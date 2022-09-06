@@ -7,12 +7,12 @@
 <meta name="generator" content="Hexo 5.3.0">
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/self/favicon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/self/favicon.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/self/favicon.png">
-  <link rel="mask-icon" href="/self/favicon.svg" color="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/favicon.png">
+  <link rel="mask-icon" href="/blog/favicon.svg" color="#222">
 
-<link rel="stylesheet" href="/self/css/main.css">
+<link rel="stylesheet" href="/blog/css/main.css">
 
 
 
@@ -20,39 +20,39 @@
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"xdxspace.gitee.io","root":"/self/","images":"/self/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/self/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
+    var CONFIG = {"hostname":"xdxxdxxdxxdxxdx.github.io","root":"/blog/","images":"/blog/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
   </script>
 <meta name="description" content="深入学习和理解 WebAssembly 相关的知识。 Wasm 到底是什么，可以调用 Web api（document 等）吗，怎么调试，性能如何…">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入了解 WebAssembly">
-<meta property="og:url" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/index.html">
+<meta property="og:url" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/index.html">
 <meta property="og:site_name" content="欢迎来到XDX的博客">
 <meta property="og:description" content="深入学习和理解 WebAssembly 相关的知识。 Wasm 到底是什么，可以调用 Web api（document 等）吗，怎么调试，性能如何…">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/history.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/wasm.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/llvm.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/import.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/command.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/stack.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/code.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/binary.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/code.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/sayhello.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/v8.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/md5.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/debug.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/cdebug.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/caniuse.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/history.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/wasm.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/llvm.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/import.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/command.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/stack.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/code.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/binary.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/code.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/sayhello.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/v8.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/md5.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/debug.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/cdebug.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/caniuse.png">
 <meta property="article:published_time" content="2022-03-15T12:55:17.000Z">
 <meta property="article:modified_time" content="2022-04-25T11:12:59.282Z">
 <meta property="article:author" content="XIEDONGXIANG">
 <meta property="article:tag" content="WebAssembly">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://xdxspace.gitee.io/self/2022/03/15/wasm/history.png">
+<meta name="twitter:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/history.png">
 
 
-<link rel="canonical" href="https://xdxspace.gitee.io/self/2022/03/15/wasm/">
+<link rel="canonical" href="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/">
 
 
 <script class="page-configurations">
@@ -123,7 +123,7 @@
 
   <div class="site-meta">
 
-    <a href="/self/" class="brand" rel="start">
+    <a href="/blog/" class="brand" rel="start">
       <i class="logo-line"></i>
       <h1 class="site-title">欢迎来到XDX的博客</h1>
       <i class="logo-line"></i>
@@ -142,9 +142,9 @@
 
 <nav class="site-nav">
   <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/self/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-tags"><a href="/self/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
-        <li class="menu-item menu-item-archives"><a href="/self/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -208,26 +208,26 @@
         <div class="site-overview-wrap sidebar-panel">
           <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="XIEDONGXIANG"
-      src="/self/images/avatar.png">
+      src="/blog/images/avatar.png">
   <p class="site-author-name" itemprop="name">XIEDONGXIANG</p>
   <div class="site-description" itemprop="description">坚持 多写写</div>
 </div>
 <div class="site-state-wrap site-overview-item animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
-          <a href="/self/archives/">
+          <a href="/blog/archives/">
         
           <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-            <a href="/self/categories/">
+            <a href="/blog/categories/">
         <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-            <a href="/self/tags/">
+            <a href="/blog/tags/">
           
         <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">标签</span></a>
@@ -240,7 +240,7 @@
       </span>
   </div>
   <div class="cc-license site-overview-item animated" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/self/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/blog/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
   </div>
 
 
@@ -276,10 +276,10 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdxspace.gitee.io/self/2022/03/15/wasm/">
+    <link itemprop="mainEntityOfPage" href="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/self/images/avatar.png">
+      <meta itemprop="image" content="/blog/images/avatar.png">
       <meta itemprop="name" content="XIEDONGXIANG">
       <meta itemprop="description" content="坚持 多写写">
     </span>
@@ -308,12 +308,12 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/self/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+          <a href="/blog/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
         </span>
     </span>
 
   
-    <span id="/self/2022/03/15/wasm/" class="post-meta-item leancloud_visitors" data-flag-title="深入了解 WebAssembly" title="阅读次数">
+    <span id="/blog/2022/03/15/wasm/" class="post-meta-item leancloud_visitors" data-flag-title="深入了解 WebAssembly" title="阅读次数">
       <span class="post-meta-item-icon">
         <i class="far fa-eye"></i>
       </span>
@@ -334,7 +334,7 @@
 <a id="more"></a>
 
 <p>WebAssembly 简称为 Wasm。</p>
-<h2 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h2><p><img src="/self/2022/03/15/wasm/history.png" alt="history"></p>
+<h2 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h2><p><img src="/blog/2022/03/15/wasm/history.png" alt="history"></p>
 <p>WebAssembly 起源于一个叫 Emscripten 的个人项目，该项目主要是将 C++编译为 js 的。后面 Mozila 觉得这个项目有未来，就组建了一个团队专门搞出了 asm.js，一种特殊的 js，由 Emscripten 生成，看一下下面这段 asm.js 代码：</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">MyAsmModule</span><span class="token punctuation">(</span><span class="token parameter">stdlib<span class="token punctuation">,</span> foreign<span class="token punctuation">,</span> heap</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
   <span class="token string">"use asm"</span><span class="token punctuation">;</span>
@@ -347,9 +347,9 @@
 <p>可以发现，asm.js 跟我们正常写的 js 基本相同，但是在函数的参数和返回值上都有特殊的<code>x | 0</code>来标记数值类型，并且在顶部有<code>use asm</code>注解。这么一来，可以处理这些类型信息的浏览器就可以做更多的编译优化从而有更快的执行速度，而不认识的浏览器也可以正常执行。该方式的主要缺憾就是仍然不够快，因为其躲不开 js 的解析编译过程。</p>
 <p>在 Mozila 推出 asm.js 的时候，Google 内部也在做 NaCl/PNaCl 项目，这个项目是支持直接在浏览器上执行本机代码，虽然这个肯定拥有最快的速度，但是失去了跨平台的特性。</p>
 <p>最后两拨人一凑合，就一起推出了 WebAssembly，目标就是保持跨平台特性的同时具有极快的执行速度。</p>
-<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p><img src="/self/2022/03/15/wasm/wasm.png" alt="wasm"><br>2019 年 12 月 5 日 — 万维网联盟（W3C）宣布 WebAssembly 核心规范成为正式标准，为 Web 带来一种功能强大的新语言。</p>
+<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p><img src="/blog/2022/03/15/wasm/wasm.png" alt="wasm"><br>2019 年 12 月 5 日 — 万维网联盟（W3C）宣布 WebAssembly 核心规范成为正式标准，为 Web 带来一种功能强大的新语言。</p>
 <p>上面是来自 W3C release 里的一句话，简单来说就是 WebAssembly 是除了传统三剑客以外第四门可以再浏览器上运行的语言。</p>
-<h3 id="一门什么语言？"><a href="#一门什么语言？" class="headerlink" title="一门什么语言？"></a>一门什么语言？</h3><p>从现代编译器角度看 WebAssembly 所处的位置<br><img src="/self/2022/03/15/wasm/llvm.png" alt="llvm"></p>
+<h3 id="一门什么语言？"><a href="#一门什么语言？" class="headerlink" title="一门什么语言？"></a>一门什么语言？</h3><p>从现代编译器角度看 WebAssembly 所处的位置<br><img src="/blog/2022/03/15/wasm/llvm.png" alt="llvm"></p>
 <p>llvm 架构简介：不同的高级语言（C++/Rust 等）通过不同的编译器前端编译为中间表示 IR，再通过不同的编译器后端生成对应平台的汇编代码，最后再由汇编编译器编译为对应平台的本机代码。</p>
 <p>可以看到 WebAssembly 跟汇编同处于汇编语言的位子上，也就是说他主要是作为一种目标代码由其他高级语言直接生成的。但是跟传统汇编的一个区别是，其运行的环境并不是真实的物理机器，而是虚拟机，所以他是一门类汇编的低级语言。</p>
 <h2 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h2><p>在继续其他内容之前，首先引入一个新的概念：模块。模块是 es5 定义的概念，可以很方便的管理和组织我们的 js 文件，Wasm 也遵循了这一规范，未来有望可以像加载 js 一样轻松加载和使用 wasm 文件。</p>
@@ -357,13 +357,13 @@
 <li>模块是 Wasm 程序编译、传输和加载的单位</li>
 <li>Wasm 规范定义了两种模块格式：二进制格式和文本格式</li>
 </ul>
-<p>下面是这两种格式的关系：<br><img src="/self/2022/03/15/wasm/import.png" alt="import"></p>
+<p>下面是这两种格式的关系：<br><img src="/blog/2022/03/15/wasm/import.png" alt="import"></p>
 <p>高级语言通过编译器生成二进制格式的.wasm 文件，通过 Wasm 的工具可以实现文本格式.wat 和二进制格式的互相转换。最后还有一种内存格式就是.wasm 在运行的时候由虚拟机实例化为相应的结构体。</p>
 <h2 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h2><h3 id="高效"><a href="#高效" class="headerlink" title="高效"></a>高效</h3><p>WebAssembly 是一种运行在栈式虚拟机上得紧凑的二进制代码，后面会详细介绍。</p>
 <h3 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h3><p>WebAssembly 的运行环境是一个沙盒，是内存安全的并且遵守浏览器的同原协议和其他安全策略。</p>
 <h3 id="开放可调试"><a href="#开放可调试" class="headerlink" title="开放可调试"></a>开放可调试</h3><p>刚刚有提到 WebAssembly 有一种文本格式，通过文本格式可以比较便捷的阅读、学习和调试 WebAssembly 的代码。</p>
 <h3 id="web-平台的一部分"><a href="#web-平台的一部分" class="headerlink" title="web 平台的一部分"></a>web 平台的一部分</h3><p>WebAssembly 可以和 js 相互调用两者存在的方法（也就是说 docuemnt、window 不是 webassembly 标准的一部分，需要通过 js 间接的调用）。可以像其他 api 一样，通过 js 检测是否支持特定功能，若不支持弹窗提示用户或者做其他回滚操作即可。野心大，不止用于 web。</p>
-<h2 id="字节码"><a href="#字节码" class="headerlink" title="字节码"></a>字节码</h2><p>一条指令的通常有操作码和 n 个操作数组成<br><img src="/self/2022/03/15/wasm/command.png" alt="command"></p>
+<h2 id="字节码"><a href="#字节码" class="headerlink" title="字节码"></a>字节码</h2><p>一条指令的通常有操作码和 n 个操作数组成<br><img src="/blog/2022/03/15/wasm/command.png" alt="command"></p>
 <p>Wasm 的代码是一种特殊的二进制代码 – 字节码。<br>汇编语言通常与具体的 CPU 指令集相关，而字节码是和和具体的虚拟机指令集相关。<br>字节码的特点是操作码由一个字节组成。</p>
 <h2 id="栈式虚拟机与寄存器式虚拟机"><a href="#栈式虚拟机与寄存器式虚拟机" class="headerlink" title="栈式虚拟机与寄存器式虚拟机"></a>栈式虚拟机与寄存器式虚拟机</h2><p>栈式和寄存器式指的都是虚拟机主要指令源与目标（操作数）的形式。wasm 中大部分是数值指令，操作数又分为两种：静态操作数和动态操作数。静态操作数直接编码在指令里，跟在操作码的后面。动态操作数在运行时从操作数栈获取）。栈式虚拟机的操作数隐含在栈上，而寄存器式的则是明确的指定操作数的寄存器</p>
 <p>以下面的 c 语言为例子，对比不同的伪代码来理解这两种虚拟机的运行方式。</p>
@@ -377,7 +377,7 @@ i32.add<span aria-hidden="true" class="line-numbers-rows"><span></span><span></s
 <pre class="line-numbers language-asm" data-language="asm"><code class="language-asm">mov  eax, 666
 add  eax, 888<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>可以看到栈式虚拟机的 add 操作是没有任何操作数的，这是因为其额外维护了一个操作数栈，在执行 add 操作的时候自动从栈上获取了两个操作数进行计算并将结果推回栈中，整个过程如下：</p>
-<p><img src="/self/2022/03/15/wasm/stack.png" alt="stack"></p>
+<p><img src="/blog/2022/03/15/wasm/stack.png" alt="stack"></p>
 <h3 id="主要区别-amp-特点"><a href="#主要区别-amp-特点" class="headerlink" title="主要区别&amp;特点"></a>主要区别&amp;特点</h3><p>通过上面的例子可以看出：</p>
 <ul>
 <li>表示同样程序逻辑的代码大小：基于栈 &lt; 基于寄存器</li>
@@ -386,7 +386,7 @@ add  eax, 888<span aria-hidden="true" class="line-numbers-rows"><span></span><sp
 <p>栈式虚拟机因为省略了操作数，所以代码一般会更小，而寄存器式虚拟机一般执行更快，这是因为对于解释器来说，解释器开销主要来自解释器循环（fetch-decode/dispatch-execute 循环）中的 fetch 与 decode/dispatch，因而减少指令条数可以导致 F 与 D 的开销减少，于是就提升了解释器速度。</p>
 <p>且为了让二进制格式尽可能紧凑，WebAssembly 段的字节数、各种索引等整数值在二进制模块中是按 LEB128 格式编码后存储的。</p>
 <h2 id="WebAssembly-的值类型"><a href="#WebAssembly-的值类型" class="headerlink" title="WebAssembly 的值类型"></a>WebAssembly 的值类型</h2><p>Wasm 1.1 规范只定义了 4 种基本的值类型：32 位整数（简称 i32）、64 位整数（简称 i64）、32 位浮点数（简称 f32）和 64 位浮点数（简称 f64）。高级语言所支持的一切类型（比如布尔值、数值、指针、数组、结构体等），都必须由编译器翻译成这 4 种基本类型或者组合。</p>
-<h2 id="代码结构"><a href="#代码结构" class="headerlink" title="代码结构"></a>代码结构</h2><p><img src="/self/2022/03/15/wasm/code.png" alt="code"></p>
+<h2 id="代码结构"><a href="#代码结构" class="headerlink" title="代码结构"></a>代码结构</h2><p><img src="/blog/2022/03/15/wasm/code.png" alt="code"></p>
 <p>上图左侧为 Wasm 的代码结构，右边是辅助我们理解的一段 go 代码。</p>
 <p>可以看到 Wasm 的代码是以魔数与版本号开头，然后模块的主体内容由 12 种段组成。除了自定义段以外，其他所有的段都最多只能出现一次，且必须按照段 ID 递增的顺序出现（图中不包含自定义段 ID.0，该段是给编译器等工具使用的，里面可以存放函数名等调试信息）。</p>
 <p>WebAssembly 模块中的函数、内存、表、全局变量都各自有自己的索引空间，用于记录各自的顺序，方便相关指令引用访问。</p>
@@ -400,7 +400,7 @@ add  eax, 888<span aria-hidden="true" class="line-numbers-rows"><span></span><sp
 <h3 id="起始段"><a href="#起始段" class="headerlink" title="起始段"></a>起始段</h3><p>该段给出模块的起始函数索引</p>
 <h3 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h3><p>内存初始化数据。示例中就是 Hello World!</p>
 <p>若某个段对其他段有依赖，那么他一定在后面，所以浏览器可以实现在下载模块的同时进行解码、验证和编译，以达到更快执行的目的。</p>
-<h2 id="二进制代码简析"><a href="#二进制代码简析" class="headerlink" title="二进制代码简析"></a>二进制代码简析</h2><p>完整的一个 Wasm 模块代码<br><img src="/self/2022/03/15/wasm/binary.png" alt="binary"></p>
+<h2 id="二进制代码简析"><a href="#二进制代码简析" class="headerlink" title="二进制代码简析"></a>二进制代码简析</h2><p>完整的一个 Wasm 模块代码<br><img src="/blog/2022/03/15/wasm/binary.png" alt="binary"></p>
 <p>前四个字节为魔数，翻译为 ASCII 码就是<code> asm</code>，紧跟着四个字节的版本号<code>01 00 00 00</code>，数字是小段编码的，所以需要倒过来解码，就是<code>00 00 00 01</code>也就是 1，Wasm 的 MVP 版本号。</p>
 <p>后面跟着的就是主体内容了，每一个段主要都由一个字节的 ID 和 一个 32 位可变长整数的内容段大小组成。如版本号后的<code>01</code>就是 ID 为 1 的类型段，后面的<code>88 80 80 80 00</code>表示的就是段的大小，前面有提到段的大小使用 LEB128 编码存储的，所以将这五个字节解码过来就是 8，说明后面八个字节都是类型段的，顺着数就会发现类型段之后就是<code>02</code>，也就是第二个代码段开始的地方了。这里用了五个字节来存储段的大小，在开启编译优化之后就会变成一个字节了。</p>
 <p>最后简单看一下最后面的<code>0D</code>也就是 11，数据段，一开始是一些指令，从<code>48</code>往后，转成对应的 ASCII 码就是我们熟悉的 Hello World!了。</p>
@@ -428,7 +428,7 @@ add  eax, 888<span aria-hidden="true" class="line-numbers-rows"><span></span><sp
 <span class="token punctuation">&#123;</span>
   <span class="token keyword">return</span> a <span class="token operator">+</span> b<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p>使用 WebAssembly Explorer 将其编译，可以看到编译结果把方法名改了，手动修正一下即可，点击下载保存为 math.wasm<br><img src="/self/2022/03/15/wasm/code.png" alt="code"></p>
+<p>使用 WebAssembly Explorer 将其编译，可以看到编译结果把方法名改了，手动修正一下即可，点击下载保存为 math.wasm<br><img src="/blog/2022/03/15/wasm/code.png" alt="code"></p>
 <p>首先需要实例化 WebAssembly 模块，这边使用的是 <code>instantiateStreaming</code> 方法，该方法的第一个参数就是请求的 math.wasm 文件，该方法会返回一个 promise，resolve 之后就能拿到 WebAssembly 实例了。示例代码中将模块导出的内容保存到了全局的 <code>moduleExports</code> 中，方便后面查看</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">let</span> moduleExports<span class="token punctuation">;</span>
 WebAssembly<span class="token punctuation">.</span><span class="token function">instantiateStreaming</span><span class="token punctuation">(</span><span class="token function">fetch</span><span class="token punctuation">(</span><span class="token string">"math.wasm"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">obj</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
@@ -447,7 +447,7 @@ moduleExports<span class="token punctuation">.</span><span class="token function
   <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>查看编译的结果就会看到，say_hello 需要从外部导入，wasm 调用 js 就是靠这个实现的</p>
-<p><img src="/self/2022/03/15/wasm/sayhello.png" alt="sayhello"></p>
+<p><img src="/blog/2022/03/15/wasm/sayhello.png" alt="sayhello"></p>
 <p>那么 js 如何给到 wasm 所需要的东西呢，答案就是第二个参数</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">sayHello</span><span class="token punctuation">(</span><span class="token parameter">num</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Hello: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>num<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">!</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -474,7 +474,7 @@ WebAssembly<span class="token punctuation">.</span><span class="token function">
   <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="WASI"><a href="#WASI" class="headerlink" title="WASI"></a>WASI</h2><p>WebAssembly System Interface。接上文提示我们有提到为了实现不同平台接口的映射，需要在编译器在编译的时候生成一个胶水代码以实现相应的功能，在跨平台的时候其实并不友好，所以 W3C 又提出了这一份接口规范，主要就是 Wasm 运行的平台只要将一些常用的接口按照规范实现，那么 Wasm 在运行的时候就可以不需要胶水代码了。node 14 版本开始已经较好的支持了该规范。</p>
-<h2 id="性能对比"><a href="#性能对比" class="headerlink" title="性能对比"></a>性能对比</h2><h3 id="v8"><a href="#v8" class="headerlink" title="v8"></a>v8</h3><p>在开始性能对比前先简单看一下 v8 的架构，来看看为什么 wasm 可以执行得更快<br><img src="/self/2022/03/15/wasm/v8.png" alt="v8"></p>
+<h2 id="性能对比"><a href="#性能对比" class="headerlink" title="性能对比"></a>性能对比</h2><h3 id="v8"><a href="#v8" class="headerlink" title="v8"></a>v8</h3><p>在开始性能对比前先简单看一下 v8 的架构，来看看为什么 wasm 可以执行得更快<br><img src="/blog/2022/03/15/wasm/v8.png" alt="v8"></p>
 <p>可以看到在有 wasm 之前，v8 只有下面一条编译基线，主要就是解析 js 生成 ast，编译为字节码然后解释为机器码执行，当一段代码执行多次成为热点代码之后就会被丢到 TurboFan 中生成优化后的机器码以达到更快的执行速度。</p>
 <p>加入 wasm 之后就多了一条编译基线，也就是上面的 Liftoff，为了让 wasm 代码更快的执行，引擎一开始会直接对 wasm 代码进行解码然后直接就解释成机器码运行，因为本身就是字节码，对比 js 一开始就赢在了起跑线上。同时会在后台独立开启一个线程将 wasm 生成优化后的机器码，以达到起飞的速度。</p>
 <h3 id="斐波那契数列"><a href="#斐波那契数列" class="headerlink" title="斐波那契数列"></a>斐波那契数列</h3><p>第一个测试的是斐波那契数列，测试获取第 42 项所需的时间，测试五组计算平均值</p>
@@ -515,13 +515,13 @@ console<span class="token punctuation">.</span><span class="token function">time
 <span class="token punctuation">&#125;</span>
 console<span class="token punctuation">.</span><span class="token function">timeEnd</span><span class="token punctuation">(</span><span class="token string">"md5-js"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>主要的测试方式就是加密不同长度的字符串十万次，看他们的执行速度，结果还是比较出人意料的</p>
-<p><img src="/self/2022/03/15/wasm/md5.png" alt="md5"></p>
+<p><img src="/blog/2022/03/15/wasm/md5.png" alt="md5"></p>
 <p>可以看到，在字符串比较短的时候，js 是远快于 wasm 的，只有当字符串长度达到一定量级的时候 wasm 的优势才体现出来。从这个测试就可以看出，并不是所有想要快的场景 wasm 都是适用的，往往 js 和 wasm 的耗时、类型的转换也是不可忽略的。</p>
 <h2 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h2><p>wasm 现在的调试已经相对完善了，例如刚刚的 sum 的例子，只需要打开控制台，查看 wasm 代码，就会发现控制台已经帮你转成文本格式了，在代码中打断点也可以正常的步进调试，在右侧还能看到有个表达式栈，就是我们说的操作数栈，求值栈，一个东西。用鼠标悬浮再变量上也可以查看值和类型</p>
-<p><img src="/self/2022/03/15/wasm/debug.png" alt="debug"></p>
+<p><img src="/blog/2022/03/15/wasm/debug.png" alt="debug"></p>
 <h3 id="调试源码"><a href="#调试源码" class="headerlink" title="调试源码"></a>调试源码</h3><p>在复杂的情况下，调试文本格式的 wasm 代码其实也是无异于自杀的，所以控制台进一步的支持了调试源码。目前仅支持 C 代码。</p>
 <p>可以打开控制台的实验选中打开调试 wasm 的选项，可以根据其后面问号指示的文档安装一下插件和构建 wasm 代码，重启一下浏览器就可以调试了，这边仅做简单展示：</p>
-<p><img src="/self/2022/03/15/wasm/cdebug.png" alt="cdebug"></p>
+<p><img src="/blog/2022/03/15/wasm/cdebug.png" alt="cdebug"></p>
 <p>在你调试的时候你可能会发现断到莫名其妙的地方了，此时根据调用栈往上找就能找到对应的 c 源码了。可以看到在浏览器中已经可以正确的显示 c 源码，并像 js 那样查看变量和调用栈了。</p>
 <p>还有其他调试方法，有兴趣的同学可以直接查看官网的 debug 模块。</p>
 <h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><ul>
@@ -530,7 +530,7 @@ console<span class="token punctuation">.</span><span class="token function">time
 <li>Web-DSP</li>
 <li>游戏引擎</li>
 </ul>
-<p>可以看到，很重计算的场景（大文件处理，图像处理，音视频渲染，3D 游戏），Wasm 都很好的发挥了作用，并且 caniuse 上现代浏览器对 Wasm 的支持也非常高了，若对速度有需求完全可以用起来了<br><img src="/self/2022/03/15/wasm/caniuse.png" alt="caniuse"></p>
+<p>可以看到，很重计算的场景（大文件处理，图像处理，音视频渲染，3D 游戏），Wasm 都很好的发挥了作用，并且 caniuse 上现代浏览器对 Wasm 的支持也非常高了，若对速度有需求完全可以用起来了<br><img src="/blog/2022/03/15/wasm/caniuse.png" alt="caniuse"></p>
 <p>最后贴一个官网的<a target="_blank" rel="noopener" href="http://webassembly.org.cn/demo/Tanks/">坦克游戏</a>，Happy Gaming!</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
 <li>《WebAssembly 原理与核心技术》– 张秀宏</li>
@@ -554,7 +554,7 @@ console<span class="token punctuation">.</span><span class="token function">time
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://xdxspace.gitee.io/self/2022/03/15/wasm/" title="深入了解 WebAssembly">https://xdxspace.gitee.io/self/2022/03/15/wasm/</a>
+      <a href="https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/" title="深入了解 WebAssembly">https://xdxxdxxdxxdxxdx.github.io/blog/2022/03/15/wasm/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -563,19 +563,19 @@ console<span class="token punctuation">.</span><span class="token function">time
 </div>
 
           <div class="post-tags">
-              <a href="/self/tags/WebAssembly/" rel="tag"># WebAssembly</a>
+              <a href="/blog/tags/WebAssembly/" rel="tag"># WebAssembly</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/self/2021/11/25/wasm-binary/" rel="prev" title="WebAssembly 入门（废弃）">
+                <a href="/blog/2021/11/25/wasm-binary/" rel="prev" title="WebAssembly 入门（废弃）">
                   <i class="fa fa-chevron-left"></i> WebAssembly 入门（废弃）
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/self/2022/04/26/rollup/" rel="next" title="发布一个工具到NPM">
+                <a href="/blog/2022/04/26/rollup/" rel="next" title="发布一个工具到NPM">
                   发布一个工具到NPM <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
@@ -633,10 +633,10 @@ console<span class="token punctuation">.</span><span class="token function">time
 
   
   <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-<script src="/self/js/utils.js"></script><script src="/self/js/next-boot.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/next-boot.js"></script>
 
   
-<script src="/self/js/local-search.js"></script>
+<script src="/blog/js/local-search.js"></script>
 
 
 

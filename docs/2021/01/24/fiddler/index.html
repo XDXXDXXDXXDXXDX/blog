@@ -7,12 +7,12 @@
 <meta name="generator" content="Hexo 5.3.0">
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/self/favicon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/self/favicon.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/self/favicon.png">
-  <link rel="mask-icon" href="/self/favicon.svg" color="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/favicon.png">
+  <link rel="mask-icon" href="/blog/favicon.svg" color="#222">
 
-<link rel="stylesheet" href="/self/css/main.css">
+<link rel="stylesheet" href="/blog/css/main.css">
 
 
 
@@ -20,35 +20,35 @@
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"xdxspace.gitee.io","root":"/self/","images":"/self/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/self/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
+    var CONFIG = {"hostname":"xdxxdxxdxxdxxdx.github.io","root":"/blog/","images":"/blog/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
   </script>
 <meta name="description" content="在选择博客评论系统的过程中，遇到了两次访问的网站使用的 jquery 下载失败导致网站功能不能正常使用的问题，故尝试修改请求让网站恢复正常。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="fiddler 修改响应实践">
-<meta property="og:url" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/index.html">
+<meta property="og:url" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/index.html">
 <meta property="og:site_name" content="欢迎来到XDX的博客">
 <meta property="og:description" content="在选择博客评论系统的过程中，遇到了两次访问的网站使用的 jquery 下载失败导致网站功能不能正常使用的问题，故尝试修改请求让网站恢复正常。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/jquery_failed.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/trust.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/choose.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/before.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/decode.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/html.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/edit.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/change_path.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/res.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/start_res.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/success.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/jquery_failed.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/trust.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/choose.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/before.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/decode.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/html.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/edit.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/change_path.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/res.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/start_res.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/success.png">
 <meta property="article:published_time" content="2021-01-24T14:00:28.000Z">
 <meta property="article:modified_time" content="2021-04-26T07:29:06.556Z">
 <meta property="article:author" content="XIEDONGXIANG">
 <meta property="article:tag" content="fiddler">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/jquery_failed.png">
+<meta name="twitter:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/jquery_failed.png">
 
 
-<link rel="canonical" href="https://xdxspace.gitee.io/self/2021/01/24/fiddler/">
+<link rel="canonical" href="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/">
 
 
 <script class="page-configurations">
@@ -119,7 +119,7 @@
 
   <div class="site-meta">
 
-    <a href="/self/" class="brand" rel="start">
+    <a href="/blog/" class="brand" rel="start">
       <i class="logo-line"></i>
       <h1 class="site-title">欢迎来到XDX的博客</h1>
       <i class="logo-line"></i>
@@ -138,9 +138,9 @@
 
 <nav class="site-nav">
   <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/self/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-tags"><a href="/self/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
-        <li class="menu-item menu-item-archives"><a href="/self/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -204,26 +204,26 @@
         <div class="site-overview-wrap sidebar-panel">
           <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="XIEDONGXIANG"
-      src="/self/images/avatar.png">
+      src="/blog/images/avatar.png">
   <p class="site-author-name" itemprop="name">XIEDONGXIANG</p>
   <div class="site-description" itemprop="description">坚持 多写写</div>
 </div>
 <div class="site-state-wrap site-overview-item animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
-          <a href="/self/archives/">
+          <a href="/blog/archives/">
         
           <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-            <a href="/self/categories/">
+            <a href="/blog/categories/">
         <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-            <a href="/self/tags/">
+            <a href="/blog/tags/">
           
         <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">标签</span></a>
@@ -236,7 +236,7 @@
       </span>
   </div>
   <div class="cc-license site-overview-item animated" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/self/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/blog/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
   </div>
 
 
@@ -272,10 +272,10 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdxspace.gitee.io/self/2021/01/24/fiddler/">
+    <link itemprop="mainEntityOfPage" href="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/self/images/avatar.png">
+      <meta itemprop="image" content="/blog/images/avatar.png">
       <meta itemprop="name" content="XIEDONGXIANG">
       <meta itemprop="description" content="坚持 多写写">
     </span>
@@ -304,12 +304,12 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/self/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+          <a href="/blog/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
         </span>
     </span>
 
   
-    <span id="/self/2021/01/24/fiddler/" class="post-meta-item leancloud_visitors" data-flag-title="fiddler 修改响应实践" title="阅读次数">
+    <span id="/blog/2021/01/24/fiddler/" class="post-meta-item leancloud_visitors" data-flag-title="fiddler 修改响应实践" title="阅读次数">
       <span class="post-meta-item-icon">
         <i class="far fa-eye"></i>
       </span>
@@ -331,7 +331,7 @@
 <h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>如果是为了了解如何修改响应，可以直接跳到最后一节<a href="#%E4%BF%AE%E6%94%B9%E5%93%8D%E5%BA%94">修改响应</a></p>
 <p>本文主要解决<a target="_blank" rel="noopener" href="http://livere.com/">livere</a>的官网登陆问题。</p>
 <p>进入官网后，点击右上角进行注册，然后点击登陆，可以看到控制台报错：</p>
-<p><img src="/self/2021/01/24/fiddler/jquery_failed.png" alt="jquery_failed"></p>
+<p><img src="/blog/2021/01/24/fiddler/jquery_failed.png" alt="jquery_failed"></p>
 <p>可以看到是<a target="_blank" rel="noopener" href="https://code.jquery.com/jquery-1.11.2.min.js">jquery</a>加载失败了，导致登陆不成功。</p>
 <p>在排除了是 DNS 解析和墙的问题之后，决定直接修改响应让网页正常获取到 jquery。</p>
 <h2 id="配置-fiddler"><a href="#配置-fiddler" class="headerlink" title="配置 fiddler"></a>配置 fiddler</h2><p>首先需要到官网下载 fiddler，<a target="_blank" rel="noopener" href="https://www.telerik.com/download/fiddler">点此前往</a></p>
@@ -340,34 +340,34 @@
 <ul>
 <li>重置所有证书和信任根证书证书，点击左上角的 Actions，按照顺序点击按钮，有弹窗则一直确定就好</li>
 </ul>
-<p><img src="/self/2021/01/24/fiddler/trust.png" alt="trust"></p>
+<p><img src="/blog/2021/01/24/fiddler/trust.png" alt="trust"></p>
 <ul>
 <li>勾选拦截 https 相关的配置</li>
 </ul>
-<p><img src="/self/2021/01/24/fiddler/choose.png" alt="choose"></p>
+<p><img src="/blog/2021/01/24/fiddler/choose.png" alt="choose"></p>
 <p>配置完后即可正常拦截 https 请求了</p>
 <h2 id="分析请求逻辑"><a href="#分析请求逻辑" class="headerlink" title="分析请求逻辑"></a>分析请求逻辑</h2><p>回到官网的登陆页，输入信息点击登陆，可以在 fiddler 的面板中看到，在获取 jquery 之前有另外一个请求</p>
-<p><img src="/self/2021/01/24/fiddler/before.png" alt="before"></p>
+<p><img src="/blog/2021/01/24/fiddler/before.png" alt="before"></p>
 <p>将该请求（双击选中请求）的响应解密可以看到是一个 html</p>
-<p><img src="/self/2021/01/24/fiddler/decode.png" alt="decode"></p>
-<p><img src="/self/2021/01/24/fiddler/html.png" alt="html"></p>
+<p><img src="/blog/2021/01/24/fiddler/decode.png" alt="decode"></p>
+<p><img src="/blog/2021/01/24/fiddler/html.png" alt="html"></p>
 <p>所以推测登陆的逻辑就是在 iframe 中加载一个 html（该 html 去请求 juery），然后再将登陆结果返回给主站。所以只要修改该 html 加载 jquery 的地址就好了。</p>
 <h2 id="修改响应"><a href="#修改响应" class="headerlink" title="修改响应"></a>修改响应</h2><p>首先找一个可以正常返回 jquery 的 cdn，例如<a target="_blank" rel="noopener" href="https://cdn.bootcdn.net/ajax/libs/jquery/1.12.1/jquery.js">https://cdn.bootcdn.net/ajax/libs/jquery/1.12.1/jquery.js</a></p>
 <p>然后在 fiddler 中选中刚才的那个请求，右键保存并编辑响应</p>
-<p><img src="/self/2021/01/24/fiddler/edit.png" alt="edit"></p>
+<p><img src="/blog/2021/01/24/fiddler/edit.png" alt="edit"></p>
 <p>在打开的编辑中，找到 jquery 的位置，将其替换为可用的 cdn</p>
-<p><img src="/self/2021/01/24/fiddler/change_path.png" alt="change_path"></p>
+<p><img src="/blog/2021/01/24/fiddler/change_path.png" alt="change_path"></p>
 <p>然后到 fiddler 中添加自动响应规则，选中右边的 AutoResponder，按照下图进行配置（三个红框先不用开启）</p>
-<p><img src="/self/2021/01/24/fiddler/res.png" alt="res"></p>
+<p><img src="/blog/2021/01/24/fiddler/res.png" alt="res"></p>
 <p>最后重新回到刚才的登陆页面，在点击登陆之前，在 fiddler 中开启自动响应，把图中的三个选项都要勾上，这三个按顺序分别是</p>
 <ul>
 <li>开启自动响应</li>
 <li>允许所有链接</li>
 <li>没有匹配到规则的请求直接放行</li>
 </ul>
-<p><img src="/self/2021/01/24/fiddler/start_res.png" alt="start_res"></p>
+<p><img src="/blog/2021/01/24/fiddler/start_res.png" alt="start_res"></p>
 <p>然后再点击登陆，可以看到页面已经正常登陆进去了~</p>
-<p><img src="/self/2021/01/24/fiddler/success.png" alt="success"></p>
+<p><img src="/blog/2021/01/24/fiddler/success.png" alt="success"></p>
 <p>通过该方式，修改其他请求也是 OK 的~</p>
 <p>神仙运行商有段时间连 github 都不让我上，真的服了…</p>
 
@@ -387,7 +387,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://xdxspace.gitee.io/self/2021/01/24/fiddler/" title="fiddler 修改响应实践">https://xdxspace.gitee.io/self/2021/01/24/fiddler/</a>
+      <a href="https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/" title="fiddler 修改响应实践">https://xdxxdxxdxxdxxdx.github.io/blog/2021/01/24/fiddler/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -396,19 +396,19 @@
 </div>
 
           <div class="post-tags">
-              <a href="/self/tags/fiddler/" rel="tag"># fiddler</a>
+              <a href="/blog/tags/fiddler/" rel="tag"># fiddler</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/self/2021/01/24/comment/" rel="prev" title="为博客添加评论系统">
+                <a href="/blog/2021/01/24/comment/" rel="prev" title="为博客添加评论系统">
                   <i class="fa fa-chevron-left"></i> 为博客添加评论系统
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/self/2021/01/25/command/" rel="next" title="常用命令">
+                <a href="/blog/2021/01/25/command/" rel="next" title="常用命令">
                   常用命令 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
@@ -466,10 +466,10 @@
 
   
   <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-<script src="/self/js/utils.js"></script><script src="/self/js/next-boot.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/next-boot.js"></script>
 
   
-<script src="/self/js/local-search.js"></script>
+<script src="/blog/js/local-search.js"></script>
 
 
 

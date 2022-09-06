@@ -7,12 +7,12 @@
 <meta name="generator" content="Hexo 5.3.0">
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/self/favicon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/self/favicon.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/self/favicon.png">
-  <link rel="mask-icon" href="/self/favicon.svg" color="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/favicon.png">
+  <link rel="mask-icon" href="/blog/favicon.svg" color="#222">
 
-<link rel="stylesheet" href="/self/css/main.css">
+<link rel="stylesheet" href="/blog/css/main.css">
 
 
 
@@ -20,12 +20,12 @@
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"xdxspace.gitee.io","root":"/self/","images":"/self/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/self/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
+    var CONFIG = {"hostname":"xdxxdxxdxxdxxdx.github.io","root":"/blog/","images":"/blog/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
   </script>
 <meta name="description" content="浅谈 js 中浅克隆和深克隆的方法。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="js 中的对象克隆">
-<meta property="og:url" content="https://xdxspace.gitee.io/self/2021/03/01/clone/index.html">
+<meta property="og:url" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/03/01/clone/index.html">
 <meta property="og:site_name" content="欢迎来到XDX的博客">
 <meta property="og:description" content="浅谈 js 中浅克隆和深克隆的方法。">
 <meta property="og:locale" content="zh_CN">
@@ -36,7 +36,7 @@
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://xdxspace.gitee.io/self/2021/03/01/clone/">
+<link rel="canonical" href="https://xdxxdxxdxxdxxdx.github.io/blog/2021/03/01/clone/">
 
 
 <script class="page-configurations">
@@ -107,7 +107,7 @@
 
   <div class="site-meta">
 
-    <a href="/self/" class="brand" rel="start">
+    <a href="/blog/" class="brand" rel="start">
       <i class="logo-line"></i>
       <h1 class="site-title">欢迎来到XDX的博客</h1>
       <i class="logo-line"></i>
@@ -126,9 +126,9 @@
 
 <nav class="site-nav">
   <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/self/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-tags"><a href="/self/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
-        <li class="menu-item menu-item-archives"><a href="/self/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -192,26 +192,26 @@
         <div class="site-overview-wrap sidebar-panel">
           <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="XIEDONGXIANG"
-      src="/self/images/avatar.png">
+      src="/blog/images/avatar.png">
   <p class="site-author-name" itemprop="name">XIEDONGXIANG</p>
   <div class="site-description" itemprop="description">坚持 多写写</div>
 </div>
 <div class="site-state-wrap site-overview-item animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
-          <a href="/self/archives/">
+          <a href="/blog/archives/">
         
           <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-            <a href="/self/categories/">
+            <a href="/blog/categories/">
         <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-            <a href="/self/tags/">
+            <a href="/blog/tags/">
           
         <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">标签</span></a>
@@ -224,7 +224,7 @@
       </span>
   </div>
   <div class="cc-license site-overview-item animated" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/self/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/blog/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
   </div>
 
 
@@ -260,10 +260,10 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdxspace.gitee.io/self/2021/03/01/clone/">
+    <link itemprop="mainEntityOfPage" href="https://xdxxdxxdxxdxxdx.github.io/blog/2021/03/01/clone/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/self/images/avatar.png">
+      <meta itemprop="image" content="/blog/images/avatar.png">
       <meta itemprop="name" content="XIEDONGXIANG">
       <meta itemprop="description" content="坚持 多写写">
     </span>
@@ -292,12 +292,12 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/self/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+          <a href="/blog/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
         </span>
     </span>
 
   
-    <span id="/self/2021/03/01/clone/" class="post-meta-item leancloud_visitors" data-flag-title="js 中的对象克隆" title="阅读次数">
+    <span id="/blog/2021/03/01/clone/" class="post-meta-item leancloud_visitors" data-flag-title="js 中的对象克隆" title="阅读次数">
       <span class="post-meta-item-icon">
         <i class="far fa-eye"></i>
       </span>
@@ -368,7 +368,7 @@ console<span class="token punctuation">.</span><span class="token function">log<
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://xdxspace.gitee.io/self/2021/03/01/clone/" title="js 中的对象克隆">https://xdxspace.gitee.io/self/2021/03/01/clone/</a>
+      <a href="https://xdxxdxxdxxdxxdx.github.io/blog/2021/03/01/clone/" title="js 中的对象克隆">https://xdxxdxxdxxdxxdx.github.io/blog/2021/03/01/clone/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -377,19 +377,19 @@ console<span class="token punctuation">.</span><span class="token function">log<
 </div>
 
           <div class="post-tags">
-              <a href="/self/tags/JavaScript/" rel="tag"># JavaScript</a>
+              <a href="/blog/tags/JavaScript/" rel="tag"># JavaScript</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/self/2021/02/20/canvas-2d-collision-detection/" rel="prev" title="canvas 2d 游戏与碰撞检测">
+                <a href="/blog/2021/02/20/canvas-2d-collision-detection/" rel="prev" title="canvas 2d 游戏与碰撞检测">
                   <i class="fa fa-chevron-left"></i> canvas 2d 游戏与碰撞检测
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/self/2021/05/18/react-hook-test/" rel="next" title="给 react 添加测试">
+                <a href="/blog/2021/05/18/react-hook-test/" rel="next" title="给 react 添加测试">
                   给 react 添加测试 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
@@ -447,10 +447,10 @@ console<span class="token punctuation">.</span><span class="token function">log<
 
   
   <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-<script src="/self/js/utils.js"></script><script src="/self/js/next-boot.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/next-boot.js"></script>
 
   
-<script src="/self/js/local-search.js"></script>
+<script src="/blog/js/local-search.js"></script>
 
 
 

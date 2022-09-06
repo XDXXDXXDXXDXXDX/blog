@@ -7,12 +7,12 @@
 <meta name="generator" content="Hexo 5.3.0">
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/self/favicon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/self/favicon.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/self/favicon.png">
-  <link rel="mask-icon" href="/self/favicon.svg" color="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/favicon.png">
+  <link rel="mask-icon" href="/blog/favicon.svg" color="#222">
 
-<link rel="stylesheet" href="/self/css/main.css">
+<link rel="stylesheet" href="/blog/css/main.css">
 
 
 
@@ -20,36 +20,36 @@
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"xdxspace.gitee.io","root":"/self/","images":"/self/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/self/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
+    var CONFIG = {"hostname":"xdxxdxxdxxdxxdx.github.io","root":"/blog/","images":"/blog/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
   </script>
 <meta name="description" content="粗略看了 WebGL Beginners Guide，记录（翻译）一下部分内容。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="WebGL Beginners Guide 笔记">
-<meta property="og:url" content="https://xdxspace.gitee.io/self/2022/07/06/webgl/index.html">
+<meta property="og:url" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/index.html">
 <meta property="og:site_name" content="欢迎来到XDX的博客">
 <meta property="og:description" content="粗略看了 WebGL Beginners Guide，记录（翻译）一下部分内容。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/07/06/webgl/sample.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/07/06/webgl/overview.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/07/06/webgl/lights.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/07/06/webgl/difflights.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/07/06/webgl/shading.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/07/06/webgl/phong.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/07/06/webgl/modeltrans.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/07/06/webgl/viewtrans.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/07/06/webgl/projectiontrans.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/07/06/webgl/division.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/07/06/webgl/viewport.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/07/06/webgl/implementation.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/sample.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/overview.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/lights.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/difflights.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/shading.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/phong.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/modeltrans.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/viewtrans.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/projectiontrans.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/division.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/viewport.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/implementation.png">
 <meta property="article:published_time" content="2022-07-06T06:19:37.000Z">
 <meta property="article:modified_time" content="2022-07-06T08:46:46.649Z">
 <meta property="article:author" content="XIEDONGXIANG">
 <meta property="article:tag" content="WebGL">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://xdxspace.gitee.io/self/2022/07/06/webgl/sample.png">
+<meta name="twitter:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/sample.png">
 
 
-<link rel="canonical" href="https://xdxspace.gitee.io/self/2022/07/06/webgl/">
+<link rel="canonical" href="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/">
 
 
 <script class="page-configurations">
@@ -120,7 +120,7 @@
 
   <div class="site-meta">
 
-    <a href="/self/" class="brand" rel="start">
+    <a href="/blog/" class="brand" rel="start">
       <i class="logo-line"></i>
       <h1 class="site-title">欢迎来到XDX的博客</h1>
       <i class="logo-line"></i>
@@ -139,9 +139,9 @@
 
 <nav class="site-nav">
   <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/self/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-tags"><a href="/self/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
-        <li class="menu-item menu-item-archives"><a href="/self/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -205,26 +205,26 @@
         <div class="site-overview-wrap sidebar-panel">
           <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="XIEDONGXIANG"
-      src="/self/images/avatar.png">
+      src="/blog/images/avatar.png">
   <p class="site-author-name" itemprop="name">XIEDONGXIANG</p>
   <div class="site-description" itemprop="description">坚持 多写写</div>
 </div>
 <div class="site-state-wrap site-overview-item animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
-          <a href="/self/archives/">
+          <a href="/blog/archives/">
         
           <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-            <a href="/self/categories/">
+            <a href="/blog/categories/">
         <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-            <a href="/self/tags/">
+            <a href="/blog/tags/">
           
         <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">标签</span></a>
@@ -237,7 +237,7 @@
       </span>
   </div>
   <div class="cc-license site-overview-item animated" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/self/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/blog/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
   </div>
 
 
@@ -273,10 +273,10 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdxspace.gitee.io/self/2022/07/06/webgl/">
+    <link itemprop="mainEntityOfPage" href="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/self/images/avatar.png">
+      <meta itemprop="image" content="/blog/images/avatar.png">
       <meta itemprop="name" content="XIEDONGXIANG">
       <meta itemprop="description" content="坚持 多写写">
     </span>
@@ -305,12 +305,12 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/self/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+          <a href="/blog/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
         </span>
     </span>
 
   
-    <span id="/self/2022/07/06/webgl/" class="post-meta-item leancloud_visitors" data-flag-title="WebGL Beginners Guide 笔记" title="阅读次数">
+    <span id="/blog/2022/07/06/webgl/" class="post-meta-item leancloud_visitors" data-flag-title="WebGL Beginners Guide 笔记" title="阅读次数">
       <span class="post-meta-item-icon">
         <i class="far fa-eye"></i>
       </span>
@@ -337,32 +337,32 @@
 <li>Camera</li>
 </ul>
 <h2 id="Rendering-Geometry"><a href="#Rendering-Geometry" class="headerlink" title="Rendering Geometry"></a>Rendering Geometry</h2><p>表示任何 3D 对象需要两种基本的数据类型：顶点（vertices）和索引（indices），内容为这两种数据的 buffer 分别称为 Vertex Buffer Objects (VBOs)和 Index Buffer Objects(IBOs)。</p>
-<p>一个使用定点和索引绘制的例子：<br><img src="/self/2022/07/06/webgl/sample.png" alt="sample"></p>
-<p>渲染管线概览：<br><img src="/self/2022/07/06/webgl/overview.png" alt="overview"></p>
+<p>一个使用定点和索引绘制的例子：<br><img src="/blog/2022/07/06/webgl/sample.png" alt="sample"></p>
+<p>渲染管线概览：<br><img src="/blog/2022/07/06/webgl/overview.png" alt="overview"></p>
 <ul>
 <li>VBO 包含需要绘制的几何体信息，顶点着色器通过属性（Attributes，不同属性指向 VBO 中对应的值）在 VBO 中获取绘制需要的信息，如颜色、法线和纹理等等。</li>
 <li>片段着色器则是让开发者可以完全控制所有绘制的细节，简单来说就是定点着色器控制的是两个定点的绘制，而片段着色器控制两个点之间的其他点的绘制，片段着色器的输入。</li>
 <li>Framebuffer 包含片段着色器处理的片段。一旦处理了所有片段，就会形成 2D 图像并显示在屏幕上。 FrameBuffer 是渲染管道的最终目的地。</li>
 <li>属性变量，同一变量和易变变量（Attributes, uniforms, and varyings）。属性是顶点着色器中使用的输入变量（定点左边和颜色等）。由于每个顶点都调用顶点着色器，因此每次调用顶点着色器时属性都是不同的。统一变量是顶点着色器和片段着色器可用的输入变量。统一变量在<code>渲染周期</code>中是不变的（例如灯的位置）。易变变量用于将数据从顶点着色器传递到片段着色器。</li>
 </ul>
-<h2 id="Lights"><a href="#Lights" class="headerlink" title="Lights!"></a>Lights!</h2><p>光照、法线和向量（Lights, normals, and materials）：<br><img src="/self/2022/07/06/webgl/lights.png" alt="lights"></p>
-<p>有两种光源：位置光和平行光（positional or directional）。位置光就是光源的位置会影响场景的表现，例如灯泡等，可以将其光照的方向想象是一个点出发的不同方向的向量，而太阳光则是比较典型的平行光，他对一个物体的各个位置的光线是平行的。<br><img src="/self/2022/07/06/webgl/difflights.png" alt="difflights"></p>
+<h2 id="Lights"><a href="#Lights" class="headerlink" title="Lights!"></a>Lights!</h2><p>光照、法线和向量（Lights, normals, and materials）：<br><img src="/blog/2022/07/06/webgl/lights.png" alt="lights"></p>
+<p>有两种光源：位置光和平行光（positional or directional）。位置光就是光源的位置会影响场景的表现，例如灯泡等，可以将其光照的方向想象是一个点出发的不同方向的向量，而太阳光则是比较典型的平行光，他对一个物体的各个位置的光线是平行的。<br><img src="/blog/2022/07/06/webgl/difflights.png" alt="difflights"></p>
 <p>着色方法（Shading methods）一种插值类型，定义了最终颜色的计算位置——在顶点着色器中或在片段着色器中；照明模型决定了法线、材质和灯光是如何组合产生最终颜色的。照明模型（lighting models）的方程使用光反射的物理原理。因此，照明模型在文献中也被称为反射模型（reflection models）。</p>
-<h3 id="两种基本的阴影-插值方法（Shading-interpolation-methods）"><a href="#两种基本的阴影-插值方法（Shading-interpolation-methods）" class="headerlink" title="两种基本的阴影/插值方法（Shading/interpolation methods）"></a>两种基本的阴影/插值方法（Shading/interpolation methods）</h3><p>高洛德着色法（Goraud shading）：根据顶点法向量计算出光照，再插值计算出整个面的光照。逐顶点光照。<br>冯氏着色法（Phong shading）：根据顶点的法向量插值计算出表面内各点的法向量，再根据光照模型逐像素计算光照值。逐像素光照。<br><img src="/self/2022/07/06/webgl/shading.png" alt="shading"></p>
+<h3 id="两种基本的阴影-插值方法（Shading-interpolation-methods）"><a href="#两种基本的阴影-插值方法（Shading-interpolation-methods）" class="headerlink" title="两种基本的阴影/插值方法（Shading/interpolation methods）"></a>两种基本的阴影/插值方法（Shading/interpolation methods）</h3><p>高洛德着色法（Goraud shading）：根据顶点法向量计算出光照，再插值计算出整个面的光照。逐顶点光照。<br>冯氏着色法（Phong shading）：根据顶点的法向量插值计算出表面内各点的法向量，再根据光照模型逐像素计算光照值。逐像素光照。<br><img src="/blog/2022/07/06/webgl/shading.png" alt="shading"></p>
 <h3 id="两种光照模型"><a href="#两种光照模型" class="headerlink" title="两种光照模型"></a>两种光照模型</h3><p>朗伯光照反射模型（Lambertian reflection model），只考虑了光照的漫反射情况，没有考虑环境光和镜面反射</p>
-<p>冯氏光照反射模型（Phong reflection model），考虑了 环境光、漫反射以及镜面反射。<br><img src="/self/2022/07/06/webgl/phong.png" alt="phong"></p>
+<p>冯氏光照反射模型（Phong reflection model），考虑了 环境光、漫反射以及镜面反射。<br><img src="/blog/2022/07/06/webgl/phong.png" alt="phong"></p>
 <p>OpenGL ES 着色器的语言是 ESSL。</p>
 <h2 id="Camera"><a href="#Camera" class="headerlink" title="Camera"></a>Camera</h2><p>基本相机类型：轨道摄像头（世界或摄像机坐标中）和跟踪摄像头（FBS）</p>
 <p>WebGL 没有可以操纵的相机对象。No camera object in the WebGL API, only matrices.</p>
 <p>了解场景从 3D 世界到 2D 屏幕的转变</p>
-<h3 id="模型变换（Model-transform）"><a href="#模型变换（Model-transform）" class="headerlink" title="模型变换（Model transform）"></a>模型变换（Model transform）</h3><p>对象的源顶点坐标转换为在世界坐标系中的坐标<br><img src="/self/2022/07/06/webgl/modeltrans.png" alt="modeltrans"></p>
-<h3 id="视图变换（View-transform）"><a href="#视图变换（View-transform）" class="headerlink" title="视图变换（View transform）"></a>视图变换（View transform）</h3><p>世界坐标系中的坐标转换为以视图坐标系中，该坐标系原点可能是眼睛或者摄像头。<br><img src="/self/2022/07/06/webgl/viewtrans.png" alt="viewtrans"></p>
-<h3 id="投影变换（Projection-transform）"><a href="#投影变换（Projection-transform）" class="headerlink" title="投影变换（Projection transform）"></a>投影变换（Projection transform）</h3><p>该变换决定了多少视图空间将被渲染，以及它将如何被映射到计算机屏幕上。这个区域被称为截锥体，它由六个平面(近、远、顶、底、右、左平面)定义，如下图所示:<br><img src="/self/2022/07/06/webgl/projectiontrans.png" alt="projectiontrans"></p>
-<h3 id="透视除法（Perspective-division）"><a href="#透视除法（Perspective-division）" class="headerlink" title="透视除法（Perspective division）"></a>透视除法（Perspective division）</h3><p>一旦确定了多少可视空间将被渲染，锥体将被映射到近平面，以产生一个 2D 图像。近平面是要在你的电脑屏幕上呈现的。该变换生成<br><img src="/self/2022/07/06/webgl/division.png" alt="division"></p>
+<h3 id="模型变换（Model-transform）"><a href="#模型变换（Model-transform）" class="headerlink" title="模型变换（Model transform）"></a>模型变换（Model transform）</h3><p>对象的源顶点坐标转换为在世界坐标系中的坐标<br><img src="/blog/2022/07/06/webgl/modeltrans.png" alt="modeltrans"></p>
+<h3 id="视图变换（View-transform）"><a href="#视图变换（View-transform）" class="headerlink" title="视图变换（View transform）"></a>视图变换（View transform）</h3><p>世界坐标系中的坐标转换为以视图坐标系中，该坐标系原点可能是眼睛或者摄像头。<br><img src="/blog/2022/07/06/webgl/viewtrans.png" alt="viewtrans"></p>
+<h3 id="投影变换（Projection-transform）"><a href="#投影变换（Projection-transform）" class="headerlink" title="投影变换（Projection transform）"></a>投影变换（Projection transform）</h3><p>该变换决定了多少视图空间将被渲染，以及它将如何被映射到计算机屏幕上。这个区域被称为截锥体，它由六个平面(近、远、顶、底、右、左平面)定义，如下图所示:<br><img src="/blog/2022/07/06/webgl/projectiontrans.png" alt="projectiontrans"></p>
+<h3 id="透视除法（Perspective-division）"><a href="#透视除法（Perspective-division）" class="headerlink" title="透视除法（Perspective division）"></a>透视除法（Perspective division）</h3><p>一旦确定了多少可视空间将被渲染，锥体将被映射到近平面，以产生一个 2D 图像。近平面是要在你的电脑屏幕上呈现的。该变换生成<br><img src="/blog/2022/07/06/webgl/division.png" alt="division"></p>
 <p>不同的操作系统和显示设备都有在屏幕上表示二维信息的机制。为了为所有可能的情况提供健壮性（robustness 鲁棒性），WebGL(也在 OpenGL ES 中)提供了一个独立于任何特定硬件的中间坐标系统。这个空间称为归一化设备坐标(Normalized Device Coordinates NDC)。</p>
-<h3 id="视口变换（Viewport-transform）"><a href="#视口变换（Viewport-transform）" class="headerlink" title="视口变换（Viewport transform）"></a>视口变换（Viewport transform）</h3><p>最后，将 NDC 映射到视口坐标。此步骤将这些坐标映射到屏幕上的可用空间。在 WebGL 中，此空间由 HTML5 画布提供，如下图所示：<br><img src="/self/2022/07/06/webgl/viewport.png" alt="viewport"></p>
+<h3 id="视口变换（Viewport-transform）"><a href="#视口变换（Viewport-transform）" class="headerlink" title="视口变换（Viewport transform）"></a>视口变换（Viewport transform）</h3><p>最后，将 NDC 映射到视口坐标。此步骤将这些坐标映射到屏幕上的可用空间。在 WebGL 中，此空间由 HTML5 画布提供，如下图所示：<br><img src="/blog/2022/07/06/webgl/viewport.png" alt="viewport"></p>
 <h3 id="法线转换（Normal-transformations）"><a href="#法线转换（Normal-transformations）" class="headerlink" title="法线转换（Normal transformations）"></a>法线转换（Normal transformations）</h3><p>当顶点被转换时，法向量也应该被转换。</p>
-<h3 id="WebGL-实现"><a href="#WebGL-实现" class="headerlink" title="WebGL 实现"></a>WebGL 实现</h3><p><img src="/self/2022/07/06/webgl/implementation.png" alt="implementation"></p>
+<h3 id="WebGL-实现"><a href="#WebGL-实现" class="headerlink" title="WebGL 实现"></a>WebGL 实现</h3><p><img src="/blog/2022/07/06/webgl/implementation.png" alt="implementation"></p>
 
     </div>
 
@@ -380,7 +380,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://xdxspace.gitee.io/self/2022/07/06/webgl/" title="WebGL Beginners Guide 笔记">https://xdxspace.gitee.io/self/2022/07/06/webgl/</a>
+      <a href="https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/" title="WebGL Beginners Guide 笔记">https://xdxxdxxdxxdxxdx.github.io/blog/2022/07/06/webgl/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -389,19 +389,19 @@
 </div>
 
           <div class="post-tags">
-              <a href="/self/tags/WebGL/" rel="tag"># WebGL</a>
+              <a href="/blog/tags/WebGL/" rel="tag"># WebGL</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/self/2022/05/16/webgpu/" rel="prev" title="初尝 WebGPU">
+                <a href="/blog/2022/05/16/webgpu/" rel="prev" title="初尝 WebGPU">
                   <i class="fa fa-chevron-left"></i> 初尝 WebGPU
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/self/2022/07/19/ts-over/" rel="next" title="ts覆盖父类的定义">
+                <a href="/blog/2022/07/19/ts-over/" rel="next" title="ts覆盖父类的定义">
                   ts覆盖父类的定义 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
@@ -459,10 +459,10 @@
 
   
   <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-<script src="/self/js/utils.js"></script><script src="/self/js/next-boot.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/next-boot.js"></script>
 
   
-<script src="/self/js/local-search.js"></script>
+<script src="/blog/js/local-search.js"></script>
 
 
 

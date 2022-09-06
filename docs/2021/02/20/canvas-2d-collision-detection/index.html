@@ -7,12 +7,12 @@
 <meta name="generator" content="Hexo 5.3.0">
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/self/favicon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/self/favicon.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/self/favicon.png">
-  <link rel="mask-icon" href="/self/favicon.svg" color="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/favicon.png">
+  <link rel="mask-icon" href="/blog/favicon.svg" color="#222">
 
-<link rel="stylesheet" href="/self/css/main.css">
+<link rel="stylesheet" href="/blog/css/main.css">
 
 
 
@@ -20,30 +20,30 @@
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"xdxspace.gitee.io","root":"/self/","images":"/self/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/self/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
+    var CONFIG = {"hostname":"xdxxdxxdxxdxxdx.github.io","root":"/blog/","images":"/blog/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
   </script>
 <meta name="description" content="在实现 canvas 游戏和动画时往往需要解决物体相互碰撞的情况。对于物体碰撞相关的问题，一般采用碰撞检测来解决。 本文主要介绍我用 canvas 做的游戏和该游戏用到的碰撞方法，顺便简单介绍 canvas 2d 中一些通用的碰撞检测方法。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="canvas 2d 游戏与碰撞检测">
-<meta property="og:url" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/index.html">
+<meta property="og:url" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/index.html">
 <meta property="og:site_name" content="欢迎来到XDX的博客">
 <meta property="og:description" content="在实现 canvas 游戏和动画时往往需要解决物体相互碰撞的情况。对于物体碰撞相关的问题，一般采用碰撞检测来解决。 本文主要介绍我用 canvas 做的游戏和该游戏用到的碰撞方法，顺便简单介绍 canvas 2d 中一些通用的碰撞检测方法。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/success.gif">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/kick.gif">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/mirror.gif">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/wall.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/all-crash.gif">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/abstract.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/intersection.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/special.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/order1.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/order2.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/split.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/reflect.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/reflect-all.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/crash-rect.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/crash-distance.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/success.gif">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/kick.gif">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/mirror.gif">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/wall.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/all-crash.gif">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/abstract.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/intersection.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/special.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/order1.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/order2.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/split.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/reflect.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/reflect-all.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/crash-rect.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/crash-distance.png">
 <meta property="article:published_time" content="2021-02-20T02:33:53.000Z">
 <meta property="article:modified_time" content="2021-04-26T07:29:06.536Z">
 <meta property="article:author" content="XIEDONGXIANG">
@@ -51,10 +51,10 @@
 <meta property="article:tag" content="JavaScript">
 <meta property="article:tag" content="HTML">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/success.gif">
+<meta name="twitter:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/success.gif">
 
 
-<link rel="canonical" href="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/">
+<link rel="canonical" href="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/">
 
 
 <script class="page-configurations">
@@ -125,7 +125,7 @@
 
   <div class="site-meta">
 
-    <a href="/self/" class="brand" rel="start">
+    <a href="/blog/" class="brand" rel="start">
       <i class="logo-line"></i>
       <h1 class="site-title">欢迎来到XDX的博客</h1>
       <i class="logo-line"></i>
@@ -144,9 +144,9 @@
 
 <nav class="site-nav">
   <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/self/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-tags"><a href="/self/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
-        <li class="menu-item menu-item-archives"><a href="/self/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -210,26 +210,26 @@
         <div class="site-overview-wrap sidebar-panel">
           <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="XIEDONGXIANG"
-      src="/self/images/avatar.png">
+      src="/blog/images/avatar.png">
   <p class="site-author-name" itemprop="name">XIEDONGXIANG</p>
   <div class="site-description" itemprop="description">坚持 多写写</div>
 </div>
 <div class="site-state-wrap site-overview-item animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
-          <a href="/self/archives/">
+          <a href="/blog/archives/">
         
           <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-            <a href="/self/categories/">
+            <a href="/blog/categories/">
         <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-            <a href="/self/tags/">
+            <a href="/blog/tags/">
           
         <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">标签</span></a>
@@ -242,7 +242,7 @@
       </span>
   </div>
   <div class="cc-license site-overview-item animated" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/self/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/blog/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
   </div>
 
 
@@ -278,10 +278,10 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/">
+    <link itemprop="mainEntityOfPage" href="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/self/images/avatar.png">
+      <meta itemprop="image" content="/blog/images/avatar.png">
       <meta itemprop="name" content="XIEDONGXIANG">
       <meta itemprop="description" content="坚持 多写写">
     </span>
@@ -310,12 +310,12 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/self/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+          <a href="/blog/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
         </span>
     </span>
 
   
-    <span id="/self/2021/02/20/canvas-2d-collision-detection/" class="post-meta-item leancloud_visitors" data-flag-title="canvas 2d 游戏与碰撞检测" title="阅读次数">
+    <span id="/blog/2021/02/20/canvas-2d-collision-detection/" class="post-meta-item leancloud_visitors" data-flag-title="canvas 2d 游戏与碰撞检测" title="阅读次数">
       <span class="post-meta-item-icon">
         <i class="far fa-eye"></i>
       </span>
@@ -348,33 +348,33 @@
 </div>
 
 <p>下面展开说其中需要处理的碰撞检测</p>
-<h3 id="游戏说明"><a href="#游戏说明" class="headerlink" title="游戏说明"></a>游戏说明</h3><p>游戏的目标就是控制光线，持续照亮房子一定时间即可：<br><img src="/self/2021/02/20/canvas-2d-collision-detection/success.gif" alt="success"></p>
-<p>但是这中间会有各种阻碍，导致房子不能直接射到房子<br><img src="/self/2021/02/20/canvas-2d-collision-detection/kick.gif" alt="mirror"></p>
-<p>这个时候就需要灵活使用镜子反射光线照到房子<br><img src="/self/2021/02/20/canvas-2d-collision-detection/mirror.gif" alt="mirror"></p>
+<h3 id="游戏说明"><a href="#游戏说明" class="headerlink" title="游戏说明"></a>游戏说明</h3><p>游戏的目标就是控制光线，持续照亮房子一定时间即可：<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/success.gif" alt="success"></p>
+<p>但是这中间会有各种阻碍，导致房子不能直接射到房子<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/kick.gif" alt="mirror"></p>
+<p>这个时候就需要灵活使用镜子反射光线照到房子<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/mirror.gif" alt="mirror"></p>
 <h3 id="碰撞检测"><a href="#碰撞检测" class="headerlink" title="碰撞检测"></a>碰撞检测</h3><h4 id="碰撞分析"><a href="#碰撞分析" class="headerlink" title="碰撞分析"></a>碰撞分析</h4><p>根据上面的描述，可以知道会有以下几种碰撞情况</p>
-<p>先是当没有阻碍时，光线会跟屏幕边缘碰撞<br><img src="/self/2021/02/20/canvas-2d-collision-detection/wall.png" alt="wall"></p>
-<p>有阻碍时，光线会在物体表面停留下来。<br><img src="/self/2021/02/20/canvas-2d-collision-detection/all-crash.gif" alt="all-crash"></p>
-<p>对页面中的图形进行抽象，可以得到我们需要处理的模型其实就是这个样子<br><img src="/self/2021/02/20/canvas-2d-collision-detection/abstract.png" alt="abstract"></p>
+<p>先是当没有阻碍时，光线会跟屏幕边缘碰撞<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/wall.png" alt="wall"></p>
+<p>有阻碍时，光线会在物体表面停留下来。<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/all-crash.gif" alt="all-crash"></p>
+<p>对页面中的图形进行抽象，可以得到我们需要处理的模型其实就是这个样子<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/abstract.png" alt="abstract"></p>
 <p>将所有碰撞检测都归为了线段和线段的相交检测，也就是图中红色线段和其他线段进行相关判断即可。</p>
 <p>这里实现用到的原理是：一个线段会把空间分为两部分，以这个线段为分界线，判断另一个线段两个端点是否分别在这个线段分割的两个空间中。如果两个线段的两个端点都分别在另一个线段分割的两个空间中，那么就认为这两条线段是相交的。</p>
 <p>判定两条线段是否相交，这里用到的是向量的叉乘。原理下面分析。</p>
 <p>算法描述：设有两条线段 ab 和 cd 如图 4。当向量 ad 与向量 ac 分别位于向量 ab 的左右两端且向量 ca 与向量 cb 分别位于向量 cd 的左右两端时，线段 ab 与线段 cd 相交。</p>
-<p><img src="/self/2021/02/20/canvas-2d-collision-detection/intersection.png" alt="intersection"></p>
+<p><img src="/blog/2021/02/20/canvas-2d-collision-detection/intersection.png" alt="intersection"></p>
 <p>两个向量叉乘的坐标运算为：</p>
 <pre class="line-numbers language-none"><code class="language-none">a × b &#x3D; (x1, y1, z1) × (x2, y2, z2) &#x3D; (y1z2 - z1y2, z1x2 - x1z2, x1y2 - y1x2)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>因为本项目的两个向量都是在同一平面上的，所以公式可以进一步简化为：</p>
 <pre class="line-numbers language-none"><code class="language-none">a × b &#x3D; (x1, y1, 0 × (x2, y2, 0) &#x3D; (0, 0, x1y2 - y1x2)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>通过向量叉乘来判断两线段是否相交的原理是：在本例中，我们需要计算的叉乘是 ad×ab 和 ac×ab，ca×cd 和 cb×cd，各为一组。向量积的 z 的值只会有三种结果，正数、负数和 0。针对每一组来说，通过右手螺旋定则可以得知，当两个向量积的 z 值之积是负数的时候，两个点就会处于所选线段所分割的空间的两端，反之为正数的话便是两点在线段的同一侧，也就是两线段不想交了。</p>
 <p><em>一些特殊情况的讨论：</em></p>
-<p><img src="/self/2021/02/20/canvas-2d-collision-detection/special.png" alt="special"></p>
+<p><img src="/blog/2021/02/20/canvas-2d-collision-detection/special.png" alt="special"></p>
 <p>图中 1 和 2 是不相交的情况。</p>
 <p>两个向量积的 z 值之积是 0 的时候需要分情况讨论。一种是其中一个端点在另外一条线段上（如图中 3），另外一种是两个端点都在线段上（如图中 4）。如果是第一中情况的话一组向量积中只会有一个 z 值为 0，而第二种的话则两组向量积的 z 值都会为 0。在游戏中，第一种情况也属于相交，而第二种则属于不想交。</p>
 <p><em>计算交点：</em><br>在判断了两线段相交之后，就需要计算他们的交点了。因为每一个线段的端点是确定的（游戏中线段在无限延伸的情况下，会与屏幕边缘有交点，取此交点为端点），那么只需要联立两个线段的两点式方程，就可以解出交点的 x 跟 y 了。</p>
 <p><em>最后是碰撞顺序的问题：</em></p>
 <p>将所有碰撞都转换成线段与线段的相交检测还有一个问题，那就是顺序。因为页面中的元素位置跟大小都是不一定的，那么就需要知道，一条线段跟其余所有线段的接触的先后顺序，以确保线段不会穿过一条直线而与这条线段后面的另外一条线段相交了。</p>
-<p>如下面图片所示：需要知道跟哪个线段先进行碰撞检测，避免出现穿过某一条线段的情况。<br><img src="/self/2021/02/20/canvas-2d-collision-detection/order1.png" alt="order1"><br><img src="/self/2021/02/20/canvas-2d-collision-detection/order2.png" alt="order2"></p>
+<p>如下面图片所示：需要知道跟哪个线段先进行碰撞检测，避免出现穿过某一条线段的情况。<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/order1.png" alt="order1"><br><img src="/blog/2021/02/20/canvas-2d-collision-detection/order2.png" alt="order2"></p>
 <p>首先需要确定的是，页面中的每个元素都是由多条线段组成的。然后我们以线段的起点为圆心，只需要计算圆心到每一条线段上的一点的距离，就可以以距离升序排列所有元素，再一一和线段进行碰撞检测。显然如果直接用组成每个元素的线段来排序肯定是会有问题的，所以需要将每一条长的线段分割成很多段长度很小的线段，近似于一个点，此时再分别从这些小线段上任意取一个点加入碰撞检测的排序队列即可。</p>
-<p><img src="/self/2021/02/20/canvas-2d-collision-detection/split.png" alt="split"></p>
+<p><img src="/blog/2021/02/20/canvas-2d-collision-detection/split.png" alt="split"></p>
 <h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><p>这里仅贴出叉乘运行和交点的运算代码。</p>
 <p>令线段一的两个端点为 p0 和 p1，令线段二的两个端点为 p2 和 p3。分别计算两组向量积的 z 值即可。<br>第一组向量积的 z 值，以 p0p1 向量来分割平面：</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">let</span> p0p2Xp0p1 <span class="token operator">=</span> p0p2<span class="token punctuation">.</span>x <span class="token operator">*</span> p0p1<span class="token punctuation">.</span>y <span class="token operator">-</span> p0p2<span class="token punctuation">.</span>y <span class="token operator">*</span> p0p1<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
@@ -402,9 +402,9 @@
 <span class="token keyword">return</span> <span class="token punctuation">&#123;</span> x<span class="token punctuation">,</span> y <span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h3><h4 id="反射分析"><a href="#反射分析" class="headerlink" title="反射分析"></a>反射分析</h4><p>线段的反射是游戏中重要的逻辑之一。游戏中采取的反射逻辑是光线的镜面反射，也就是入射角等于反射角。要处理这个问题，关键需要用到两个参数，一个入射光线相对基轴的角度，另一个是光线的接触面相对于基轴的角度。</p>
 <p>在 canvas 提供的图像旋转的 api 中，是以我们普通平面坐标轴的 x 轴的负半轴为基轴，顺时针方向为正来计算角度的，所以项目中对角度的定义也是基于这一点。</p>
-<p>如下图所示，让入射光线的角度为 α，平面角度为 β，反射光线的角度为 σ，α、β 和 σ 取值范围均为[0, 2π]。设入射角为 ∠1，反射角为 ∠2。∠1=∠2。<br><img src="/self/2021/02/20/canvas-2d-collision-detection/reflect.png" alt="reflect"></p>
+<p>如下图所示，让入射光线的角度为 α，平面角度为 β，反射光线的角度为 σ，α、β 和 σ 取值范围均为[0, 2π]。设入射角为 ∠1，反射角为 ∠2。∠1=∠2。<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/reflect.png" alt="reflect"></p>
 <p>在这个分析的基础上会有下图的三种情况，反射情况的分析就不贴在这了。</p>
-<p><img src="/self/2021/02/20/canvas-2d-collision-detection/reflect-all.png" alt="reflect-all"></p>
+<p><img src="/blog/2021/02/20/canvas-2d-collision-detection/reflect-all.png" alt="reflect-all"></p>
 <p>直接给出反射光线的角度为</p>
 <pre class="line-numbers language-none"><code class="language-none">σ &#x3D; 2β - α ± 2kπ(k &#x3D; 0 或 ±1)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h4 id="代码实现-1"><a href="#代码实现-1" class="headerlink" title="代码实现"></a>代码实现</h4><p>设入射光线的角度为 deg1，接触面的角度为 deg2，反射角度为 refAngle。依据前面的分析有：</p>
@@ -432,7 +432,7 @@
 <h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>还有一些物体的运动，线段的切割没有普适性，就不在此说明了。最后说一些比较通用的碰撞检测。</p>
 <h3 id="打飞机游戏中的碰撞检测"><a href="#打飞机游戏中的碰撞检测" class="headerlink" title="打飞机游戏中的碰撞检测"></a>打飞机游戏中的碰撞检测</h3><p>该部分内容均基于该教程：<a target="_blank" rel="noopener" href="https://ke.qq.com/classroom/index.html#course_id=247953&term_id=100292460&ch_id=394550&vch_id=84&section_id=313&task_id=1672404430735505">打飞机 - 碰撞检测</a>。只截取主要内容，详细的分析说明请到教程中查看。</p>
 <p>常见的碰撞检测有矩形与矩形的碰撞还有圆形和圆形的碰撞，用两张图可以简单说明这两种判定方式</p>
-<p>矩形的碰撞：<br><img src="/self/2021/02/20/canvas-2d-collision-detection/crash-rect.png" alt="crash-rect"><br>圆形的碰撞：<br><img src="/self/2021/02/20/canvas-2d-collision-detection/crash-distance.png" alt="crash-distance"></p>
+<p>矩形的碰撞：<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/crash-rect.png" alt="crash-rect"><br>圆形的碰撞：<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/crash-distance.png" alt="crash-distance"></p>
 <p>学会基础的碰撞后就可以完成一些不错的小游戏了，例如这个还未穿衣服的打飞机游戏：</p>
 <iframe src="https://xdxspace.gitee.io/planegamenobgm/" style="width:375px;height:367px"></iframe>
 
@@ -457,7 +457,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/" title="canvas 2d 游戏与碰撞检测">https://xdxspace.gitee.io/self/2021/02/20/canvas-2d-collision-detection/</a>
+      <a href="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/" title="canvas 2d 游戏与碰撞检测">https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/20/canvas-2d-collision-detection/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -466,21 +466,21 @@
 </div>
 
           <div class="post-tags">
-              <a href="/self/tags/canvas/" rel="tag"># canvas</a>
-              <a href="/self/tags/JavaScript/" rel="tag"># JavaScript</a>
-              <a href="/self/tags/HTML/" rel="tag"># HTML</a>
+              <a href="/blog/tags/canvas/" rel="tag"># canvas</a>
+              <a href="/blog/tags/JavaScript/" rel="tag"># JavaScript</a>
+              <a href="/blog/tags/HTML/" rel="tag"># HTML</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/self/2021/02/19/vscode-debug/" rel="prev" title="使用 vscode 的调试功能">
+                <a href="/blog/2021/02/19/vscode-debug/" rel="prev" title="使用 vscode 的调试功能">
                   <i class="fa fa-chevron-left"></i> 使用 vscode 的调试功能
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/self/2021/03/01/clone/" rel="next" title="js 中的对象克隆">
+                <a href="/blog/2021/03/01/clone/" rel="next" title="js 中的对象克隆">
                   js 中的对象克隆 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
@@ -538,10 +538,10 @@
 
   
   <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-<script src="/self/js/utils.js"></script><script src="/self/js/next-boot.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/next-boot.js"></script>
 
   
-<script src="/self/js/local-search.js"></script>
+<script src="/blog/js/local-search.js"></script>
 
 
 

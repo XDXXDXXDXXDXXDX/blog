@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>std::array 使用中的类型问题</title>
-    <url>/self/2021/09/08/array-type/</url>
+    <url>/blog/2021/09/08/array-type/</url>
     <content><![CDATA[<p>记录一下在看 std::array 的<a href="https://www.learncpp.com/cpp-tutorial/an-introduction-to-stdarray/">课程</a>时碰到的感觉很坑的类型问题。</p>
 <a id="more"></a>
 
@@ -51,7 +51,7 @@
   </entry>
   <entry>
     <title>canvas 2d 游戏与碰撞检测</title>
-    <url>/self/2021/02/20/canvas-2d-collision-detection/</url>
+    <url>/blog/2021/02/20/canvas-2d-collision-detection/</url>
     <content><![CDATA[<p>在实现 canvas 游戏和动画时往往需要解决物体相互碰撞的情况。对于物体碰撞相关的问题，一般采用碰撞检测来解决。</p>
 <p>本文主要介绍我用 canvas 做的游戏和该游戏用到的碰撞方法，顺便简单介绍 canvas 2d 中一些通用的碰撞检测方法。</p>
 <a id="more"></a>
@@ -69,33 +69,33 @@
 </div>
 
 <p>下面展开说其中需要处理的碰撞检测</p>
-<h3 id="游戏说明"><a href="#游戏说明" class="headerlink" title="游戏说明"></a>游戏说明</h3><p>游戏的目标就是控制光线，持续照亮房子一定时间即可：<br><img src="/self/2021/02/20/canvas-2d-collision-detection/success.gif" alt="success"></p>
-<p>但是这中间会有各种阻碍，导致房子不能直接射到房子<br><img src="/self/2021/02/20/canvas-2d-collision-detection/kick.gif" alt="mirror"></p>
-<p>这个时候就需要灵活使用镜子反射光线照到房子<br><img src="/self/2021/02/20/canvas-2d-collision-detection/mirror.gif" alt="mirror"></p>
+<h3 id="游戏说明"><a href="#游戏说明" class="headerlink" title="游戏说明"></a>游戏说明</h3><p>游戏的目标就是控制光线，持续照亮房子一定时间即可：<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/success.gif" alt="success"></p>
+<p>但是这中间会有各种阻碍，导致房子不能直接射到房子<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/kick.gif" alt="mirror"></p>
+<p>这个时候就需要灵活使用镜子反射光线照到房子<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/mirror.gif" alt="mirror"></p>
 <h3 id="碰撞检测"><a href="#碰撞检测" class="headerlink" title="碰撞检测"></a>碰撞检测</h3><h4 id="碰撞分析"><a href="#碰撞分析" class="headerlink" title="碰撞分析"></a>碰撞分析</h4><p>根据上面的描述，可以知道会有以下几种碰撞情况</p>
-<p>先是当没有阻碍时，光线会跟屏幕边缘碰撞<br><img src="/self/2021/02/20/canvas-2d-collision-detection/wall.png" alt="wall"></p>
-<p>有阻碍时，光线会在物体表面停留下来。<br><img src="/self/2021/02/20/canvas-2d-collision-detection/all-crash.gif" alt="all-crash"></p>
-<p>对页面中的图形进行抽象，可以得到我们需要处理的模型其实就是这个样子<br><img src="/self/2021/02/20/canvas-2d-collision-detection/abstract.png" alt="abstract"></p>
+<p>先是当没有阻碍时，光线会跟屏幕边缘碰撞<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/wall.png" alt="wall"></p>
+<p>有阻碍时，光线会在物体表面停留下来。<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/all-crash.gif" alt="all-crash"></p>
+<p>对页面中的图形进行抽象，可以得到我们需要处理的模型其实就是这个样子<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/abstract.png" alt="abstract"></p>
 <p>将所有碰撞检测都归为了线段和线段的相交检测，也就是图中红色线段和其他线段进行相关判断即可。</p>
 <p>这里实现用到的原理是：一个线段会把空间分为两部分，以这个线段为分界线，判断另一个线段两个端点是否分别在这个线段分割的两个空间中。如果两个线段的两个端点都分别在另一个线段分割的两个空间中，那么就认为这两条线段是相交的。</p>
 <p>判定两条线段是否相交，这里用到的是向量的叉乘。原理下面分析。</p>
 <p>算法描述：设有两条线段 ab 和 cd 如图 4。当向量 ad 与向量 ac 分别位于向量 ab 的左右两端且向量 ca 与向量 cb 分别位于向量 cd 的左右两端时，线段 ab 与线段 cd 相交。</p>
-<p><img src="/self/2021/02/20/canvas-2d-collision-detection/intersection.png" alt="intersection"></p>
+<p><img src="/blog/2021/02/20/canvas-2d-collision-detection/intersection.png" alt="intersection"></p>
 <p>两个向量叉乘的坐标运算为：</p>
 <pre class="line-numbers language-none"><code class="language-none">a × b &#x3D; (x1, y1, z1) × (x2, y2, z2) &#x3D; (y1z2 - z1y2, z1x2 - x1z2, x1y2 - y1x2)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>因为本项目的两个向量都是在同一平面上的，所以公式可以进一步简化为：</p>
 <pre class="line-numbers language-none"><code class="language-none">a × b &#x3D; (x1, y1, 0 × (x2, y2, 0) &#x3D; (0, 0, x1y2 - y1x2)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>通过向量叉乘来判断两线段是否相交的原理是：在本例中，我们需要计算的叉乘是 ad×ab 和 ac×ab，ca×cd 和 cb×cd，各为一组。向量积的 z 的值只会有三种结果，正数、负数和 0。针对每一组来说，通过右手螺旋定则可以得知，当两个向量积的 z 值之积是负数的时候，两个点就会处于所选线段所分割的空间的两端，反之为正数的话便是两点在线段的同一侧，也就是两线段不想交了。</p>
 <p><em>一些特殊情况的讨论：</em></p>
-<p><img src="/self/2021/02/20/canvas-2d-collision-detection/special.png" alt="special"></p>
+<p><img src="/blog/2021/02/20/canvas-2d-collision-detection/special.png" alt="special"></p>
 <p>图中 1 和 2 是不相交的情况。</p>
 <p>两个向量积的 z 值之积是 0 的时候需要分情况讨论。一种是其中一个端点在另外一条线段上（如图中 3），另外一种是两个端点都在线段上（如图中 4）。如果是第一中情况的话一组向量积中只会有一个 z 值为 0，而第二种的话则两组向量积的 z 值都会为 0。在游戏中，第一种情况也属于相交，而第二种则属于不想交。</p>
 <p><em>计算交点：</em><br>在判断了两线段相交之后，就需要计算他们的交点了。因为每一个线段的端点是确定的（游戏中线段在无限延伸的情况下，会与屏幕边缘有交点，取此交点为端点），那么只需要联立两个线段的两点式方程，就可以解出交点的 x 跟 y 了。</p>
 <p><em>最后是碰撞顺序的问题：</em></p>
 <p>将所有碰撞都转换成线段与线段的相交检测还有一个问题，那就是顺序。因为页面中的元素位置跟大小都是不一定的，那么就需要知道，一条线段跟其余所有线段的接触的先后顺序，以确保线段不会穿过一条直线而与这条线段后面的另外一条线段相交了。</p>
-<p>如下面图片所示：需要知道跟哪个线段先进行碰撞检测，避免出现穿过某一条线段的情况。<br><img src="/self/2021/02/20/canvas-2d-collision-detection/order1.png" alt="order1"><br><img src="/self/2021/02/20/canvas-2d-collision-detection/order2.png" alt="order2"></p>
+<p>如下面图片所示：需要知道跟哪个线段先进行碰撞检测，避免出现穿过某一条线段的情况。<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/order1.png" alt="order1"><br><img src="/blog/2021/02/20/canvas-2d-collision-detection/order2.png" alt="order2"></p>
 <p>首先需要确定的是，页面中的每个元素都是由多条线段组成的。然后我们以线段的起点为圆心，只需要计算圆心到每一条线段上的一点的距离，就可以以距离升序排列所有元素，再一一和线段进行碰撞检测。显然如果直接用组成每个元素的线段来排序肯定是会有问题的，所以需要将每一条长的线段分割成很多段长度很小的线段，近似于一个点，此时再分别从这些小线段上任意取一个点加入碰撞检测的排序队列即可。</p>
-<p><img src="/self/2021/02/20/canvas-2d-collision-detection/split.png" alt="split"></p>
+<p><img src="/blog/2021/02/20/canvas-2d-collision-detection/split.png" alt="split"></p>
 <h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><p>这里仅贴出叉乘运行和交点的运算代码。</p>
 <p>令线段一的两个端点为 p0 和 p1，令线段二的两个端点为 p2 和 p3。分别计算两组向量积的 z 值即可。<br>第一组向量积的 z 值，以 p0p1 向量来分割平面：</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">let</span> p0p2Xp0p1 <span class="token operator">=</span> p0p2<span class="token punctuation">.</span>x <span class="token operator">*</span> p0p1<span class="token punctuation">.</span>y <span class="token operator">-</span> p0p2<span class="token punctuation">.</span>y <span class="token operator">*</span> p0p1<span class="token punctuation">.</span>x<span class="token punctuation">;</span>
@@ -123,9 +123,9 @@
 <span class="token keyword">return</span> <span class="token punctuation">&#123;</span> x<span class="token punctuation">,</span> y <span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h3><h4 id="反射分析"><a href="#反射分析" class="headerlink" title="反射分析"></a>反射分析</h4><p>线段的反射是游戏中重要的逻辑之一。游戏中采取的反射逻辑是光线的镜面反射，也就是入射角等于反射角。要处理这个问题，关键需要用到两个参数，一个入射光线相对基轴的角度，另一个是光线的接触面相对于基轴的角度。</p>
 <p>在 canvas 提供的图像旋转的 api 中，是以我们普通平面坐标轴的 x 轴的负半轴为基轴，顺时针方向为正来计算角度的，所以项目中对角度的定义也是基于这一点。</p>
-<p>如下图所示，让入射光线的角度为 α，平面角度为 β，反射光线的角度为 σ，α、β 和 σ 取值范围均为[0, 2π]。设入射角为 ∠1，反射角为 ∠2。∠1=∠2。<br><img src="/self/2021/02/20/canvas-2d-collision-detection/reflect.png" alt="reflect"></p>
+<p>如下图所示，让入射光线的角度为 α，平面角度为 β，反射光线的角度为 σ，α、β 和 σ 取值范围均为[0, 2π]。设入射角为 ∠1，反射角为 ∠2。∠1=∠2。<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/reflect.png" alt="reflect"></p>
 <p>在这个分析的基础上会有下图的三种情况，反射情况的分析就不贴在这了。</p>
-<p><img src="/self/2021/02/20/canvas-2d-collision-detection/reflect-all.png" alt="reflect-all"></p>
+<p><img src="/blog/2021/02/20/canvas-2d-collision-detection/reflect-all.png" alt="reflect-all"></p>
 <p>直接给出反射光线的角度为</p>
 <pre class="line-numbers language-none"><code class="language-none">σ &#x3D; 2β - α ± 2kπ(k &#x3D; 0 或 ±1)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h4 id="代码实现-1"><a href="#代码实现-1" class="headerlink" title="代码实现"></a>代码实现</h4><p>设入射光线的角度为 deg1，接触面的角度为 deg2，反射角度为 refAngle。依据前面的分析有：</p>
@@ -153,7 +153,7 @@
 <h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>还有一些物体的运动，线段的切割没有普适性，就不在此说明了。最后说一些比较通用的碰撞检测。</p>
 <h3 id="打飞机游戏中的碰撞检测"><a href="#打飞机游戏中的碰撞检测" class="headerlink" title="打飞机游戏中的碰撞检测"></a>打飞机游戏中的碰撞检测</h3><p>该部分内容均基于该教程：<a href="https://ke.qq.com/classroom/index.html#course_id=247953&term_id=100292460&ch_id=394550&vch_id=84&section_id=313&task_id=1672404430735505">打飞机 - 碰撞检测</a>。只截取主要内容，详细的分析说明请到教程中查看。</p>
 <p>常见的碰撞检测有矩形与矩形的碰撞还有圆形和圆形的碰撞，用两张图可以简单说明这两种判定方式</p>
-<p>矩形的碰撞：<br><img src="/self/2021/02/20/canvas-2d-collision-detection/crash-rect.png" alt="crash-rect"><br>圆形的碰撞：<br><img src="/self/2021/02/20/canvas-2d-collision-detection/crash-distance.png" alt="crash-distance"></p>
+<p>矩形的碰撞：<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/crash-rect.png" alt="crash-rect"><br>圆形的碰撞：<br><img src="/blog/2021/02/20/canvas-2d-collision-detection/crash-distance.png" alt="crash-distance"></p>
 <p>学会基础的碰撞后就可以完成一些不错的小游戏了，例如这个还未穿衣服的打飞机游戏：</p>
 <iframe src="https://xdxspace.gitee.io/planegamenobgm/" style="width:375px;height:367px"></iframe>
 
@@ -173,7 +173,7 @@
   </entry>
   <entry>
     <title>create-react-app 实现原理</title>
-    <url>/self/2021/08/18/cli/</url>
+    <url>/blog/2021/08/18/cli/</url>
     <content><![CDATA[<p>通过分析 create-react-app 的原理，学习如何自己写一个 cli。</p>
 <a id="more"></a>
 
@@ -241,7 +241,7 @@
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>可以看到，主要就是添加了基于 react-scripts 的开发命令、eslint 规则和构建代码的目标浏览器列表</p>
 <p>eslintConfig 的 extends 参考<a href="https://cn.eslint.org/docs/user-guide/configuring#using-a-shareable-configuration-package">官方文档</a>，实际就是在请求 node_modules 中<code>eslint-config-react-app</code>导出的规则。</p>
-<p>其余的读写操作细节比较多，完整的代码走读如下：<br><img src="/self/2021/08/18/cli/create-react-app.png" alt="create-react-app"></p>
+<p>其余的读写操作细节比较多，完整的代码走读如下：<br><img src="/blog/2021/08/18/cli/create-react-app.png" alt="create-react-app"></p>
 <h3 id="分析脚本执行"><a href="#分析脚本执行" class="headerlink" title="分析脚本执行"></a>分析脚本执行</h3><p>项目创建好了，剩下的就是分析脚本是如何执行的了，通过查看 package.json 可以看到主要有四个脚本</p>
 <pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
   <span class="token property">"scripts"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
@@ -262,7 +262,7 @@
   </entry>
   <entry>
     <title>js 中的对象克隆</title>
-    <url>/self/2021/03/01/clone/</url>
+    <url>/blog/2021/03/01/clone/</url>
     <content><![CDATA[<p>浅谈 js 中浅克隆和深克隆的方法。</p>
 <a id="more"></a>
 
@@ -311,7 +311,7 @@ console<span class="token punctuation">.</span><span class="token function">log<
   </entry>
   <entry>
     <title>常用命令</title>
-    <url>/self/2021/01/25/command/</url>
+    <url>/blog/2021/01/25/command/</url>
     <content><![CDATA[<p>记录一些开发过程中用到的命令。</p>
 <a id="more"></a>
 
@@ -372,24 +372,24 @@ yarn config set registry https:&#x2F;&#x2F;registry.npmjs.org&#x2F;<span aria-hi
   </entry>
   <entry>
     <title>为博客添加评论系统</title>
-    <url>/self/2021/01/24/comment/</url>
+    <url>/blog/2021/01/24/comment/</url>
     <content><![CDATA[<p>搭建个博客，选择评论系统又折腾了半天，把大部分系统都用了个遍。本文档记录了各系统踩的坑，希望对你做选择有帮助。</p>
 <p>文档中的配置说明基于 next 主题 8.2.0 版本。</p>
 <a id="more"></a>
 
 <h2 id="总体对比"><a href="#总体对比" class="headerlink" title="总体对比"></a>总体对比</h2><p>借用知乎同学的一张图，看一下各个免费评论系统的对比</p>
-<p><img src="/self/2021/01/24/comment/compare.jpg" alt="compare"></p>
+<p><img src="/blog/2021/01/24/comment/compare.jpg" alt="compare"></p>
 <h2 id="utterances"><a href="#utterances" class="headerlink" title="utterances"></a>utterances</h2><p>先介绍和推荐最终采用的 <a href="https://utteranc.es/">utterances</a>，基于 github 的 issue，所以使用者和评论者都需要有 github 帐号。</p>
 <p>如果用的不是 next 主题，则需要按照官网的文档自行植入博客中。</p>
 <p>使用 next 主题则非常简单，按照以下流程进行配置即可</p>
 <ul>
 <li>要自行去注册个 github 帐号，新建一个仓库</li>
-<li>进入这个<a href="https://github.com/apps/utterances">网页</a>，点击安装，对新建的仓库授权即可<br><img src="/self/2021/01/24/comment/installutt.png" alt="installutt"></li>
+<li>进入这个<a href="https://github.com/apps/utterances">网页</a>，点击安装，对新建的仓库授权即可<br><img src="/blog/2021/01/24/comment/installutt.png" alt="installutt"></li>
 <li>进入 next 主题的配置文件修改 utterances 的配置</li>
 </ul>
 <pre class="line-numbers language-yml" data-language="yml"><code class="language-yml">utterances:
   enable: true
-  repo: XDXXDXXDXXDXXDX&#x2F;self # 你的 github id + 仓库名
+  repo: XDXXDXXDXXDXXDX&#x2F;blog # 你的 github id + 仓库名
   # Available values: pathname | url | title | og:title
   issue_term: og:title # issue 的标题形式 推荐使用 og:title
   # Available values: github-light | github-dark | preferred-color-scheme | github-dark-orange | icy-dark | dark-blue | photon-dark | boxy-light
@@ -409,15 +409,15 @@ yarn config set registry https:&#x2F;&#x2F;registry.npmjs.org&#x2F;<span aria-hi
   </entry>
   <entry>
     <title>CSS 基础与实用特性大全</title>
-    <url>/self/2021/07/13/css-based/</url>
+    <url>/blog/2021/07/13/css-based/</url>
     <content><![CDATA[<p>系统的 CSS 基础知识和工程化内容。</p>
 <a id="more"></a>
 
 <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>CSS(Cascading Style Sheets)，层叠样式表。用于描述网页呈现的语言，包括颜色、布局和字体。 独立于 HTML，可以与任何基于 XML 的标记语言一起使用。</p>
 <h3 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h3><p>CSS1（废弃），CSS2 1996~1999 规范基础样式；CSS3 2001 分模块发布如背景和边框、盒子模型等。</p>
-<p><img src="/self/2021/07/13/css-based/history.png" alt="history"></p>
+<p><img src="/blog/2021/07/13/css-based/history.png" alt="history"></p>
 <h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p>和 HTML 一样，CSS 内容被加载到网页中后会被解析为 CSSOM，会和 DOM 结合成渲染树，浏览器根据这颗渲染树进行布局、绘制和合成，最终就成了我们看到的网页。</p>
-<p><img src="/self/2021/07/13/css-based/work.png" alt="work"></p>
+<p><img src="/blog/2021/07/13/css-based/work.png" alt="work"></p>
 <h3 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h3><p>一般有四种使用方式</p>
 <p>style 元素</p>
 <pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>style</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>text/css<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token style"><span class="token language-css">
@@ -452,12 +452,12 @@ yarn config set registry https:&#x2F;&#x2F;registry.npmjs.org&#x2F;<span aria-hi
 </ul>
 <pre class="line-numbers language-html" data-language="html"><code class="language-html">img[type="fat cat"] &#123; width: 100px &#125; <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>fat cat<span class="token punctuation">"</span></span> <span class="token attr-name">alt</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Garfield<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <ul>
-<li>部分属性值：属性值按照规则匹配<br><img src="/self/2021/07/13/css-based/attr.png" alt="attr"></li>
+<li>部分属性值：属性值按照规则匹配<br><img src="/blog/2021/07/13/css-based/attr.png" alt="attr"></li>
 </ul>
 <h3 id="组选择器"><a href="#组选择器" class="headerlink" title="组选择器"></a>组选择器</h3><p>多个选择器可以通过不同的符号进行组合，以实现不同的选择效果</p>
 <h4 id="分组选择器"><a href="#分组选择器" class="headerlink" title="分组选择器"></a>分组选择器</h4><p><code>,</code> - 选择器列表，将不同选择器组合在一起，选择所有能被列表中任意一个选择器选中的节点<br>示例：div, span 会同时匹配 <code>&lt;span&gt;</code> 和 <code>&lt;div&gt;</code></p>
 <h4 id="组合器"><a href="#组合器" class="headerlink" title="组合器"></a>组合器</h4><p><code> </code>（空格）- 后代组合器，选择所有指定的后代元素<br>示例：A B<br><code>&gt;</code> - 直接子代组合器，选择所有指定的直接子代节点<br>示例：A &gt; B<br><code>~</code> - 一般兄弟组合器<br>示例：A ~ B<br><code>+</code> - 紧邻兄弟选择器<br>示例：A + B</p>
-<h4 id="连写"><a href="#连写" class="headerlink" title="连写"></a>连写</h4><p>多个选择器连续书写<br><img src="/self/2021/07/13/css-based/select.png" alt="select"></p>
+<h4 id="连写"><a href="#连写" class="headerlink" title="连写"></a>连写</h4><p>多个选择器连续书写<br><img src="/blog/2021/07/13/css-based/select.png" alt="select"></p>
 <h3 id="特指度"><a href="#特指度" class="headerlink" title="特指度"></a>特指度</h3><p>特指度由四个权重组成，为 a-b-c-d。这四个权重是相互独立的，没有进位一说。不同选择器有不同的权重、合起来就是特指度。需要特别记住的就是 0 特指度比没有特指度更优，后面会举例说明。</p>
 <p>特指度<code>a-b-c-d</code>的规则</p>
 <ul>
@@ -467,7 +467,7 @@ yarn config set registry https:&#x2F;&#x2F;registry.npmjs.org&#x2F;<span aria-hi
 <li>d = 选择器中元素名和伪元素的数量</li>
 <li>继承和连接符没有特指度，通用选择器特指度为 0</li>
 </ul>
-<p>很生动的一张图：<br><img src="/self/2021/07/13/css-based/weight.png" alt="weight"></p>
+<p>很生动的一张图：<br><img src="/blog/2021/07/13/css-based/weight.png" alt="weight"></p>
 <p>通过认真阅读图片，可以得知以下结论</p>
 <ul>
 <li>通用选择器不影响特指度</li>
@@ -475,7 +475,7 @@ yarn config set registry https:&#x2F;&#x2F;registry.npmjs.org&#x2F;<span aria-hi
 <li>同级选择器特指度都只增加 1</li>
 <li>!important 重要声明始终覆盖选择器声明</li>
 </ul>
-<h3 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h3><p>不少属性是可以通过父元素继承的，例如 color，可以通过查看 mdn 的文档的 inherited 属性看看属性是否是可以继承的，当然你也可以手动修改该属性。<br><img src="/self/2021/07/13/css-based/w3c-inherited.png" alt="w3c-inherited"></p>
+<h3 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h3><p>不少属性是可以通过父元素继承的，例如 color，可以通过查看 mdn 的文档的 inherited 属性看看属性是否是可以继承的，当然你也可以手动修改该属性。<br><img src="/blog/2021/07/13/css-based/w3c-inherited.png" alt="w3c-inherited"></p>
 <p>但是继承的样式是没有特指度的，所以 0 特指度会胜过无特指度，观察下面例子：</p>
 <pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>style</span><span class="token punctuation">></span></span><span class="token style"><span class="token language-css">
   <span class="token selector">*</span> <span class="token punctuation">&#123;</span>
@@ -489,7 +489,7 @@ yarn config set registry https:&#x2F;&#x2F;registry.npmjs.org&#x2F;<span aria-hi
   Title
   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>sub title<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>最终结果是，可以看到在 p 中，sub title 的颜色是 0 特指度的灰色而不是继承的红色<br><img src="/self/2021/07/13/css-based/inherited.png" alt="inherited"></p>
+<p>最终结果是，可以看到在 p 中，sub title 的颜色是 0 特指度的灰色而不是继承的红色<br><img src="/blog/2021/07/13/css-based/inherited.png" alt="inherited"></p>
 <h3 id="层叠计算"><a href="#层叠计算" class="headerlink" title="层叠计算"></a>层叠计算</h3><ul>
 <li><p>权重<br>!important &gt; 行内样式 &gt; ID &gt; 其他属性（Class 等）、伪类 &gt; 元素、伪元素</p>
 </li>
@@ -500,7 +500,7 @@ yarn config set registry https:&#x2F;&#x2F;registry.npmjs.org&#x2F;<span aria-hi
 <li><p>前后位置<br>排在后面的规则生效</p>
 </li>
 </ul>
-<p>读者指的是网站的用户通过浏览器的接口修改的样式。读者样式一个最直接的例子就是在 chrome 浏览器的外观设置中的字体，其中有有默认字号和字号两个选项<br><img src="/self/2021/07/13/css-based/reader.png" alt="reader"></p>
+<p>读者指的是网站的用户通过浏览器的接口修改的样式。读者样式一个最直接的例子就是在 chrome 浏览器的外观设置中的字体，其中有有默认字号和字号两个选项<br><img src="/blog/2021/07/13/css-based/reader.png" alt="reader"></p>
 <p>读者样式样式就是默认字号，网页中的文字默认的大小 我们日常开发中 使用 font-size 直接就覆盖了。<br>而最小字号就是读者样式 + !important ，你会发现你的 font-size 无论设置多小，始终都不会小于 12px，就是因为设置中的这个用户选项限制的。</p>
 <h2 id="布局方式"><a href="#布局方式" class="headerlink" title="布局方式"></a>布局方式</h2><h3 id="视觉格式化基础"><a href="#视觉格式化基础" class="headerlink" title="视觉格式化基础"></a>视觉格式化基础</h3><p>视觉格式化的内容非常多，这里只列举了三个常用的概念、知识点</p>
 <ul>
@@ -508,7 +508,7 @@ yarn config set registry https:&#x2F;&#x2F;registry.npmjs.org&#x2F;<span aria-hi
 <li>盒子模型：内容、内边距、边框、外边距</li>
 <li>纵向格式化：计算容纳块的高度，同一 BFC 的块级元素之间会折叠纵向外边距</li>
 </ul>
-<p><img src="/self/2021/07/13/css-based/box.png" alt="box"></p>
+<p><img src="/blog/2021/07/13/css-based/box.png" alt="box"></p>
 <h3 id="块级格式化上下文"><a href="#块级格式化上下文" class="headerlink" title="块级格式化上下文"></a>块级格式化上下文</h3><p>Block Formatting Context(BFC)，块盒子的布局过程发生的区域，也是浮动元素与其他元素交互的区域。<br>创建格式化上下文</p>
 <ul>
 <li>根元素（html）</li>
@@ -517,7 +517,7 @@ yarn config set registry https:&#x2F;&#x2F;registry.npmjs.org&#x2F;<span aria-hi
 <li>行内块元素（display 为 inline-block）或 flow-root</li>
 <li>overflow 不为 visible</li>
 </ul>
-<h4 id="清除浮动"><a href="#清除浮动" class="headerlink" title="清除浮动"></a>清除浮动</h4><p>典型的浮动流就是将浮动元素从他的普通流位置中剔除，放到行的开始。这么做的问题就是原本的容器不会再考虑浮动元素的高度，会有高度塌陷的问题，后面如果有别的块级元素的话，会继续填充在浮动流的空白处。<br><img src="/self/2021/07/13/css-based/float.png" alt="float"><br>用得最多的方法就是 clear: both，但是在 p 有兄弟元素想 float 成侧边栏时就不好使了,此时就可以将 float 用 BFC 包装起来，不是同一个 BFC 的元素就不会互相影响了<br><img src="/self/2021/07/13/css-based/float-bfc.png" alt="float-bfc"></p>
+<h4 id="清除浮动"><a href="#清除浮动" class="headerlink" title="清除浮动"></a>清除浮动</h4><p>典型的浮动流就是将浮动元素从他的普通流位置中剔除，放到行的开始。这么做的问题就是原本的容器不会再考虑浮动元素的高度，会有高度塌陷的问题，后面如果有别的块级元素的话，会继续填充在浮动流的空白处。<br><img src="/blog/2021/07/13/css-based/float.png" alt="float"><br>用得最多的方法就是 clear: both，但是在 p 有兄弟元素想 float 成侧边栏时就不好使了,此时就可以将 float 用 BFC 包装起来，不是同一个 BFC 的元素就不会互相影响了<br><img src="/blog/2021/07/13/css-based/float-bfc.png" alt="float-bfc"></p>
 <h3 id="其他格式化上下文"><a href="#其他格式化上下文" class="headerlink" title="其他格式化上下文"></a>其他格式化上下文</h3><ul>
 <li><p>IFC（Inline Formatting Context，内联格式化上下文），块容器盒子在不只包含块级盒子的情况下创建 IFC</p>
 </li>
@@ -578,18 +578,18 @@ yarn config set registry https:&#x2F;&#x2F;registry.npmjs.org&#x2F;<span aria-hi
 <li>Web Components</li>
 <li><code>&lt;style scope&gt;&lt;/style&gt;</code><br>在 js 中会通过函数作用域起到局部命名空间的作用，在 css 中需要使用 webcomponents 才可以有局部的命名空间。规范命名可以说是最初的模块化 Bootstrap antd 等都在用。style scope 其实是有官方提案的，但是浏览器的支持程度惨不忍睹。vue 的 scope 是类似 css modules 的实现。</li>
 </ul>
-<h3 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h3><p>CSS 已经原生支持，github 和 tailwindcss 都在用，放心使用<br><img src="/self/2021/07/13/css-based/css-var.png" alt="css-var"><br>使用示例：<br><img src="/self/2021/07/13/css-based/css-var-sample.png" alt="css-var-sample"></p>
-<h3 id="PostCSS"><a href="#PostCSS" class="headerlink" title="PostCSS"></a>PostCSS</h3><p>在 node 生态下，聊工程化就离不开 postcss，他是专门用来处理的 css 的。。目前热门的 css 工具基本上都是基于他来实现的，例如 css-loader、cssnano、autoprefixer。<br>他核心的作用就是把 css 转成抽象语法树：<br><img src="/self/2021/07/13/css-based/css-ast.png" alt="css-ast"></p>
-<p>基于他实现的工具，理论上可以解决目前所有问题<br><img src="/self/2021/07/13/css-based/postcss-tools.png" alt="postcss-tools"></p>
+<h3 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h3><p>CSS 已经原生支持，github 和 tailwindcss 都在用，放心使用<br><img src="/blog/2021/07/13/css-based/css-var.png" alt="css-var"><br>使用示例：<br><img src="/blog/2021/07/13/css-based/css-var-sample.png" alt="css-var-sample"></p>
+<h3 id="PostCSS"><a href="#PostCSS" class="headerlink" title="PostCSS"></a>PostCSS</h3><p>在 node 生态下，聊工程化就离不开 postcss，他是专门用来处理的 css 的。。目前热门的 css 工具基本上都是基于他来实现的，例如 css-loader、cssnano、autoprefixer。<br>他核心的作用就是把 css 转成抽象语法树：<br><img src="/blog/2021/07/13/css-based/css-ast.png" alt="css-ast"></p>
+<p>基于他实现的工具，理论上可以解决目前所有问题<br><img src="/blog/2021/07/13/css-based/postcss-tools.png" alt="postcss-tools"></p>
 <h3 id="构建工具"><a href="#构建工具" class="headerlink" title="构建工具"></a>构建工具</h3><p>基于 webpack 等构建工具，会有很多插件和工具库可以选择，此处列出常用的四种</p>
 <ul>
-<li>css modules：进行一定配置，最后自动生成带有哈希值的 class name<br><img src="/self/2021/07/13/css-based/css-modules.png" alt="css-modules"></li>
+<li>css modules：进行一定配置，最后自动生成带有哈希值的 class name<br><img src="/blog/2021/07/13/css-based/css-modules.png" alt="css-modules"></li>
 <li>CSS in JS（React）：styled-components、emotion 等</li>
 <li>scope（Vue）：vue cli 集成的 css modules 方案</li>
 <li>行内样式</li>
 </ul>
 <h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>CSS 中还有很多重要的组成部分，例如字体、单位、阴影和动画等，推荐阅读 CSS 权威指南一次性爽够。若对新兴的 CSS 技巧感兴趣的话可以阅读 CSS 一姐 Lea Verou 的 css 揭秘和 more css 系列的演讲。</p>
-<p><img src="/self/2021/07/13/css-based/other.png" alt="other"></p>
+<p><img src="/blog/2021/07/13/css-based/other.png" alt="other"></p>
 ]]></content>
       <categories>
         <category>前端</category>
@@ -600,9 +600,9 @@ yarn config set registry https:&#x2F;&#x2F;registry.npmjs.org&#x2F;<span aria-hi
   </entry>
   <entry>
     <title>自动化部署（Jenkins, Ansible,Bash）</title>
-    <url>/self/2022/08/15/deploy/</url>
+    <url>/blog/2022/08/15/deploy/</url>
     <content><![CDATA[<p>使用 Jenkins,Ansible,Bash 自动化部署的流程。</p>
-<p><img src="/self/2022/08/15/deploy/pineline.png" alt="pineline"></p>
+<p><img src="/blog/2022/08/15/deploy/pineline.png" alt="pineline"></p>
 <a id="more"></a>
 
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前端项目中有这么几个不直接服务于 UI 的文件、目录，主要就是用于自动部署的：</p>
@@ -796,7 +796,7 @@ exec nginx -g &quot;daemon off;&quot;<span aria-hidden="true" class="line-number
   </entry>
   <entry>
     <title>ECMAScript 6.x 学习笔记</title>
-    <url>/self/2021/01/25/es6/</url>
+    <url>/blog/2021/01/25/es6/</url>
     <content><![CDATA[<p>整理归纳的 ES6 中新增的一些新特性。每个知识点有简单的例子以便快速了解。内容较多推荐查看目录选择性食用。</p>
 <a id="more"></a>
 
@@ -934,14 +934,14 @@ arr<span class="token punctuation">.</span><span class="token function">some</sp
 arr<span class="token punctuation">.</span><span class="token function">every</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 数组里面所有的元素都要符合条件，才返回 true</span>
 
 arr<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 用于重新整理数据结构（处理后台传过来的数据），正常情况下需要配合 return，一般返回一个新的数组。若是没有 return，相当于 forEach。</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="/self/2021/01/25/es6/arr1.webp" alt="arr.map"></p>
+<p><img src="/blog/2021/01/25/es6/arr1.webp" alt="arr.map"></p>
 <p><em>以上方法都可以接收两个参数，一个回调 + 一个 this。使用箭头函数则第二个参数无效</em></p>
 <p>还有一个比较特殊的 reduce，用来求数组的和、阶乘等</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js">arr<span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//从左往右</span>
 arr<span class="token punctuation">.</span><span class="token function">reduceRight</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//从右往左</span>
 
 arr<span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">prec<span class="token punctuation">,</span> cur<span class="token punctuation">,</span> index<span class="token punctuation">,</span> arr</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 接收的参数：前面处理的结果，后一个元素，索引，数组本身</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="/self/2021/01/25/es6/reduce.webp" alt="reduce"></p>
+<p><img src="/blog/2021/01/25/es6/reduce.webp" alt="reduce"></p>
 <h3 id="遍历数组-对象的新方法"><a href="#遍历数组-对象的新方法" class="headerlink" title="遍历数组/对象的新方法"></a>遍历数组/对象的新方法</h3><p>for….of….</p>
 <p>默认遍历的就是 value，arr.value 有可能会报错</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> val <span class="token keyword">of</span> arr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -972,7 +972,7 @@ arr<span class="token punctuation">.</span><span class="token function">includes
 
 <span class="token comment">// 4、填充</span>
 arr<span class="token punctuation">.</span><span class="token function">fill</span><span class="token punctuation">(</span><span class="token string">"填充的东西"</span><span class="token punctuation">,</span> <span class="token string">"开始位置"</span><span class="token punctuation">,</span> <span class="token string">"结束位置"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="对象新增与改进"><a href="#对象新增与改进" class="headerlink" title="对象新增与改进"></a>对象新增与改进</h2><h3 id="对象简洁语法"><a href="#对象简洁语法" class="headerlink" title="对象简洁语法"></a>对象简洁语法</h3><p><img src="/self/2021/01/25/es6/object1.webp" alt="object"></p>
+<h2 id="对象新增与改进"><a href="#对象新增与改进" class="headerlink" title="对象新增与改进"></a>对象新增与改进</h2><h3 id="对象简洁语法"><a href="#对象简洁语法" class="headerlink" title="对象简洁语法"></a>对象简洁语法</h3><p><img src="/blog/2021/01/25/es6/object1.webp" alt="object"></p>
 <h3 id="新增方法"><a href="#新增方法" class="headerlink" title="新增方法"></a>新增方法</h3><pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token comment">// 1、Object.is() 用来比较两个值是否相等（==，===）</span>
 Object<span class="token punctuation">.</span><span class="token function">is</span><span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">,</span> <span class="token string">"a"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//true</span>
 Object<span class="token punctuation">.</span><span class="token function">is</span><span class="token punctuation">(</span><span class="token number">NaN</span><span class="token punctuation">,</span> <span class="token number">NaN</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//true 用==的话返回 false</span>
@@ -986,12 +986,12 @@ Object<span class="token punctuation">.</span><span class="token function">is</s
 Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 返回属性名</span>
 Object<span class="token punctuation">.</span><span class="token function">entries</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 返回整个数据</span>
 Object<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 返回属性值</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="解构以方便遍历"><a href="#解构以方便遍历" class="headerlink" title="解构以方便遍历"></a>解构以方便遍历</h3><p><img src="/self/2021/01/25/es6/object2.webp" alt="object"></p>
+<h3 id="解构以方便遍历"><a href="#解构以方便遍历" class="headerlink" title="解构以方便遍历"></a>解构以方便遍历</h3><p><img src="/blog/2021/01/25/es6/object2.webp" alt="object"></p>
 <h2 id="Promise"><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h2><p>解决异步回调问题，所有的 promise 对象都是 resolve 状态才执行 res，否则执行 err(抓取第一个出现的错误)。</p>
-<p>语法:(链式操作)<br><img src="/self/2021/01/25/es6/promise.webp" alt="promise"></p>
-<h3 id="Promise-all"><a href="#Promise-all" class="headerlink" title="Promise.all"></a>Promise.all</h3><p>Promise.all([p1, p2, p3]): 把 promise 对象打包到一个数组里面，打包完还是一个 promise 对象<br><img src="/self/2021/01/25/es6/promiseAll.webp" alt="promiseAll"></p>
+<p>语法:(链式操作)<br><img src="/blog/2021/01/25/es6/promise.webp" alt="promise"></p>
+<h3 id="Promise-all"><a href="#Promise-all" class="headerlink" title="Promise.all"></a>Promise.all</h3><p>Promise.all([p1, p2, p3]): 把 promise 对象打包到一个数组里面，打包完还是一个 promise 对象<br><img src="/blog/2021/01/25/es6/promiseAll.webp" alt="promiseAll"></p>
 <h3 id="Promise-race"><a href="#Promise-race" class="headerlink" title="Promise.race"></a>Promise.race</h3><p>Promise.race([p1, p2, p3]): 返回第一个成功或失败的结果。</p>
-<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><p>使用 Promise 实现用户登录<br><img src="/self/2021/01/25/es6/promiseUser.webp" alt="promiseUser"></p>
+<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><p>使用 Promise 实现用户登录<br><img src="/blog/2021/01/25/es6/promiseUser.webp" alt="promiseUser"></p>
 <h2 id="模块化"><a href="#模块化" class="headerlink" title="模块化"></a>模块化</h2><p>注意： 需要放到 node 环境</p>
 <h3 id="定义模块"><a href="#定义模块" class="headerlink" title="定义模块"></a>定义模块</h3><pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">export</span> <span class="token string">"东西"</span>
 <span class="token keyword">export</span> <span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token number">12</span><span class="token punctuation">;</span>
@@ -1022,7 +1022,7 @@ Object<span class="token punctuation">.</span><span class="token function">value
 <li>路径也可以动态</li>
 </ul>
 <h2 id="类-Class"><a href="#类-Class" class="headerlink" title="类(Class)"></a>类(Class)</h2><p>使用 typeof 检测依旧是 function。</p>
-<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p>面向对象(人) ，类(Person)，属性(name)，方法(showName)。<br><img src="/self/2021/01/25/es6/class.webp" alt="class"></p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p>面向对象(人) ，类(Person)，属性(name)，方法(showName)。<br><img src="/blog/2021/01/25/es6/class.webp" alt="class"></p>
 <p><em>注意</em></p>
 <ul>
 <li>ES6 里面 class 没有提升功能，在 ES5，用函数模拟可以，默认函数提升</li>
@@ -1032,13 +1032,13 @@ Object<span class="token punctuation">.</span><span class="token function">value
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token function">fn</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span>args1<span class="token punctuation">,</span> args2<span class="token operator">...</span><span class="token punctuation">.</span><span class="token punctuation">)</span>
 <span class="token function">fn</span><span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span><span class="token punctuation">[</span>args1<span class="token punctuation">,</span> args2<span class="token operator">...</span><span class="token punctuation">.</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
 <span class="token function">fn</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p><img src="/self/2021/01/25/es6/class-this.webp" alt="class-this"></p>
-<h3 id="取值函数-getter-存值函数-setter"><a href="#取值函数-getter-存值函数-setter" class="headerlink" title="取值函数(getter),存值函数(setter)"></a>取值函数(getter),存值函数(setter)</h3><p><img src="/self/2021/01/25/es6/class-getter.webp" alt="class-getter"></p>
+<p><img src="/blog/2021/01/25/es6/class-this.webp" alt="class-this"></p>
+<h3 id="取值函数-getter-存值函数-setter"><a href="#取值函数-getter-存值函数-setter" class="headerlink" title="取值函数(getter),存值函数(setter)"></a>取值函数(getter),存值函数(setter)</h3><p><img src="/blog/2021/01/25/es6/class-getter.webp" alt="class-getter"></p>
 <h3 id="静态方法"><a href="#静态方法" class="headerlink" title="静态方法"></a>静态方法</h3><p>类身上不会继承的方法</p>
 <h3 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h3><p>ES5 中的继承</p>
-<p><img src="/self/2021/01/25/es6/extend.webp" alt="extend"></p>
+<p><img src="/blog/2021/01/25/es6/extend.webp" alt="extend"></p>
 <p>ES6 中的继承:extends</p>
-<p><img src="/self/2021/01/25/es6/class-extends.webp" alt="class-extends"></p>
+<p><img src="/blog/2021/01/25/es6/class-extends.webp" alt="class-extends"></p>
 <h2 id="新数据类型-Symbol"><a href="#新数据类型-Symbol" class="headerlink" title="新数据类型 Symbol"></a>新数据类型 Symbol</h2><p>基本数据类型 Number、String、Boolean、Object、undefined、Function、Symbol<br>typeof 检测为小写的 symbol</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">let</span> syml <span class="token operator">=</span> <span class="token function">Symbol</span><span class="token punctuation">(</span><span class="token string">"aaa"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><em>注意</em></p>
@@ -1055,9 +1055,9 @@ Object<span class="token punctuation">.</span><span class="token function">value
 <span class="token punctuation">&#125;</span>
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">show</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">show</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="定义与调用"><a href="#定义与调用" class="headerlink" title="定义与调用"></a>定义与调用</h3><p><img src="/self/2021/01/25/es6/run-generator.webp" alt="run-generator"></p>
+<h3 id="定义与调用"><a href="#定义与调用" class="headerlink" title="定义与调用"></a>定义与调用</h3><p><img src="/blog/2021/01/25/es6/run-generator.webp" alt="run-generator"></p>
 <p>手动调用比较麻烦可以使用 for .. of 自动遍历 generator，return 的东西会被忽略</p>
-<p><img src="/self/2021/01/25/es6/gen-for.webp" alt="gen-for"></p>
+<p><img src="/blog/2021/01/25/es6/gen-for.webp" alt="gen-for"></p>
 <h3 id="其他用法"><a href="#其他用法" class="headerlink" title="其他用法"></a>其他用法</h3><pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token comment">// 解构赋值</span>
 <span class="token keyword">let</span> <span class="token punctuation">[</span>a<span class="token punctuation">,</span> <span class="token operator">...</span>b<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">gen</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//a = welcome 和 b = to</span>
 
@@ -1085,7 +1085,7 @@ console<span class="token punctuation">.</span><span class="token function">log<
 <li>async 函数返回是一个 promise 对象</li>
 <li>只要 await 语句后面 Promise 状态变成 reject, 那么整个 async 函数会中断执行</li>
 </ul>
-<h3 id="解决抛出错误"><a href="#解决抛出错误" class="headerlink" title="解决抛出错误"></a>解决抛出错误</h3><p>try…catch<br><img src="/self/2021/01/25/es6/await-catch.webp" alt="await-catch"><br>promise 本身 catch<br><img src="/self/2021/01/25/es6/await-catch2.webp" alt="await-catch2"><br>建议凡是用到 await 的语句都用 try…catch 包裹</p>
+<h3 id="解决抛出错误"><a href="#解决抛出错误" class="headerlink" title="解决抛出错误"></a>解决抛出错误</h3><p>try…catch<br><img src="/blog/2021/01/25/es6/await-catch.webp" alt="await-catch"><br>promise 本身 catch<br><img src="/blog/2021/01/25/es6/await-catch2.webp" alt="await-catch2"><br>建议凡是用到 await 的语句都用 try…catch 包裹</p>
 <h2 id="Set-与-WeakSet"><a href="#Set-与-WeakSet" class="headerlink" title="Set 与 WeakSet"></a>Set 与 WeakSet</h2><p>类似数组，但是里面不能有重复值。</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token comment">// Set 用法:</span>
 <span class="token keyword">let</span> setArr <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">"a"</span><span class="token punctuation">,</span> <span class="token string">"b"</span><span class="token punctuation">,</span> <span class="token string">"a"</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//有序</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
@@ -1117,7 +1117,7 @@ setArr<span class="token punctuation">.</span><span class="token function">forEa
 
 <span class="token comment">// set 数据结构变成数组:</span>
 <span class="token punctuation">[</span><span class="token operator">...</span>set<span class="token punctuation">]</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="使用-map-和-filter-等数据方法"><a href="#使用-map-和-filter-等数据方法" class="headerlink" title="使用 map 和 filter 等数据方法"></a>使用 map 和 filter 等数据方法</h3><p><img src="/self/2021/01/25/es6/set-map.webp" alt="set-map"></p>
+<h3 id="使用-map-和-filter-等数据方法"><a href="#使用-map-和-filter-等数据方法" class="headerlink" title="使用 map 和 filter 等数据方法"></a>使用 map 和 filter 等数据方法</h3><p><img src="/blog/2021/01/25/es6/set-map.webp" alt="set-map"></p>
 <h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ul>
 <li>new Set([]); 存储数组，可以通过 add 添加对象</li>
 <li>new WeakSet({}); 存储对象，如果没有其他的变量或属性引用这个对象值，则这个对象值会被回收。因此无法被枚举,没有办法拿到它包含的所有元素。</li>
@@ -1127,7 +1127,7 @@ setArr<span class="token punctuation">.</span><span class="token function">forEa
 <p>Map 是对 json 功能增强，key 可以是任意类型值。</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token comment">// 使用:</span>
 <span class="token keyword">let</span> map <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Map</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p><img src="/self/2021/01/25/es6/newMap.webp" alt="newMap"></p>
+<p><img src="/blog/2021/01/25/es6/newMap.webp" alt="newMap"></p>
 <h3 id="常用方法"><a href="#常用方法" class="headerlink" title="常用方法"></a>常用方法</h3><pre class="line-numbers language-js" data-language="js"><code class="language-js">map<span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 设置一个值</span>
 map<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 获取一个值</span>
 map<span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 删除一项</span>
@@ -1175,25 +1175,25 @@ Math<span class="token punctuation">.</span><span class="token function">sign</s
 <span class="token comment">// Math.cbrt() 计算一个数立方根</span>
 Math<span class="token punctuation">.</span><span class="token function">cbrt</span><span class="token punctuation">(</span><span class="token number">27</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//3</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="幂运算符"><a href="#幂运算符" class="headerlink" title="幂运算符"></a>幂运算符</h3><pre class="line-numbers language-js" data-language="js"><code class="language-js">Math<span class="token punctuation">.</span><span class="token function">pow</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">2</span> <span class="token operator">**</span> <span class="token number">3</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<h2 id="正则新增的内容"><a href="#正则新增的内容" class="headerlink" title="正则新增的内容"></a>正则新增的内容</h2><h3 id="命名捕获"><a href="#命名捕获" class="headerlink" title="命名捕获"></a>命名捕获</h3><p>语法：(?&lt;名字&gt;)<br><img src="/self/2021/01/25/es6/reg.webp" alt="reg"></p>
-<h3 id="反向引用命名捕获"><a href="#反向引用命名捕获" class="headerlink" title="反向引用命名捕获"></a>反向引用命名捕获</h3><p>反向引用方法\1 \2 $1 $2<br>语法:\k&lt;名字&gt;<br><img src="/self/2021/01/25/es6/reg1.webp" alt="reg1"><br>反向引用\1 等可用<br><img src="/self/2021/01/25/es6/reg2.webp" alt="reg2"><br>替换事例<br><img src="/self/2021/01/25/es6/reg3.webp" alt="reg3"></p>
+<h2 id="正则新增的内容"><a href="#正则新增的内容" class="headerlink" title="正则新增的内容"></a>正则新增的内容</h2><h3 id="命名捕获"><a href="#命名捕获" class="headerlink" title="命名捕获"></a>命名捕获</h3><p>语法：(?&lt;名字&gt;)<br><img src="/blog/2021/01/25/es6/reg.webp" alt="reg"></p>
+<h3 id="反向引用命名捕获"><a href="#反向引用命名捕获" class="headerlink" title="反向引用命名捕获"></a>反向引用命名捕获</h3><p>反向引用方法\1 \2 $1 $2<br>语法:\k&lt;名字&gt;<br><img src="/blog/2021/01/25/es6/reg1.webp" alt="reg1"><br>反向引用\1 等可用<br><img src="/blog/2021/01/25/es6/reg2.webp" alt="reg2"><br>替换事例<br><img src="/blog/2021/01/25/es6/reg3.webp" alt="reg3"></p>
 <h3 id="dotAll-模式"><a href="#dotAll-模式" class="headerlink" title="dotAll 模式"></a>dotAll 模式</h3><p>以前 ‘.’ 在正则里表示匹配任意东西，但是不包括 \n，dotAll 模式中的 ‘.’ 将真正的匹配任何东西</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">let</span> reg <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\w+</span><span class="token regex-delimiter">/</span><span class="token regex-flags">gims</span></span><span class="token punctuation">;</span> <span class="token comment">//在最后添加 s 以启用 dotAll 模式</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="/self/2021/01/25/es6/dotall.webp" alt="dotall"></p>
+<p><img src="/blog/2021/01/25/es6/dotall.webp" alt="dotall"></p>
 <h2 id="标签函数"><a href="#标签函数" class="headerlink" title="标签函数"></a>标签函数</h2><pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">fn</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token comment">//定义函数不变</span>
 <span class="token function">fn</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//这样调用就是普通函数</span>
 fn<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">一些内容</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span> <span class="token comment">//这样调用就是当作标签函数使用</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p>标签函数会将非变量元素和一个空放到一个数组里作为第一个参数传给函数<br><img src="/self/2021/01/25/es6/tagfun.webp" alt="tagfun"></p>
+<p>标签函数会将非变量元素和一个空放到一个数组里作为第一个参数传给函数<br><img src="/blog/2021/01/25/es6/tagfun.webp" alt="tagfun"></p>
 <h2 id="proxy"><a href="#proxy" class="headerlink" title="proxy"></a>proxy</h2><p>扩展(增强)对象、方法(函数)一些功能，proxy 是设计模式的一种，代理模式。</p>
 <h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><p>预警、上报、扩展功能、统计、增强对象等等</p>
-<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><p><img src="/self/2021/01/25/es6/proxy.webp" alt="proxy"></p>
-<h3 id="应用实例"><a href="#应用实例" class="headerlink" title="应用实例"></a>应用实例</h3><p>get() 取值时拦截<br><img src="/self/2021/01/25/es6/proxyget.webp" alt="proxyget"><br>set() 设置值时拦截<br><img src="/self/2021/01/25/es6/proxyset.webp" alt="proxyset"></p>
-<p>deleteProperty() 删除时拦截与 has() 检测有没有时拦截；<br><img src="/self/2021/01/25/es6/deleteProperty.webp" alt="deleteProperty"><br>apply() 拦截方法<br><img src="/self/2021/01/25/es6/proxyapply.webp" alt="proxyapply"></p>
-<h2 id="Reflect"><a href="#Reflect" class="headerlink" title="Reflect"></a>Reflect</h2><p>组织计划将一些类似 Object.xxx 的语言内部的方法放到了 Reflect 对象身上，然后通过 Reflect 对象直接拿到语言内部的东西。例如：<br><img src="/self/2021/01/25/es6/reflect.webp" alt="reflect"></p>
+<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><p><img src="/blog/2021/01/25/es6/proxy.webp" alt="proxy"></p>
+<h3 id="应用实例"><a href="#应用实例" class="headerlink" title="应用实例"></a>应用实例</h3><p>get() 取值时拦截<br><img src="/blog/2021/01/25/es6/proxyget.webp" alt="proxyget"><br>set() 设置值时拦截<br><img src="/blog/2021/01/25/es6/proxyset.webp" alt="proxyset"></p>
+<p>deleteProperty() 删除时拦截与 has() 检测有没有时拦截；<br><img src="/blog/2021/01/25/es6/deleteProperty.webp" alt="deleteProperty"><br>apply() 拦截方法<br><img src="/blog/2021/01/25/es6/proxyapply.webp" alt="proxyapply"></p>
+<h2 id="Reflect"><a href="#Reflect" class="headerlink" title="Reflect"></a>Reflect</h2><p>组织计划将一些类似 Object.xxx 的语言内部的方法放到了 Reflect 对象身上，然后通过 Reflect 对象直接拿到语言内部的东西。例如：<br><img src="/blog/2021/01/25/es6/reflect.webp" alt="reflect"></p>
 <h3 id="日常用法"><a href="#日常用法" class="headerlink" title="日常用法"></a>日常用法</h3><p>目前常配合 proxy 中的 apply()使用<br>使用 Reflect.apply 以保证函数在被拦截之后可以正常运行</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token comment">// 与 fn.call()和 fn.apply()类似</span>
 <span class="token function">Reflect</span><span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span>调用的函数，<span class="token keyword">this</span> 指向，参数数组<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p>一个实例<br><img src="/self/2021/01/25/es6/reflectsample.webp" alt="reflectsample"></p>
+<p>一个实例<br><img src="/blog/2021/01/25/es6/reflectsample.webp" alt="reflectsample"></p>
 ]]></content>
       <categories>
         <category>前端</category>
@@ -1204,14 +1204,14 @@ fn<span class="token template-string"><span class="token template-punctuation st
   </entry>
   <entry>
     <title>fiddler 修改响应实践</title>
-    <url>/self/2021/01/24/fiddler/</url>
+    <url>/blog/2021/01/24/fiddler/</url>
     <content><![CDATA[<p>在选择博客评论系统的过程中，遇到了两次访问的网站使用的 jquery 下载失败导致网站功能不能正常使用的问题，故尝试修改请求让网站恢复正常。</p>
 <a id="more"></a>
 
 <h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>如果是为了了解如何修改响应，可以直接跳到最后一节<a href="#%E4%BF%AE%E6%94%B9%E5%93%8D%E5%BA%94">修改响应</a></p>
 <p>本文主要解决<a href="http://livere.com/">livere</a>的官网登陆问题。</p>
 <p>进入官网后，点击右上角进行注册，然后点击登陆，可以看到控制台报错：</p>
-<p><img src="/self/2021/01/24/fiddler/jquery_failed.png" alt="jquery_failed"></p>
+<p><img src="/blog/2021/01/24/fiddler/jquery_failed.png" alt="jquery_failed"></p>
 <p>可以看到是<a href="https://code.jquery.com/jquery-1.11.2.min.js">jquery</a>加载失败了，导致登陆不成功。</p>
 <p>在排除了是 DNS 解析和墙的问题之后，决定直接修改响应让网页正常获取到 jquery。</p>
 <h2 id="配置-fiddler"><a href="#配置-fiddler" class="headerlink" title="配置 fiddler"></a>配置 fiddler</h2><p>首先需要到官网下载 fiddler，<a href="https://www.telerik.com/download/fiddler">点此前往</a></p>
@@ -1220,34 +1220,34 @@ fn<span class="token template-string"><span class="token template-punctuation st
 <ul>
 <li>重置所有证书和信任根证书证书，点击左上角的 Actions，按照顺序点击按钮，有弹窗则一直确定就好</li>
 </ul>
-<p><img src="/self/2021/01/24/fiddler/trust.png" alt="trust"></p>
+<p><img src="/blog/2021/01/24/fiddler/trust.png" alt="trust"></p>
 <ul>
 <li>勾选拦截 https 相关的配置</li>
 </ul>
-<p><img src="/self/2021/01/24/fiddler/choose.png" alt="choose"></p>
+<p><img src="/blog/2021/01/24/fiddler/choose.png" alt="choose"></p>
 <p>配置完后即可正常拦截 https 请求了</p>
 <h2 id="分析请求逻辑"><a href="#分析请求逻辑" class="headerlink" title="分析请求逻辑"></a>分析请求逻辑</h2><p>回到官网的登陆页，输入信息点击登陆，可以在 fiddler 的面板中看到，在获取 jquery 之前有另外一个请求</p>
-<p><img src="/self/2021/01/24/fiddler/before.png" alt="before"></p>
+<p><img src="/blog/2021/01/24/fiddler/before.png" alt="before"></p>
 <p>将该请求（双击选中请求）的响应解密可以看到是一个 html</p>
-<p><img src="/self/2021/01/24/fiddler/decode.png" alt="decode"></p>
-<p><img src="/self/2021/01/24/fiddler/html.png" alt="html"></p>
+<p><img src="/blog/2021/01/24/fiddler/decode.png" alt="decode"></p>
+<p><img src="/blog/2021/01/24/fiddler/html.png" alt="html"></p>
 <p>所以推测登陆的逻辑就是在 iframe 中加载一个 html（该 html 去请求 juery），然后再将登陆结果返回给主站。所以只要修改该 html 加载 jquery 的地址就好了。</p>
 <h2 id="修改响应"><a href="#修改响应" class="headerlink" title="修改响应"></a>修改响应</h2><p>首先找一个可以正常返回 jquery 的 cdn，例如<a href="https://cdn.bootcdn.net/ajax/libs/jquery/1.12.1/jquery.js">https://cdn.bootcdn.net/ajax/libs/jquery/1.12.1/jquery.js</a></p>
 <p>然后在 fiddler 中选中刚才的那个请求，右键保存并编辑响应</p>
-<p><img src="/self/2021/01/24/fiddler/edit.png" alt="edit"></p>
+<p><img src="/blog/2021/01/24/fiddler/edit.png" alt="edit"></p>
 <p>在打开的编辑中，找到 jquery 的位置，将其替换为可用的 cdn</p>
-<p><img src="/self/2021/01/24/fiddler/change_path.png" alt="change_path"></p>
+<p><img src="/blog/2021/01/24/fiddler/change_path.png" alt="change_path"></p>
 <p>然后到 fiddler 中添加自动响应规则，选中右边的 AutoResponder，按照下图进行配置（三个红框先不用开启）</p>
-<p><img src="/self/2021/01/24/fiddler/res.png" alt="res"></p>
+<p><img src="/blog/2021/01/24/fiddler/res.png" alt="res"></p>
 <p>最后重新回到刚才的登陆页面，在点击登陆之前，在 fiddler 中开启自动响应，把图中的三个选项都要勾上，这三个按顺序分别是</p>
 <ul>
 <li>开启自动响应</li>
 <li>允许所有链接</li>
 <li>没有匹配到规则的请求直接放行</li>
 </ul>
-<p><img src="/self/2021/01/24/fiddler/start_res.png" alt="start_res"></p>
+<p><img src="/blog/2021/01/24/fiddler/start_res.png" alt="start_res"></p>
 <p>然后再点击登陆，可以看到页面已经正常登陆进去了~</p>
-<p><img src="/self/2021/01/24/fiddler/success.png" alt="success"></p>
+<p><img src="/blog/2021/01/24/fiddler/success.png" alt="success"></p>
 <p>通过该方式，修改其他请求也是 OK 的~</p>
 <p>神仙运行商有段时间连 github 都不让我上，真的服了…</p>
 ]]></content>
@@ -1260,7 +1260,7 @@ fn<span class="token template-string"><span class="token template-punctuation st
   </entry>
   <entry>
     <title>git 免密码操作</title>
-    <url>/self/2021/01/26/gitlab/</url>
+    <url>/blog/2021/01/26/gitlab/</url>
     <content><![CDATA[<p>通常在 github 或者 gitlab 下载代码时，使用 https 一般是最快捷的方法。但是坏处就是每次提交的时候都需要重复输入密码，本文主要记录几种免密克隆方法。</p>
 <a id="more"></a>
 
@@ -1271,7 +1271,7 @@ git config --global user.email &quot;youremail@163.com&quot;<span aria-hidden="t
 <h2 id="使用第三方工具"><a href="#使用第三方工具" class="headerlink" title="使用第三方工具"></a>使用第三方工具</h2><p>很多第三方的 git 工具，不单止提供了便捷的 GUI，还会在你使用 http 克隆代码时帮你记住密码，非常方便。</p>
 <p>此处仅推荐两款个人用过的工具<a href="https://www.sourcetreeapp.com/">sourcetree</a>和<a href="https://www.gitkraken.com/">GitKraken</a>，都是多平台的。</p>
 <h2 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h2><p>最常用的方式，主要是把这几个命令记一下就好。</p>
-<p>生成 ssh 公钥，打开命令行工具，输入以下指令，疯狂回车即可。其中<a href="mailto:&#120;&#x78;&#x78;&#64;&#120;&#x78;&#120;&#x2e;&#99;&#x6f;&#x6d;">&#120;&#x78;&#x78;&#64;&#120;&#x78;&#120;&#x2e;&#99;&#x6f;&#x6d;</a>为任意字符串，仅作标识用，推荐使用邮箱。</p>
+<p>生成 ssh 公钥，打开命令行工具，输入以下指令，疯狂回车即可。其中<a href="mailto:&#120;&#120;&#120;&#x40;&#120;&#120;&#x78;&#46;&#99;&#111;&#x6d;">&#120;&#120;&#120;&#x40;&#120;&#120;&#x78;&#46;&#99;&#111;&#x6d;</a>为任意字符串，仅作标识用，推荐使用邮箱。</p>
 <pre class="line-numbers language-none"><code class="language-none">ssh-keygen -t rsa -C  &#39;xxx@xxx.com&#39;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>若有提示是否覆盖，输入 y 确认覆盖。</p>
 <p>注意生成路径，根据路径找到 id_rsa.pub 文件打开复制即可。</p>
@@ -1295,7 +1295,7 @@ git config --global user.email &quot;youremail@163.com&quot;<span aria-hidden="t
   </entry>
   <entry>
     <title>HTML + CSS 随笔</title>
-    <url>/self/2021/02/12/html-css-daily/</url>
+    <url>/blog/2021/02/12/html-css-daily/</url>
     <content><![CDATA[<p>一些学习到的 HTML 和 css 的知识点，有意思的就记录一下。</p>
 <a id="more"></a>
 
@@ -1362,7 +1362,7 @@ git config --global user.email &quot;youremail@163.com&quot;<span aria-hidden="t
   </entry>
   <entry>
     <title>git 提交时自动格式化代码</title>
-    <url>/self/2021/01/23/husky-prettier/</url>
+    <url>/blog/2021/01/23/husky-prettier/</url>
     <content><![CDATA[<p>简单记录一下配置过程，使用 husky、prettier 和 lint-staged，使项目可以在提交代码时自动格式化。</p>
 <a id="more"></a>
 
@@ -1428,7 +1428,7 @@ git config --global user.email &quot;youremail@163.com&quot;<span aria-hidden="t
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>配置完后，git commit 时就会自动格式化了</p>
 <h2 id="钩子配置文件丢失"><a href="#钩子配置文件丢失" class="headerlink" title="钩子配置文件丢失"></a>钩子配置文件丢失</h2><p>有时候会发现钩子不会正常触发，查看.git/hooks 文件夹可以看到 husky 的钩子全没了，只剩下.sample 文件。但是 npm rebuild 也没用。</p>
-<p>此时建议将代码备份或者先 push 到远程，然后删掉整个本地项目，重新从远端 clone 并安装依赖即可。npm 不行就用 yarn，相信一下玄学。<br><img src="/self/2021/01/23/husky-prettier/husky-prettier.png" alt="rebuild"></p>
+<p>此时建议将代码备份或者先 push 到远程，然后删掉整个本地项目，重新从远端 clone 并安装依赖即可。npm 不行就用 yarn，相信一下玄学。<br><img src="/blog/2021/01/23/husky-prettier/husky-prettier.png" alt="rebuild"></p>
 ]]></content>
       <categories>
         <category>前端</category>
@@ -1443,7 +1443,7 @@ git config --global user.email &quot;youremail@163.com&quot;<span aria-hidden="t
   </entry>
   <entry>
     <title>i18n-dom - 浏览器中最省心的多语言工具</title>
-    <url>/self/2022/04/27/i18n-dom/</url>
+    <url>/blog/2022/04/27/i18n-dom/</url>
     <content><![CDATA[<p>介绍 i18n-dom 是如何使用魔法拯救开发者于繁琐的多语言开发中</p>
 <a id="more"></a>
 
@@ -1482,27 +1482,27 @@ git config --global user.email &quot;youremail@163.com&quot;<span aria-hidden="t
   </entry>
   <entry>
     <title>Apache JMeter 使用指南</title>
-    <url>/self/2021/01/25/jMeter/</url>
+    <url>/blog/2021/01/25/jMeter/</url>
     <content><![CDATA[<p>使用 JMeter 对服务端进行压测，用来定位服务端的性能问题。</p>
 <p>Apache JMeter 基于 Java 编写，所以在各平台都可以快乐使用。有 GUI 和中文，易用性拉满。</p>
 <a id="more"></a>
 
 <h2 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h2><p>首先需要到<a href="https://jmeter.apache.org/">官网</a>下载，进入到官网后点击左上角的 Download Releases，在右下角选择 Binaries 中的 zip 包下载。不要下载到 Source 中文件，程序会无法正常运行。</p>
-<p><img src="/self/2021/01/25/jMeter/jmeter-down.png" alt="jmeter-down"></p>
+<p><img src="/blog/2021/01/25/jMeter/jmeter-down.png" alt="jmeter-down"></p>
 <p>将下载的 zip 包解压到任意目录，本文基于 Apache JMeter 5.x+版本，无需进行环境变量的配置，需要 JAVA 8+的环境。请先安装 JDK 以继续。</p>
 <p>windows 下，双击/bin/jmeter.bat 文件启动。</p>
 <p>MAC 下，双击/bin/jmeter 文件启动。</p>
 <p>启动后不要关闭命令行工具，直接使用即可。</p>
 <h2 id="修改界面语言"><a href="#修改界面语言" class="headerlink" title="修改界面语言"></a>修改界面语言</h2><p>右键启动文件 jmeter.bat/jmeter 使用文本编辑器打开，修改其中的 language 和 region 为想要使用的语言即可，例如中文则如图改成 zh CN，保存退出，重新打开应用即可看到中文界面。</p>
-<p><img src="/self/2021/01/25/jMeter/lang.png" alt="lang"></p>
+<p><img src="/blog/2021/01/25/jMeter/lang.png" alt="lang"></p>
 <h2 id="模拟并发场景"><a href="#模拟并发场景" class="headerlink" title="模拟并发场景"></a>模拟并发场景</h2><p>新建一个测试计划，右键测试计划 -&gt; 添加 -&gt; 线程 -&gt; 线程组</p>
-<p><img src="/self/2021/01/25/jMeter/new-test.png" alt="new-test"></p>
+<p><img src="/blog/2021/01/25/jMeter/new-test.png" alt="new-test"></p>
 <p>添加 http 请求测试，右键线程组 -&gt; 添加 -&gt; 取样器 -&gt; HTTP 请求</p>
-<p><img src="/self/2021/01/25/jMeter/new-http.png" alt="new-http"></p>
+<p><img src="/blog/2021/01/25/jMeter/new-http.png" alt="new-http"></p>
 <p>配置 HTTP 请求，请求的 url 和参数等</p>
-<p><img src="/self/2021/01/25/jMeter/http-req.png" alt="http-req"></p>
+<p><img src="/blog/2021/01/25/jMeter/http-req.png" alt="http-req"></p>
 <p>选中线程组，配置请求的状态。</p>
-<p><img src="/self/2021/01/25/jMeter/user.png" alt="user"></p>
+<p><img src="/blog/2021/01/25/jMeter/user.png" alt="user"></p>
 <p>对三个参数的解释：</p>
 <ul>
 <li>线程数即用户数，单次运行时总的请求量</li>
@@ -1511,18 +1511,18 @@ git config --global user.email &quot;youremail@163.com&quot;<span aria-hidden="t
 </ul>
 <p>如图将线程数设为 10，ramp-up 时间和循环次数都设为 1，则并发数为 10，最后添加两个监听器来记录结果。</p>
 <p>选中线程组，右键线程组 -&gt; 添加 -&gt; 监听器 -&gt; 查看结果树和汇总报告。新建或者选择任意文件保存结果。</p>
-<p><img src="/self/2021/01/25/jMeter/addlistener.png" alt="addlistener"></p>
+<p><img src="/blog/2021/01/25/jMeter/addlistener.png" alt="addlistener"></p>
 <p>然后点击上方的绿色按钮运行即可。</p>
 <h2 id="配置-POST-请求"><a href="#配置-POST-请求" class="headerlink" title="配置 POST 请求"></a>配置 POST 请求</h2><p>在HTTP配置中，将请求方式改为POST。通常情况我们的请求体是JSON，可以在下方切换到消息体数据tab，输入参数。</p>
-<p><img src="/self/2021/01/25/jMeter/post.png" alt="post"></p>
+<p><img src="/blog/2021/01/25/jMeter/post.png" alt="post"></p>
 <p>然后添加请求头的配置，右键线程组 -&gt; 添加 -&gt; 配置元件 -&gt; HTTP信息头管理器</p>
-<p><img src="/self/2021/01/25/jMeter/header.png" alt="header"></p>
+<p><img src="/blog/2021/01/25/jMeter/header.png" alt="header"></p>
 <p>在打开的配置页中添加Content-Type: application/json</p>
-<p><img src="/self/2021/01/25/jMeter/header-content.png" alt="header-content"></p>
+<p><img src="/blog/2021/01/25/jMeter/header-content.png" alt="header-content"></p>
 <p>配置完后即可正常发送POST请求。</p>
 <h2 id="报告说明"><a href="#报告说明" class="headerlink" title="报告说明"></a>报告说明</h2><p>所有报告说明可以查看<a href="https://jmeter.apache.org/usermanual/component_reference.html#listeners">官方文档</a>，该节仅摘录结果树和汇总报告两种报告。</p>
 <h3 id="查看结果树"><a href="#查看结果树" class="headerlink" title="查看结果树"></a>查看结果树</h3><p>结果树中可以看到每个请求的成功或失败的状态和各个请求的参数和响应，选中查看即可。</p>
-<h3 id="汇总报告"><a href="#汇总报告" class="headerlink" title="汇总报告"></a>汇总报告</h3><p><img src="/self/2021/01/25/jMeter/total.png" alt="total"></p>
+<h3 id="汇总报告"><a href="#汇总报告" class="headerlink" title="汇总报告"></a>汇总报告</h3><p><img src="/blog/2021/01/25/jMeter/total.png" alt="total"></p>
 <p>每个不同名称的请求会创建一个表行。对于每个请求，有以下信息</p>
 <ul>
 <li>Lable：每个样品的名称，如HTTP Request</li>
@@ -1538,7 +1538,7 @@ git config --global user.email &quot;youremail@163.com&quot;<span aria-hidden="t
 <h2 id="实现间隔请求"><a href="#实现间隔请求" class="headerlink" title="实现间隔请求"></a>实现间隔请求</h2><p>有时候需要模拟间隔的并发请求，例如并发10个请求，隔两分钟再并发10个，这时候线程组的作用就体现出来了。</p>
 <p>可以右键选择刚刚创建的HTTP Request，选中复制，然后右键选中线程组点击黏贴。</p>
 <p>对复制出来的HTTP Request，右键添加固定定时器。</p>
-<p><img src="/self/2021/01/25/jMeter/settimeout.png" alt="settimeout"></p>
+<p><img src="/blog/2021/01/25/jMeter/settimeout.png" alt="settimeout"></p>
 <p>需要注意的是定时器是相对于上一个任务间隔的时间（而不是第一个任务的时间），也就是定好时间之后，想要执行几次任务，就复制几个刚设定了定时器的任务即可。</p>
 <h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>点击上方（齿轮 + 扫把）按钮可以清除当前记录的结果。</p>
 <p>更多使用说明可查看官方文档，<a href="https://jmeter.apache.org/usermanual/index.html">点击跳转</a>。</p>
@@ -1552,7 +1552,7 @@ git config --global user.email &quot;youremail@163.com&quot;<span aria-hidden="t
   </entry>
   <entry>
     <title>基于构造函数的继承</title>
-    <url>/self/2021/11/16/js-extends/</url>
+    <url>/blog/2021/11/16/js-extends/</url>
     <content><![CDATA[<p>继承是面向对象编程中的重要组成之一。本文梳理 js 中实现继承的方式，说清楚原型链的生与死。</p>
 <a id="more"></a>
 
@@ -1603,9 +1603,9 @@ b <span class="token keyword">instanceof</span> <span class="token class-name">D
   </entry>
   <entry>
     <title>loadsh xor 实现分析</title>
-    <url>/self/2022/08/09/loadsh-xor/</url>
+    <url>/blog/2022/08/09/loadsh-xor/</url>
     <content><![CDATA[<p>论如何高效的计算数组/集合的对称差</p>
-<p><img src="/self/2022/08/09/loadsh-xor/Venn0110.svg" alt="header"></p>
+<p><img src="/blog/2022/08/09/loadsh-xor/Venn0110.svg" alt="header"></p>
 <a id="more"></a>
 
 <p>最近碰到这么一个业务需求：两个 ip 列表，需要从中找出交集以外的项，也就是找对称差。举例来说：</p>
@@ -1727,31 +1727,31 @@ b <span class="token keyword">instanceof</span> <span class="token class-name">D
   </entry>
   <entry>
     <title>Web小程序引擎实现</title>
-    <url>/self/2021/07/14/mini-app/</url>
+    <url>/blog/2021/07/14/mini-app/</url>
     <content><![CDATA[<p>小程序架构和原理可以从<a href="https://developers.weixin.qq.com/community/develop/article/doc/000a4c1620c188f3adf7db9ab5b413">微信小程序架构</a>和<a href="https://zhuanlan.zhihu.com/p/81775922">小程序底层实现原理</a>学习到，本文主要是通过实现一个 Web 版小程序引擎，让大家可以更好的理解抽象的架构说明，清楚一个小程序是如何运行的。</p>
 <a id="more"></a>
 
 <p>本项目地址：<a href="https://github.com/XDXXDXXDXXDXXDX/mini-app">mini-app</a></p>
 <h2 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h2><p>原生应用、客户端：承载 webview 的应用，安卓、IOS app</p>
 <h2 id="Webview"><a href="#Webview" class="headerlink" title="Webview"></a>Webview</h2><p>首先我们需要了解一下 Webview 是什么。WebView 是一种嵌入式浏览器，原生应用可以用它来展示网络内容。WebView 就是浏览器引擎部分，可以像插入 iframe 一样将 Webview 插入到原生应用中。</p>
-<p><img src="/self/2021/07/14/mini-app/webview.png" alt="webview"></p>
+<p><img src="/blog/2021/07/14/mini-app/webview.png" alt="webview"></p>
 <p>传统 web 开发，浏览器提供了诸多 api 供前端开发者使用，那么在 hybird app 的开发模式下，网页开发者除了调用浏览器提供的 api 外还可以通过桥与原生应用进行通信，然后由原生应用执行浏览器没有提供的功能（例如开关蓝牙），然后再通过桥将结果返回给网页开发者（蓝牙开启成功或失败）。</p>
-<p><img src="/self/2021/07/14/mini-app/bridge.png" alt="bridge"></p>
+<p><img src="/blog/2021/07/14/mini-app/bridge.png" alt="bridge"></p>
 <h2 id="小程序运行原理"><a href="#小程序运行原理" class="headerlink" title="小程序运行原理"></a>小程序运行原理</h2><p>一份小程序源码目录一般长这个样子（微信小程序的示例代码）</p>
-<p><img src="/self/2021/07/14/mini-app/file.png" alt="file"></p>
+<p><img src="/blog/2021/07/14/mini-app/file.png" alt="file"></p>
 <p>要让这份代码运行起来，一般需要两个过程：</p>
 <ul>
 <li>编译，将小程序源码编译为浏览器/webview 可以识别的 html 和 js</li>
 <li>执行，原生应用加载编译后的小程序程序包，按照规则执行不同的文件</li>
 </ul>
 <p>整个过程是这样的，后面会详细展开说明</p>
-<p><img src="/self/2021/07/14/mini-app/run.png" alt="run"></p>
+<p><img src="/blog/2021/07/14/mini-app/run.png" alt="run"></p>
 <p>所以开发一个引擎我们需要关注的主要也就是两部分</p>
 <ul>
 <li>编译工具</li>
 <li>运行环境</li>
 </ul>
-<h2 id="编译工具"><a href="#编译工具" class="headerlink" title="编译工具"></a>编译工具</h2><p>首先来了解一下需要编译的文件有哪些，本文仅实现引擎的主要逻辑，所以后续会忽略对全局文件（app.js 等）和配置文件（.json）的处理。<br><img src="/self/2021/07/14/mini-app/file.png" alt="file"></p>
+<h2 id="编译工具"><a href="#编译工具" class="headerlink" title="编译工具"></a>编译工具</h2><p>首先来了解一下需要编译的文件有哪些，本文仅实现引擎的主要逻辑，所以后续会忽略对全局文件（app.js 等）和配置文件（.json）的处理。<br><img src="/blog/2021/07/14/mini-app/file.png" alt="file"></p>
 <ul>
 <li><code>.json</code>后缀的配置文件</li>
 <li><code>.wxml</code>后缀的模板文件</li>
@@ -1764,7 +1764,7 @@ b <span class="token keyword">instanceof</span> <span class="token class-name">D
 <li>页面的视图信息（index.html + index.js）：各个页面的模板、样式组成（ <em>.wxml、</em>.css）</li>
 </ul>
 <h3 id="示例程序"><a href="#示例程序" class="headerlink" title="示例程序"></a>示例程序</h3><p>本文的小程序源码结构如下图，相当于刚才给出的小程序示例的目录结构中的 pages/index 下的文件，本文不会对配置和样式扩展进行实现，所以去除了 json 文件和将 css 文件合入了.vue 文件中。</p>
-<p><img src="/self/2021/07/14/mini-app/sample.png" alt="sample"></p>
+<p><img src="/blog/2021/07/14/mini-app/sample.png" alt="sample"></p>
 <p>此处编译的逻辑比较简单，主要就是使用 webpack，借助 vue-loader 对.vue 文件进行编译，此处需要注意的配置是入口和 HtmlWebpackPlugin 的配置</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js">entry<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
   page<span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">"../Demo/index.js"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
@@ -1782,12 +1782,12 @@ plugins<span class="token operator">:</span> <span class="token punctuation">[</
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">import</span> Page <span class="token keyword">from</span> <span class="token string">"../../Demo/index.vue"</span><span class="token punctuation">;</span>
 window<span class="token punctuation">.</span><span class="token function">pageLoad</span><span class="token punctuation">(</span>Page<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>配置编写完后就能执行构建了，这就是最后构建的结果</p>
-<p><img src="/self/2021/07/14/mini-app/dist.png" alt="dist"></p>
+<p><img src="/blog/2021/07/14/mini-app/dist.png" alt="dist"></p>
 <h2 id="架构设计"><a href="#架构设计" class="headerlink" title="架构设计"></a>架构设计</h2><p>此处直接引用微信的架构设计了，各家大同小异，为什么这么做请看文章开头提到的两篇文章，本文剩余部分将解释如何让构建出的小程序代码在这个架构下运行。</p>
-<p><img src="/self/2021/07/14/mini-app/frame.png" alt="frame"></p>
+<p><img src="/blog/2021/07/14/mini-app/frame.png" alt="frame"></p>
 <p>要让小程序代码直接执行肯定是不可能的，因为逻辑层没有 Page 方法，视图层也需要 vue 框架驱动构建出的 vue 文件执行，所以在执行小程序的代码之前，还需要在逻辑层和视图层分别执行引擎代码进行初始化，逻辑层执行的引擎代码为 service.js，视图层执行的引擎代码为 view.js，他们分别需要实现什么功能，会在下面一一说明。</p>
 <h3 id="抽象"><a href="#抽象" class="headerlink" title="抽象"></a>抽象</h3><p>为了方便说明运行原理，我对这个架构进行抽象，用前端的技术实现。其中 js 线程就是 web woeker，webview 就是 iframe，原生应用就对应网页应用。</p>
-<p><img src="/self/2021/07/14/mini-app/abstract.png" alt="abstract"></p>
+<p><img src="/blog/2021/07/14/mini-app/abstract.png" alt="abstract"></p>
 <h3 id="通信"><a href="#通信" class="headerlink" title="通信"></a>通信</h3><p>首先就需要解决我们文章开头提到的原生应用和不同线程的通信问题，也就是搭建所谓的桥。</p>
 <p>v8 引擎和 webview 组件都提供了对应的接口供开发者通信，此处不扩展。用抽象的模型的基础上，对通信的过程有一个等效的认识。</p>
 <p>三个主要的通信问题</p>
@@ -1831,7 +1831,7 @@ viewContent<span class="token punctuation">.</span><span class="token function">
   <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="逻辑层"><a href="#逻辑层" class="headerlink" title="逻辑层"></a>逻辑层</h2><p>原生应用主要就是负责管理逻辑层、渲染层、消息分发和处理，那么逻辑层的作用是什么呢。</p>
-<p>首先看一下运行在逻辑层的文件：<br><img src="/self/2021/07/14/mini-app/page.png" alt="page"></p>
+<p>首先看一下运行在逻辑层的文件：<br><img src="/blog/2021/07/14/mini-app/page.png" alt="page"></p>
 <p>可以看到主要需要实现三个功能</p>
 <ul>
 <li>接口的调用（获取用户信息）</li>
@@ -1874,7 +1874,7 @@ service<span class="token punctuation">.</span><span class="token function">post
   <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>整个过程是这样的</p>
-<p><img src="/self/2021/07/14/mini-app/call.png" alt="call"></p>
+<p><img src="/blog/2021/07/14/mini-app/call.png" alt="call"></p>
 <h2 id="视图层"><a href="#视图层" class="headerlink" title="视图层"></a>视图层</h2><p>视图层需要做的东西很多，这里只把最精简的部分提出来</p>
 <ul>
 <li>视图层框架（不然 vue 怎么执行呢）</li>
@@ -1896,7 +1896,7 @@ service<span class="token punctuation">.</span><span class="token function">post
   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>整体的执行流程图</p>
-<p><img src="/self/2021/07/14/mini-app/flow.png" alt="flow"></p>
+<p><img src="/blog/2021/07/14/mini-app/flow.png" alt="flow"></p>
 <p>欢迎访问项目的原地址体验文中提到的所有代码：<a href="https://github.com/XDXXDXXDXXDXXDX/mini-app">mini-app</a></p>
 ]]></content>
       <categories>
@@ -1908,8 +1908,37 @@ service<span class="token punctuation">.</span><span class="token function">post
       </tags>
   </entry>
   <entry>
+    <title>部署速度优化</title>
+    <url>/blog/2022/09/05/optimize-build/</url>
+    <content><![CDATA[<p>通过优化构建工具和部署脚本，减少部署耗时。</p>
+<a id="more"></a>
+
+<h2 id="优化构建工具"><a href="#优化构建工具" class="headerlink" title="优化构建工具"></a>优化构建工具</h2><p>1、使用 esbuild 和升级 webpack5</p>
+<p>接入 esbuild 可以使用 infrad 提供的插件：xxx</p>
+<p>PS：下面结论中看到的最差部署速度 4min32s 为构建工具优化后的结果，优化前为 7min+</p>
+<h2 id="减少网络下载用时"><a href="#减少网络下载用时" class="headerlink" title="减少网络下载用时"></a>减少网络下载用时</h2><p>不更换部署方案的前提下，主要减少网络下载占时（减少镜像和依赖大小），并使缓存生效。</p>
+<h3 id="修改-Dockerfile"><a href="#修改-Dockerfile" class="headerlink" title="修改 Dockerfile"></a>修改 Dockerfile</h3><p>1、将 node 镜像改为精简版的镜像</p>
+<p>不要使用 16+的镜像，node 有重大更新会导致某个工具报错。</p>
+<p>如果使用精简版的镜像报错，请用回完整版的镜像。</p>
+<p>FROM hostname.com/prado-user-images/node:latest AS builder</p>
+<p>改为</p>
+<p>FROM node:16-alpine AS builder</p>
+<p>2、修改 yarn 的执行时机使 yarn install 的执缓存生效</p>
+<p>COPY package.json yarn.lock ./<br>COPY . ./<br>RUN yarn install –frozen-lockfile</p>
+<p>改为</p>
+<p>COPY package.json yarn.lock ./<br>RUN yarn<br>COPY . ./</p>
+<p>3、合并命令，减少容器创建销毁</p>
+<p>RUN yarn build:$ENV &amp;&amp; rm -rf ./node_modules/</p>
+<p>删除多余依赖</p>
+<p>使用下面命令查看 node_modules 下各个文件夹的大小，谁大就想办法删掉谁（一些功能重复的依赖如 antd 何 infrad、lodash 和 lamda）</p>
+<p>du -d 1 -h | sort -h # 获取目录下文件夹的大小并排序</p>
+<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p>最优速度为 93 秒，其中构建速度占 73 秒，目前瓶颈在构建太久。</p>
+<p><img src="/blog/2022/09/05/optimize-build/result.png" alt="result"></p>
+]]></content>
+  </entry>
+  <entry>
     <title>快应用性能优化之减少js执行时间</title>
-    <url>/self/2021/02/03/quickapp-optimized-js/</url>
+    <url>/blog/2021/02/03/quickapp-optimized-js/</url>
     <content><![CDATA[<p>快应用是一种新的应用形态，用户在使用国内厂商的手机时无需下载安装，即能流畅的体验应用内容。</p>
 <p>本文主要指导开发者对javascript执行时间进行优化，让用户获得更好的体验。</p>
 <a id="more"></a>
@@ -1976,7 +2005,7 @@ session<span class="token punctuation">.</span><span class="token function">post
 <ul>
 <li>若没有 adb 也可以手动将手机内部存储/Android/data/com.nearme.instant.platform/files/com.example.demo/profile.cpuprofile 目录下的 profile.cpuprofile 文件拷贝到电脑上</li>
 </ul>
-<h4 id="使用-chrome-的-performance-面板打开-profile-cpuprofile-文件即可"><a href="#使用-chrome-的-performance-面板打开-profile-cpuprofile-文件即可" class="headerlink" title="使用 chrome 的 performance 面板打开 profile.cpuprofile 文件即可"></a>使用 chrome 的 performance 面板打开 profile.cpuprofile 文件即可</h4><p><img src="/self/2021/02/03/quickapp-optimized-js/load-profile.png" alt="load profile"><br><img src="/self/2021/02/03/quickapp-optimized-js/performance-app.png" alt="http link"></p>
+<h4 id="使用-chrome-的-performance-面板打开-profile-cpuprofile-文件即可"><a href="#使用-chrome-的-performance-面板打开-profile-cpuprofile-文件即可" class="headerlink" title="使用 chrome 的 performance 面板打开 profile.cpuprofile 文件即可"></a>使用 chrome 的 performance 面板打开 profile.cpuprofile 文件即可</h4><p><img src="/blog/2021/02/03/quickapp-optimized-js/load-profile.png" alt="load profile"><br><img src="/blog/2021/02/03/quickapp-optimized-js/performance-app.png" alt="http link"></p>
 <h3 id="通过-H5-预览查看火焰图"><a href="#通过-H5-预览查看火焰图" class="headerlink" title="通过 H5 预览查看火焰图"></a>通过 H5 预览查看火焰图</h3><p>快应用除了在真机上进行原生渲染外，也支持在浏览器中查看 H5 模拟渲染的结果。虽然渲染的方式不同，但是各个 js 耗时相对的执行耗时不会相差太多，所以可以直接使用 chrome 的 performance 面板查看火焰图。</p>
 <ul>
 <li>在命令行中执行以下命令</li>
@@ -1985,21 +2014,21 @@ session<span class="token punctuation">.</span><span class="token function">post
 <ul>
 <li>执行后可以在命令行中看到生成 HTTP 服务器的地址，将其复制到 chrome 浏览器中打开，并点击打开页面中的打开 web 预览</li>
 </ul>
-<p><img src="/self/2021/02/03/quickapp-optimized-js/hap-server-log.png" alt="http link"></p>
-<p><img src="/self/2021/02/03/quickapp-optimized-js/web-preview.png" alt="web preview"></p>
+<p><img src="/blog/2021/02/03/quickapp-optimized-js/hap-server-log.png" alt="http link"></p>
+<p><img src="/blog/2021/02/03/quickapp-optimized-js/web-preview.png" alt="web preview"></p>
 <ul>
 <li>若操作无误的话即可在浏览器中看到 web 预览的快应用页面，如下图。此后调试和调试优化 H5 无异。</li>
 </ul>
-<p><img src="/self/2021/02/03/quickapp-optimized-js/preview-result.png" alt="preview"></p>
+<p><img src="/blog/2021/02/03/quickapp-optimized-js/preview-result.png" alt="preview"></p>
 <ul>
 <li><p>点击页面中的 reload 按钮，等待 6s 左右停止录制即可</p>
 </li>
 <li><p>获得的火焰图</p>
 </li>
 </ul>
-<p><img src="/self/2021/02/03/quickapp-optimized-js/reload.png" alt="preview"></p>
+<p><img src="/blog/2021/02/03/quickapp-optimized-js/reload.png" alt="preview"></p>
 <h2 id="通过火焰图优化耗时脚本"><a href="#通过火焰图优化耗时脚本" class="headerlink" title="通过火焰图优化耗时脚本"></a>通过火焰图优化耗时脚本</h2><p>以 inspect 接口生成的火焰图为例，可以看到快应用启动有两个主要流程，createApplication 和 cratePage，都能在火焰图中找到。</p>
-<p><img src="/self/2021/02/03/quickapp-optimized-js/createApp-Page.png" alt="create"></p>
+<p><img src="/blog/2021/02/03/quickapp-optimized-js/createApp-Page.png" alt="create"></p>
 <p>开发者不需要关注其中陌生的函数执行，主要关注在火焰图底部是否有各个生命周期的宽度很宽，如果有的话则需要进行优化。</p>
 <p>需要关注的生命周期：</p>
 <ul>
@@ -2007,7 +2036,7 @@ session<span class="token punctuation">.</span><span class="token function">post
 <li>createPage 中的 onInit、onReady</li>
 </ul>
 <p>例如在 demo 生成的火焰图中,放大 createApplication 部分可以明显看到 onCreate 占用 CPU 时间很多</p>
-<p><img src="/self/2021/02/03/quickapp-optimized-js/onCreate.png" alt="onCreate"></p>
+<p><img src="/blog/2021/02/03/quickapp-optimized-js/onCreate.png" alt="onCreate"></p>
 <p>可以直接根据火焰图继续看调用栈或者直接看源码，看是哪个函数导致函数执行时间太长</p>
 <pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>
   showMenu<span class="token operator">:</span> $utils<span class="token punctuation">.</span>showMenu<span class="token punctuation">,</span>
@@ -2022,7 +2051,7 @@ session<span class="token punctuation">.</span><span class="token function">post
   <span class="token comment">// APP_STATISTICS.app_sta_init(this)</span>
 <span class="token punctuation">&#125;</span><span class="token punctuation">,</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>重新获取火焰图对比，可以明显看到 createApp 过程中 js 的执行时间从 29ms 降到了 10ms</p>
-<p><img src="/self/2021/02/03/quickapp-optimized-js/app-before.png" alt="before"><img src="/self/2021/02/03/quickapp-optimized-js/app-after.png" alt="after"></p>
+<p><img src="/blog/2021/02/03/quickapp-optimized-js/app-before.png" alt="before"><img src="/blog/2021/02/03/quickapp-optimized-js/app-after.png" alt="after"></p>
 <h2 id="其他优化手段"><a href="#其他优化手段" class="headerlink" title="其他优化手段"></a>其他优化手段</h2><h3 id="console-log-语句"><a href="#console-log-语句" class="headerlink" title="console.log 语句"></a>console.log 语句</h3><p>在快应用运行时，控制台大量打印日志语可能会拖累 JavaScript 线程。注意有些第三方调试库也可能包含控制台打印语句，所以在发布应用前请务必仔细检查，删除不必要的 console 语句，或者直接将 manifest.json 中将 debug 选项改为 false。该场景与<a href="https://reactnative.dev/docs/performance#using-consolelog-statements">react native</a>类似。</p>
 <h3 id="优化-createPage-的时间"><a href="#优化-createPage-的时间" class="headerlink" title="优化 createPage 的时间"></a>优化 createPage 的时间</h3><p>若 createPage 耗时过长且没有明显耗时的业务代码，调用栈中有较多的 appendChild 方法，则可能时节点数过多导致的，可以参考 dom 优化文档进行优化。</p>
 <h3 id="简化-ViewModel-的数据"><a href="#简化-ViewModel-的数据" class="headerlink" title="简化 ViewModel 的数据"></a>简化 ViewModel 的数据</h3><p><a href="https://doc.quickapp.cn/tutorial/framework/optimization-skills.html?h=%E4%BC%98%E5%8C%96#%E7%AE%80%E5%8C%96viewmodel%E7%9A%84%E6%95%B0%E6%8D%AE">官方文档</a></p>
@@ -2038,8 +2067,116 @@ session<span class="token punctuation">.</span><span class="token function">post
       </tags>
   </entry>
   <entry>
+    <title>首屏加载速度优化</title>
+    <url>/blog/2022/09/05/optimize/</url>
+    <content><![CDATA[<p>使用 React.lazy 优化首屏展示，减少白屏时间。</p>
+<a id="more"></a>
+
+<h2 id="优化前后对比"><a href="#优化前后对比" class="headerlink" title="优化前后对比"></a>优化前后对比</h2><p>首先简单看一下优化的前后的对比，数据为取 6 次的平均值。</p>
+<h3 id="优化前"><a href="#优化前" class="headerlink" title="优化前"></a>优化前</h3><p>7.8 MB transferred<br>8.0 MB resources<br>DOMContentLoaded: 5.18 s<br>Load: 6.33 s</p>
+<p>展示分为两个阶段：白屏 -&gt; 所有内容</p>
+<p>直接展示所有内容<br><img src="/blog/2022/09/05/optimize/b1.jpeg" alt="b1"></p>
+<h3 id="优化后"><a href="#优化后" class="headerlink" title="优化后"></a>优化后</h3><p>4.6 MB transferred<br>4.7 MB resources<br>DOMContentLoaded: 1.34 s<br>Load: 4.54 s</p>
+<p>展示主要分为四个阶段：白屏 -&gt; 顶栏 -&gt; 内容区 -&gt; 反馈按钮（右下角）</p>
+<p>出现顶栏<br><img src="/blog/2022/09/05/optimize/o1.jpeg" alt="1"><br>出现内容区<br><img src="/blog/2022/09/05/optimize/o2.jpeg" alt="2"><br>出现反馈按钮<br><img src="/blog/2022/09/05/optimize/o3.jpeg" alt="3"></p>
+<p>通过数据和截图可以很明显看出，优化后首屏加载资源更少，展示内容更快。</p>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>目前项目对首屏加载主要存在两个问题</p>
+<ul>
+<li>只对文件进行了分割（splitChunks），进入页面仍需加载所有文件</li>
+<li>Suspense 位置不合理</li>
+</ul>
+<p>主要针对第一点进行优化，第二点只是在第一点的基础上让用户更快的看到部分已加载的内容而已。</p>
+<h2 id="懒加载"><a href="#懒加载" class="headerlink" title="懒加载"></a>懒加载</h2><p>针对第一点，主要依赖 React.lazy 进行懒加载优化。<br>React.lazy 使用方法可以参考<a href="https://zh-hans.reactjs.org/docs/code-splitting.html#reactlazy">官方文档</a>。<br>原理可以参考<a href="https://webpack.js.org/guides/code-splitting/">Code Splitting</a>。</p>
+<p>因为不需要考虑网速特别差的网络，所以仅做以下 4 点优化就可以获得比较好的体验（需要极致体验可以把所有子路由都懒加载，过多网络请求反而可能影响速度，不推荐）</p>
+<ul>
+<li>减少不必要的依赖</li>
+<li>懒加载主要的路由组件</li>
+<li>懒加载较大的第三方库</li>
+</ul>
+<h3 id="懒加载主要的路由组件"><a href="#懒加载主要的路由组件" class="headerlink" title="懒加载主要的路由组件"></a>懒加载主要的路由组件</h3><p>例如 prado 由三大模块组成，对应三个组件</p>
+<ul>
+<li>任务调度</li>
+<li>资源调度</li>
+<li>资源管理</li>
+</ul>
+<p>那么就对这三个组件进行懒加载就好了</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">import</span> ResourceBasedScheduling <span class="token keyword">from</span> <span class="token string">"components/App/ResourceBasedScheduling"</span><span class="token punctuation">;</span> <span class="token comment">// 资源调度</span>
+<span class="token keyword">import</span> ResourceBasedManagement <span class="token keyword">from</span> <span class="token string">"components/App/ResourceBasedManagement"</span><span class="token punctuation">;</span> <span class="token comment">// 资源管理</span>
+<span class="token keyword">import</span> TaskBasedScheduling <span class="token keyword">from</span> <span class="token string">"components/App/TaskBasedScheduling"</span><span class="token punctuation">;</span> <span class="token comment">// 任务调度</span>
+
+<span class="token comment">// 改成</span>
+<span class="token keyword">const</span> ResourceBasedScheduling <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">lazy</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+  <span class="token keyword">import</span><span class="token punctuation">(</span>
+    <span class="token comment">/* webpackChunkName: "resourceScheduling" */</span> <span class="token string">"components/App/ResourceBasedScheduling"</span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> ResourceBasedManagement <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">lazy</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+  <span class="token keyword">import</span><span class="token punctuation">(</span>
+    <span class="token comment">/* webpackChunkName: "resourceMgmt" */</span> <span class="token string">"components/App/ResourceBasedManagement"</span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> TaskBasedScheduling <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">lazy</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+  <span class="token keyword">import</span><span class="token punctuation">(</span>
+    <span class="token comment">/* webpackChunkName: "taskScheduling" */</span> <span class="token string">"components/App/TaskBasedScheduling"</span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="懒加载较大的第三方库"><a href="#懒加载较大的第三方库" class="headerlink" title="懒加载较大的第三方库"></a>懒加载较大的第三方库</h3><p>使用 <code>webpack-bundle-analyzer</code> 或直接在 node_modules 下运行命令 <code>du -d 1 -h | sort -h</code>，看看哪个第三库比较大，则对其相关组件进行懒加载。</p>
+<p>如下是 prado 的：<br>28M ./@antv<br>32M ./react-icons<br>41M ./echarts<br>47M ./@ant-design<br>51M ./ace-builds<br>52M ./typescript<br>70M ./infrad</p>
+<p>可以看到除了必须的 infrad 和 @ant-design 外，还有几个比较大的第三方库 @antv、echarts 和 ace-builds。</p>
+<p>以 echarts 为例，代码中仅有一个组件 TaskBarChart 对 echarts 有依赖，在所有使用 TaskBarChart 的地方都改成动态引入就好了：</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">import</span> TaskBarChart <span class="token keyword">from</span> <span class="token string">"components/Common/TaskBarChart"</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 改为</span>
+<span class="token keyword">const</span> TaskBarChart <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">lazy</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+  <span class="token keyword">import</span><span class="token punctuation">(</span><span class="token comment">/* webpackChunkName: "taskChart" */</span> <span class="token string">"components/Common/TaskBarChart"</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>此外，还可以在 webpack 的 splitChunks 中将 echart 单独分割出来，方便观察是否懒加载成功</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js">splitChunks<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+  cacheGroups<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    echarts<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      name<span class="token operator">:</span> <span class="token string">'echarts'</span><span class="token punctuation">,</span>
+      test<span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">[\\/]node_modules[\\/](echarts|zrender)[\\/]</span><span class="token regex-delimiter">/</span></span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>PS: infrad 的 @ipg/feedback-client build 后很大，需要动态引入</p>
+<h2 id="减少依赖的文件"><a href="#减少依赖的文件" class="headerlink" title="减少依赖的文件"></a>减少依赖的文件</h2><p>针对第一点，还可以主动减少依赖的第三方文件。</p>
+<h3 id="使用支持-es-module-的第三方库"><a href="#使用支持-es-module-的第三方库" class="headerlink" title="使用支持 es module 的第三方库"></a>使用支持 es module 的第三方库</h3><p>例如 lodash 改用 lodash-es（antd 依赖了 lodash，所以这一步不做也没差），或者使用按需引入的写法，如 echarts。<br>webpack 可以自动进行 tree shaking，减少库还能加快下载依赖的时间，好处++</p>
+<h3 id="删除功能重复的库"><a href="#删除功能重复的库" class="headerlink" title="删除功能重复的库"></a>删除功能重复的库</h3><p>例如 antd 和 infrad、lodash 和 ramda</p>
+<h2 id="优化-Suspense-组件的位置"><a href="#优化-Suspense-组件的位置" class="headerlink" title="优化 Suspense 组件的位置"></a>优化 Suspense 组件的位置</h2><p>第二点比较好优化，优化 Suspense 的位置即可。</p>
+<p>现在项目一般都由三个部分组成，分别是顶栏，侧边栏和内容区域，对着三个部分使用 Suspense 进行包裹即可，可以做到尽快展示页面内容的目的。</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"> <span class="token operator">&lt;</span>Suspense fallback<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token operator">&lt;</span>SuspenseFallback <span class="token operator">/</span><span class="token operator">></span><span class="token punctuation">&#125;</span><span class="token operator">></span>
+  <span class="token operator">&lt;</span>CommonStyledLayout<span class="token operator">></span>
+    <span class="token operator">&lt;</span>SidedMenu listMenu<span class="token operator">=</span><span class="token punctuation">&#123;</span>listMenu<span class="token punctuation">&#125;</span> extra<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token operator">&lt;</span>ApplicationSelect <span class="token operator">/</span><span class="token operator">></span><span class="token punctuation">&#125;</span> <span class="token operator">/</span><span class="token operator">></span>
+    <span class="token operator">&lt;</span>CommonStyledContent<span class="token operator">></span>
+      <span class="token operator">&lt;</span>ConfigProvider getPopupContainer<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token parameter">node</span> <span class="token operator">=></span> node<span class="token punctuation">&#125;</span><span class="token operator">></span>
+        <span class="token operator">&lt;</span>Switch<span class="token operator">></span>
+          <span class="token operator">&lt;</span>Route path<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token constant">APPLICATIONS</span><span class="token punctuation">&#125;</span> component<span class="token operator">=</span><span class="token punctuation">&#123;</span>Home<span class="token punctuation">&#125;</span> exact <span class="token operator">/</span><span class="token operator">></span>
+          <span class="token operator">&lt;</span>Redirect <span class="token keyword">from</span><span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token constant">APPLICATIONS_DETAIL</span><span class="token punctuation">&#125;</span> to<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token constant">ONLINE_JOB_MANAGEMENT</span><span class="token punctuation">&#125;</span> <span class="token operator">/</span><span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>Switch<span class="token operator">></span>
+      <span class="token operator">&lt;</span><span class="token operator">/</span>ConfigProvider<span class="token operator">></span>
+    <span class="token operator">&lt;</span><span class="token operator">/</span>CommonStyledContent<span class="token operator">></span>
+  <span class="token operator">&lt;</span><span class="token operator">/</span>CommonStyledLayout<span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>Suspense<span class="token operator">></span>
+
+<span class="token comment">// 改为下面的结构</span>
+<span class="token comment">// 1、最外层无需 Suspense，因为在使用这个组件的父组件 Layout 本身就已经对其使用了 Suspense包裹</span>
+<span class="token comment">// 2、为内容区添加 Suspense 包裹</span>
+
+<span class="token operator">&lt;</span>CommonStyledLayout<span class="token operator">></span>
+  <span class="token operator">&lt;</span>SidedMenu listMenu<span class="token operator">=</span><span class="token punctuation">&#123;</span>listMenu<span class="token punctuation">&#125;</span> <span class="token operator">/</span><span class="token operator">></span>
+  <span class="token operator">&lt;</span>CommonStyledContent<span class="token operator">></span>
+    <span class="token operator">&lt;</span>Suspense fallback<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token operator">&lt;</span>SuspenseFallback <span class="token operator">/</span><span class="token operator">></span><span class="token punctuation">&#125;</span><span class="token operator">></span>
+      Content
+    <span class="token operator">&lt;</span><span class="token operator">/</span>Suspense<span class="token operator">></span>
+  <span class="token operator">&lt;</span><span class="token operator">/</span>CommonStyledContent<span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>CommonStyledLayout<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p>整体代码改动可见这笔提交：none</p>
+]]></content>
+  </entry>
+  <entry>
     <title>给 react 添加测试</title>
-    <url>/self/2021/05/18/react-hook-test/</url>
+    <url>/blog/2021/05/18/react-hook-test/</url>
     <content><![CDATA[<p>记录给react hook添加测试过程中踩过的坑</p>
 <a id="more"></a>
 
@@ -2086,7 +2223,7 @@ session<span class="token punctuation">.</span><span class="token function">post
   </entry>
   <entry>
     <title>正则表达式快餐</title>
-    <url>/self/2021/01/30/reg/</url>
+    <url>/blog/2021/01/30/reg/</url>
     <content><![CDATA[<p>正则表达式在开发时还是比较常用的，正则的使用可以说是灵活又复杂，本文以简单的例子说明常用的知识点。</p>
 <a id="more"></a>
 
@@ -2184,7 +2321,7 @@ str<span class="token punctuation">.</span><span class="token function">match</s
   </entry>
   <entry>
     <title>发布一个工具到NPM</title>
-    <url>/self/2022/04/26/rollup/</url>
+    <url>/blog/2022/04/26/rollup/</url>
     <content><![CDATA[<p>基于 typescript 与 rollup 编写一个工具，并发布到 npm</p>
 <a id="more"></a>
 
@@ -2197,7 +2334,7 @@ str<span class="token punctuation">.</span><span class="token function">match</s
 <li>在根目录下新建 src 文件夹并添加 index.ts 文件</li>
 </ul>
 <p>顺利的话现在的目录结构是这样的</p>
-<p><img src="/self/2022/04/26/rollup/start.png" alt="start"></p>
+<p><img src="/blog/2022/04/26/rollup/start.png" alt="start"></p>
 <p>可选：</p>
 <ul>
 <li>修改 package.json，添加<code>&quot;type&quot;: &quot;module&quot;</code>，然后就可以直接使用 import/export 了</li>
@@ -2222,7 +2359,7 @@ str<span class="token punctuation">.</span><span class="token function">match</s
 
 <span class="token keyword">export</span> <span class="token keyword">default</span> sum<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>然后在根目录执行 tsc 进行编译，顺利的话就能在 dist 目录获得生成的文件了，此时目录结构应该像这样</p>
-<p><img src="/self/2022/04/26/rollup/tsc.png" alt="tsc"></p>
+<p><img src="/blog/2022/04/26/rollup/tsc.png" alt="tsc"></p>
 <h2 id="测试包的安装与执行"><a href="#测试包的安装与执行" class="headerlink" title="测试包的安装与执行"></a>测试包的安装与执行</h2><p>这一步主要是在本地确认包能够被正常安装与使用</p>
 <p>修改 package.json 中的 <code>main</code> 为 <code>./dist/index.js</code>，也就是将包的入口文件定为我们生成的文件。</p>
 <p>然后本地随便一个项目执行 <code>npm install 这个包的目录</code> 就可以安装这个包了。</p>
@@ -2290,7 +2427,7 @@ str<span class="token punctuation">.</span><span class="token function">match</s
   </entry>
   <entry>
     <title>Hexo 图片引用问题</title>
-    <url>/self/2021/01/23/start/</url>
+    <url>/blog/2021/01/23/start/</url>
     <content><![CDATA[<p>使用 Hexo 搭建的博客网站，第一篇文章决定就是吐槽这个架子了，引用个图片折腾了半天…</p>
 <a id="more"></a>
 
@@ -2330,7 +2467,7 @@ marked:
 <p>然后打开本地服务的地址，可以看到图片已经正常加载。</p>
 <h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>官方文档最后也有说明。简单来说就是在构建时，将 img src 设置成了明确的相对根目录的地址，所以就不会出现资源引用的问题了。</p>
 <h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>最后，插入一张图片表达此刻的欣 tong 喜 ku 之情</p>
-<p><img src="/self/2021/01/23/start/2eroxm.jpg" alt="js是世界上最好的语言"></p>
+<p><img src="/blog/2021/01/23/start/2eroxm.jpg" alt="js是世界上最好的语言"></p>
 ]]></content>
       <tags>
         <tag>Hexo</tag>
@@ -2338,7 +2475,7 @@ marked:
   </entry>
   <entry>
     <title>彻底理清 this 去哪儿</title>
-    <url>/self/2021/02/06/this/</url>
+    <url>/blog/2021/02/06/this/</url>
     <content><![CDATA[<p>ES6 中引入的箭头函数和 Class 让 this 更加令人头疼了，通过这遍博客完整的好好的理一理他的指向。</p>
 <a id="more"></a>
 
@@ -2458,13 +2595,13 @@ ins3<span class="token punctuation">.</span>name<span class="token punctuation">
 <span class="token function">getName</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>student1<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 小明</span>
 <span class="token function">getName</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>student2<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 小红</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="事件处理函数调用"><a href="#事件处理函数调用" class="headerlink" title="事件处理函数调用"></a>事件处理函数调用</h3><p>dom 事件触发时，执行的回调的 this</p>
-<h4 id="DOM-事件处理函数"><a href="#DOM-事件处理函数" class="headerlink" title="DOM 事件处理函数"></a>DOM 事件处理函数</h4><p>this 指向触发此事件的 DOM 对象。针对 addEventListener 和 onevent 类。<br><img src="/self/2021/02/06/this/event.png" alt="event"></p>
+<h4 id="DOM-事件处理函数"><a href="#DOM-事件处理函数" class="headerlink" title="DOM 事件处理函数"></a>DOM 事件处理函数</h4><p>this 指向触发此事件的 DOM 对象。针对 addEventListener 和 onevent 类。<br><img src="/blog/2021/02/06/this/event.png" alt="event"></p>
 <h4 id="内联事件处理函数"><a href="#内联事件处理函数" class="headerlink" title="内联事件处理函数"></a>内联事件处理函数</h4><ul>
 <li>函数语句直接运行时，this 指向当前 DOM 元素</li>
-<li>函数语句被包裹在函数里运行时与函数直接运行结果相同。没有设置内部函数的 this，所以它指向 global/window 对象（严格模式下为 undefined）<br><img src="/self/2021/02/06/this/on-event.png" alt="on-event"></li>
+<li>函数语句被包裹在函数里运行时与函数直接运行结果相同。没有设置内部函数的 this，所以它指向 global/window 对象（严格模式下为 undefined）<br><img src="/blog/2021/02/06/this/on-event.png" alt="on-event"></li>
 </ul>
 <h3 id="原生-API-的回调"><a href="#原生-API-的回调" class="headerlink" title="原生 API 的回调"></a>原生 API 的回调</h3><p>大部分原生 API 的回调函数 this 指向 global/window（严格模式下也是）。可用 bind 等改变 this。</p>
-<p>例如 setTimeout、setInterval 和 requestAnimationFrame<br><img src="/self/2021/02/06/this/setTimeout.webp" alt="setTimeout"></p>
+<p>例如 setTimeout、setInterval 和 requestAnimationFrame<br><img src="/blog/2021/02/06/this/setTimeout.webp" alt="setTimeout"></p>
 <h2 id="类上下文"><a href="#类上下文" class="headerlink" title="类上下文"></a>类上下文</h2><p>this 在类（Class）中的表现与在函数中类似。Class 中所有非静态的方法都会被添加到 this 的原型中。</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">class</span> <span class="token class-name">Example</span> <span class="token punctuation">&#123;</span>
   <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -2576,7 +2713,7 @@ console<span class="token punctuation">.</span><span class="token function">log<
   </entry>
   <entry>
     <title>ts覆盖父类的定义</title>
-    <url>/self/2022/07/19/ts-over/</url>
+    <url>/blog/2022/07/19/ts-over/</url>
     <content><![CDATA[<p>覆盖有问题，有待更新。</p>
 <a id="more"></a>
 
@@ -2589,53 +2726,8 @@ console<span class="token punctuation">.</span><span class="token function">log<
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
   </entry>
   <entry>
-    <title>使用 vscode 的调试功能</title>
-    <url>/self/2021/02/19/vscode-debug/</url>
-    <content><![CDATA[<p>使用 webpack 构建为例，简单介绍使用 vscode 调试 node 脚本的方法。</p>
-<a id="more"></a>
-
-<h2 id="官方文档"><a href="#官方文档" class="headerlink" title="官方文档"></a>官方文档</h2><p>微软官方的说明文档：<a href="https://go.microsoft.com/fwlink/?linkid=830387">Launch configurations</a></p>
-<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>本文基于手动配置的 vue 文件编译项目上改动，项目看前面的文章<a href="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/">vue-loader 的执行原理</a>。</p>
-<h2 id="添加脚本"><a href="#添加脚本" class="headerlink" title="添加脚本"></a>添加脚本</h2><p>在编译项目下新建脚本文件<code>index.js</code>，输入以下内容</p>
-<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">const</span> <span class="token punctuation">&#123;</span> exec <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"child_process"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token function">exec</span><span class="token punctuation">(</span><span class="token string">"npm run build"</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">error<span class="token punctuation">,</span> stdout<span class="token punctuation">,</span> stderr</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-    console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">执行出错: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>error<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span><span class="token punctuation">;</span>
-  <span class="token punctuation">&#125;</span>
-  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">stdout: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>stdout<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">stderr: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>stderr<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>脚本很简单，就是通过脚本自动执行 npm run build 命令进行构建，实际使用中可以是别的 shell 命令或其他操作。</p>
-<h2 id="添加配置"><a href="#添加配置" class="headerlink" title="添加配置"></a>添加配置</h2><p>在项目根目录下新建<code>.vscode</code>文件夹，在该文件夹下新建 launch.json 文件，并输入以下内容</p>
-<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
-  <span class="token comment">// Use IntelliSense to learn about possible attributes.</span>
-  <span class="token comment">// Hover to view descriptions of existing attributes.</span>
-  <span class="token comment">// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387</span>
-  <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"0.2.0"</span><span class="token punctuation">,</span>
-  <span class="token property">"configurations"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
-    <span class="token punctuation">&#123;</span>
-      <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"node"</span><span class="token punctuation">,</span> <span class="token comment">// 调试类型</span>
-      <span class="token property">"request"</span><span class="token operator">:</span> <span class="token string">"launch"</span><span class="token punctuation">,</span>
-      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"启动调试"</span><span class="token punctuation">,</span>
-      <span class="token property">"cwd"</span><span class="token operator">:</span> <span class="token string">"$&#123;workspaceRoot&#125;"</span><span class="token punctuation">,</span> <span class="token comment">// 命令执行的目录</span>
-      <span class="token property">"skipFiles"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"&lt;node_internals>/**"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-      <span class="token property">"program"</span><span class="token operator">:</span> <span class="token string">"index.js"</span><span class="token punctuation">,</span> <span class="token comment">// 执行的脚本路径</span>
-      <span class="token property">"args"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"start"</span><span class="token punctuation">]</span> <span class="token comment">// 参数</span>
-    <span class="token punctuation">&#125;</span>
-  <span class="token punctuation">]</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="开始调试"><a href="#开始调试" class="headerlink" title="开始调试"></a>开始调试</h2><p>在想要调试的文件中打断点，本例中在 vue-loader 的 index 中断点了<br><img src="/self/2021/02/19/vscode-debug/debugger.png" alt="debugger"></p>
-<p>然后点击调试面板中的启动即可运行到想要断点调试的地方了<br><img src="/self/2021/02/19/vscode-debug/debug-vue.png" alt="debug"></p>
-<p>使用该方法理论上可以调试所有 node 脚本。</p>
-]]></content>
-      <tags>
-        <tag>vscode</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>template 的 AST 与 vdom 的区别</title>
-    <url>/self/2021/02/08/vue-ast-vdom/</url>
+    <url>/blog/2021/02/08/vue-ast-vdom/</url>
     <content><![CDATA[<p>简单说明 vue 在编译时生成的 AST 与运行时的 vdom 区别是什么。</p>
 <a id="more"></a>
 
@@ -2723,8 +2815,53 @@ console<span class="token punctuation">.</span><span class="token function">log<
       </tags>
   </entry>
   <entry>
+    <title>使用 vscode 的调试功能</title>
+    <url>/blog/2021/02/19/vscode-debug/</url>
+    <content><![CDATA[<p>使用 webpack 构建为例，简单介绍使用 vscode 调试 node 脚本的方法。</p>
+<a id="more"></a>
+
+<h2 id="官方文档"><a href="#官方文档" class="headerlink" title="官方文档"></a>官方文档</h2><p>微软官方的说明文档：<a href="https://go.microsoft.com/fwlink/?linkid=830387">Launch configurations</a></p>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>本文基于手动配置的 vue 文件编译项目上改动，项目看前面的文章<a href="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/">vue-loader 的执行原理</a>。</p>
+<h2 id="添加脚本"><a href="#添加脚本" class="headerlink" title="添加脚本"></a>添加脚本</h2><p>在编译项目下新建脚本文件<code>index.js</code>，输入以下内容</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">const</span> <span class="token punctuation">&#123;</span> exec <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"child_process"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">exec</span><span class="token punctuation">(</span><span class="token string">"npm run build"</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">error<span class="token punctuation">,</span> stdout<span class="token punctuation">,</span> stderr</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">执行出错: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>error<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">stdout: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>stdout<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">stderr: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>stderr<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>脚本很简单，就是通过脚本自动执行 npm run build 命令进行构建，实际使用中可以是别的 shell 命令或其他操作。</p>
+<h2 id="添加配置"><a href="#添加配置" class="headerlink" title="添加配置"></a>添加配置</h2><p>在项目根目录下新建<code>.vscode</code>文件夹，在该文件夹下新建 launch.json 文件，并输入以下内容</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+  <span class="token comment">// Use IntelliSense to learn about possible attributes.</span>
+  <span class="token comment">// Hover to view descriptions of existing attributes.</span>
+  <span class="token comment">// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387</span>
+  <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"0.2.0"</span><span class="token punctuation">,</span>
+  <span class="token property">"configurations"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">&#123;</span>
+      <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"node"</span><span class="token punctuation">,</span> <span class="token comment">// 调试类型</span>
+      <span class="token property">"request"</span><span class="token operator">:</span> <span class="token string">"launch"</span><span class="token punctuation">,</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"启动调试"</span><span class="token punctuation">,</span>
+      <span class="token property">"cwd"</span><span class="token operator">:</span> <span class="token string">"$&#123;workspaceRoot&#125;"</span><span class="token punctuation">,</span> <span class="token comment">// 命令执行的目录</span>
+      <span class="token property">"skipFiles"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"&lt;node_internals>/**"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+      <span class="token property">"program"</span><span class="token operator">:</span> <span class="token string">"index.js"</span><span class="token punctuation">,</span> <span class="token comment">// 执行的脚本路径</span>
+      <span class="token property">"args"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"start"</span><span class="token punctuation">]</span> <span class="token comment">// 参数</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="开始调试"><a href="#开始调试" class="headerlink" title="开始调试"></a>开始调试</h2><p>在想要调试的文件中打断点，本例中在 vue-loader 的 index 中断点了<br><img src="/blog/2021/02/19/vscode-debug/debugger.png" alt="debugger"></p>
+<p>然后点击调试面板中的启动即可运行到想要断点调试的地方了<br><img src="/blog/2021/02/19/vscode-debug/debug-vue.png" alt="debug"></p>
+<p>使用该方法理论上可以调试所有 node 脚本。</p>
+]]></content>
+      <tags>
+        <tag>vscode</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>vue-loader 的执行原理</title>
-    <url>/self/2021/02/18/vue-loader/</url>
+    <url>/blog/2021/02/18/vue-loader/</url>
     <content><![CDATA[<p>如果一个框架（如 weex 和快应用）需要支持 vue dsl，那么就离不开 vue-loader。</p>
 <p>vue-loader 负责将 vue 文件转为单文件组件 (SFCs)对象，并调用 vue-template-compiler 将模板编译成 render 函数。</p>
 <p>本文主要分析其执行原理。</p>
@@ -2876,11 +3013,11 @@ compiler<span class="token punctuation">.</span>options<span class="token punctu
 <h3 id="loader-第一轮执行"><a href="#loader-第一轮执行" class="headerlink" title="loader 第一轮执行"></a>loader 第一轮执行</h3><p>根据 webpack 的配置，从下到上开始第一轮的 vue 文件处理。</p>
 <p>此处不贴完整代码，建议打开<a href="https://github.com/vuejs/vue-loader/blob/master/lib/index.js">vue-loader github 仓库</a>对照阅读。</p>
 <p>首先 vue-loader 会检测是否在 webpack config 中正确配置了 VueLoaderPlugin</p>
-<p><img src="/self/2021/02/18/vue-loader/check-plugin.png" alt="check-plugin"></p>
+<p><img src="/blog/2021/02/18/vue-loader/check-plugin.png" alt="check-plugin"></p>
 <p>然后 vue 文件会迎来他的第一次转换，即下图中的 parse 方法，该方法实际调用的是 vue-template-compiler/build.js 中的 parseComponent 方法</p>
-<p><img src="/self/2021/02/18/vue-loader/parse.png" alt="parse"></p>
+<p><img src="/blog/2021/02/18/vue-loader/parse.png" alt="parse"></p>
 <p>该方法将 vue 文件的内容转换成了 SFC 描述符对象，即文件内容（字符串）转换成下面这个对象，将每个部分（script、styles、template）明确分了开来。</p>
-<p><img src="/self/2021/02/18/vue-loader/parse-result.png" alt="parse-result"></p>
+<p><img src="/blog/2021/02/18/vue-loader/parse-result.png" alt="parse-result"></p>
 <p>接着会有一个 incomingQuery.type 的判断，现在为 false 暂时忽略。</p>
 <p>最后的解析结果：</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">import</span> <span class="token punctuation">&#123;</span>
@@ -2923,7 +3060,7 @@ component<span class="token punctuation">.</span>options<span class="token punct
 <li>templateLoader</li>
 </ul>
 <p>直接看 vue-loader，关键是这块刚才没有提的逻辑</p>
-<p><img src="/self/selected-block.png" alt="block"></p>
+<p><img src="/blog/selected-block.png" alt="block"></p>
 <p>此处的 selectBlock 方法会根据 url 参数中的 type 获取对应模块的内容（template 等）给下一个 loader。</p>
 <p>最后就是 templateLoader，该 loader 会会拿到 template 字符串。vue-loader 就是通过这个 loader 调用 vue-template-compiler 对模板进行编译，得到最终的 render 函数。</p>
 <p>这是最后编译获得的结果：</p>
@@ -2951,7 +3088,7 @@ render<span class="token punctuation">.</span>_withStripped <span class="token o
   </entry>
   <entry>
     <title>WebAssembly 入门（废弃）</title>
-    <url>/self/2021/11/25/wasm-binary/</url>
+    <url>/blog/2021/11/25/wasm-binary/</url>
     <content><![CDATA[<p>该文内容基本废弃，直接查看最新发布的 WebAssembly 相关文章。</p>
 <a id="more"></a>
 
@@ -2977,17 +3114,17 @@ render<span class="token punctuation">.</span>_withStripped <span class="token o
 <h2 id="WebAssembly"><a href="#WebAssembly" class="headerlink" title="WebAssembly"></a>WebAssembly</h2><p>按字面意思理解，WebAssembly 就是 Web 汇编，是为 Web 浏览器定制的汇编语言。</p>
 <h2 id="从现代编译器角度看-wasm-代码"><a href="#从现代编译器角度看-wasm-代码" class="headerlink" title="从现代编译器角度看 wasm 代码"></a>从现代编译器角度看 wasm 代码</h2><p>0.找到 main.m 文件 1.预处理器，处理 include、import、宏定义 2.编译器编译，编译成 ir 中间代码 3.后端，生成目标代码 4.汇编 5.链接其他动态库静态库 6.编译成适合某个架构的代码</p>
 <p>前端 将高级语言生成中间表示（Intermediate Representation，IR）<br>中断 对 IR 进行分析和各种优化<br>后端 生成目标代码。把 IR 转化成平台相关的汇编代码，最终由汇编器编译为机器码</p>
-<p><img src="/self/2021/11/25/wasm-binary/llvm.png" alt="llvm"></p>
+<p><img src="/blog/2021/11/25/wasm-binary/llvm.png" alt="llvm"></p>
 <h2 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h2><h3 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h3><p>模块是 Wasm 程序编译、传输和加载的单位。Wasm 规范定义了两种模块格式：二进制格式和文本格式。如果和传统汇编语言做类比，那么 Wasm 模块的二进制格式相当于目标文件或可执行文件格式，文本格式则相当于汇编语言。（更容易进行 AOT/JIT 编译，适合作为目标代码，由其他高级语言编译器生成）</p>
 <ul>
 <li>二进制格式 .wasm 设计紧凑，所以小</li>
 <li>文本格式 .wat 文件 Wasm 文本格式可以简写为 WAT</li>
 </ul>
 <p>还有一种内存格式，Wasm 实现（如解释器）通常会把二进制模块解码为内部形式（即内存格式，比如 C/C++/Go 结构体），然后再进行后续处理</p>
-<p><img src="/self/2021/11/25/wasm-binary/wat.png" alt="wat"></p>
+<p><img src="/blog/2021/11/25/wasm-binary/wat.png" alt="wat"></p>
 <h3 id="指令集"><a href="#指令集" class="headerlink" title="指令集"></a>指令集</h3><p>和 Java 虚拟机一样，Wasm 也采用了栈式虚拟机和字节码</p>
 <h3 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h3><p>Wasm 模块包含了大量类型信息，这样绝大多数问题就可以通过静态分析在代码执行前被发现，只有少数问题需要推迟到运行时进行检查。</p>
-<h3 id="从二进制到可以执行"><a href="#从二进制到可以执行" class="headerlink" title="从二进制到可以执行"></a>从二进制到可以执行</h3><p><img src="/self/2021/11/25/wasm-binary/excute.png" alt="excute"></p>
+<h3 id="从二进制到可以执行"><a href="#从二进制到可以执行" class="headerlink" title="从二进制到可以执行"></a>从二进制到可以执行</h3><p><img src="/blog/2021/11/25/wasm-binary/excute.png" alt="excute"></p>
 <p>参考书籍：《WebAssembly 原理与核心技术》张秀宏</p>
 ]]></content>
       <tags>
@@ -2996,13 +3133,13 @@ render<span class="token punctuation">.</span>_withStripped <span class="token o
   </entry>
   <entry>
     <title>深入了解 WebAssembly</title>
-    <url>/self/2022/03/15/wasm/</url>
+    <url>/blog/2022/03/15/wasm/</url>
     <content><![CDATA[<p>深入学习和理解 WebAssembly 相关的知识。</p>
 <p>Wasm 到底是什么，可以调用 Web api（document 等）吗，怎么调试，性能如何…</p>
 <a id="more"></a>
 
 <p>WebAssembly 简称为 Wasm。</p>
-<h2 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h2><p><img src="/self/2022/03/15/wasm/history.png" alt="history"></p>
+<h2 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h2><p><img src="/blog/2022/03/15/wasm/history.png" alt="history"></p>
 <p>WebAssembly 起源于一个叫 Emscripten 的个人项目，该项目主要是将 C++编译为 js 的。后面 Mozila 觉得这个项目有未来，就组建了一个团队专门搞出了 asm.js，一种特殊的 js，由 Emscripten 生成，看一下下面这段 asm.js 代码：</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">MyAsmModule</span><span class="token punctuation">(</span><span class="token parameter">stdlib<span class="token punctuation">,</span> foreign<span class="token punctuation">,</span> heap</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
   <span class="token string">"use asm"</span><span class="token punctuation">;</span>
@@ -3015,9 +3152,9 @@ render<span class="token punctuation">.</span>_withStripped <span class="token o
 <p>可以发现，asm.js 跟我们正常写的 js 基本相同，但是在函数的参数和返回值上都有特殊的<code>x | 0</code>来标记数值类型，并且在顶部有<code>use asm</code>注解。这么一来，可以处理这些类型信息的浏览器就可以做更多的编译优化从而有更快的执行速度，而不认识的浏览器也可以正常执行。该方式的主要缺憾就是仍然不够快，因为其躲不开 js 的解析编译过程。</p>
 <p>在 Mozila 推出 asm.js 的时候，Google 内部也在做 NaCl/PNaCl 项目，这个项目是支持直接在浏览器上执行本机代码，虽然这个肯定拥有最快的速度，但是失去了跨平台的特性。</p>
 <p>最后两拨人一凑合，就一起推出了 WebAssembly，目标就是保持跨平台特性的同时具有极快的执行速度。</p>
-<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p><img src="/self/2022/03/15/wasm/wasm.png" alt="wasm"><br>2019 年 12 月 5 日 — 万维网联盟（W3C）宣布 WebAssembly 核心规范成为正式标准，为 Web 带来一种功能强大的新语言。</p>
+<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p><img src="/blog/2022/03/15/wasm/wasm.png" alt="wasm"><br>2019 年 12 月 5 日 — 万维网联盟（W3C）宣布 WebAssembly 核心规范成为正式标准，为 Web 带来一种功能强大的新语言。</p>
 <p>上面是来自 W3C release 里的一句话，简单来说就是 WebAssembly 是除了传统三剑客以外第四门可以再浏览器上运行的语言。</p>
-<h3 id="一门什么语言？"><a href="#一门什么语言？" class="headerlink" title="一门什么语言？"></a>一门什么语言？</h3><p>从现代编译器角度看 WebAssembly 所处的位置<br><img src="/self/2022/03/15/wasm/llvm.png" alt="llvm"></p>
+<h3 id="一门什么语言？"><a href="#一门什么语言？" class="headerlink" title="一门什么语言？"></a>一门什么语言？</h3><p>从现代编译器角度看 WebAssembly 所处的位置<br><img src="/blog/2022/03/15/wasm/llvm.png" alt="llvm"></p>
 <p>llvm 架构简介：不同的高级语言（C++/Rust 等）通过不同的编译器前端编译为中间表示 IR，再通过不同的编译器后端生成对应平台的汇编代码，最后再由汇编编译器编译为对应平台的本机代码。</p>
 <p>可以看到 WebAssembly 跟汇编同处于汇编语言的位子上，也就是说他主要是作为一种目标代码由其他高级语言直接生成的。但是跟传统汇编的一个区别是，其运行的环境并不是真实的物理机器，而是虚拟机，所以他是一门类汇编的低级语言。</p>
 <h2 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h2><p>在继续其他内容之前，首先引入一个新的概念：模块。模块是 es5 定义的概念，可以很方便的管理和组织我们的 js 文件，Wasm 也遵循了这一规范，未来有望可以像加载 js 一样轻松加载和使用 wasm 文件。</p>
@@ -3025,13 +3162,13 @@ render<span class="token punctuation">.</span>_withStripped <span class="token o
 <li>模块是 Wasm 程序编译、传输和加载的单位</li>
 <li>Wasm 规范定义了两种模块格式：二进制格式和文本格式</li>
 </ul>
-<p>下面是这两种格式的关系：<br><img src="/self/2022/03/15/wasm/import.png" alt="import"></p>
+<p>下面是这两种格式的关系：<br><img src="/blog/2022/03/15/wasm/import.png" alt="import"></p>
 <p>高级语言通过编译器生成二进制格式的.wasm 文件，通过 Wasm 的工具可以实现文本格式.wat 和二进制格式的互相转换。最后还有一种内存格式就是.wasm 在运行的时候由虚拟机实例化为相应的结构体。</p>
 <h2 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h2><h3 id="高效"><a href="#高效" class="headerlink" title="高效"></a>高效</h3><p>WebAssembly 是一种运行在栈式虚拟机上得紧凑的二进制代码，后面会详细介绍。</p>
 <h3 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h3><p>WebAssembly 的运行环境是一个沙盒，是内存安全的并且遵守浏览器的同原协议和其他安全策略。</p>
 <h3 id="开放可调试"><a href="#开放可调试" class="headerlink" title="开放可调试"></a>开放可调试</h3><p>刚刚有提到 WebAssembly 有一种文本格式，通过文本格式可以比较便捷的阅读、学习和调试 WebAssembly 的代码。</p>
 <h3 id="web-平台的一部分"><a href="#web-平台的一部分" class="headerlink" title="web 平台的一部分"></a>web 平台的一部分</h3><p>WebAssembly 可以和 js 相互调用两者存在的方法（也就是说 docuemnt、window 不是 webassembly 标准的一部分，需要通过 js 间接的调用）。可以像其他 api 一样，通过 js 检测是否支持特定功能，若不支持弹窗提示用户或者做其他回滚操作即可。野心大，不止用于 web。</p>
-<h2 id="字节码"><a href="#字节码" class="headerlink" title="字节码"></a>字节码</h2><p>一条指令的通常有操作码和 n 个操作数组成<br><img src="/self/2022/03/15/wasm/command.png" alt="command"></p>
+<h2 id="字节码"><a href="#字节码" class="headerlink" title="字节码"></a>字节码</h2><p>一条指令的通常有操作码和 n 个操作数组成<br><img src="/blog/2022/03/15/wasm/command.png" alt="command"></p>
 <p>Wasm 的代码是一种特殊的二进制代码 – 字节码。<br>汇编语言通常与具体的 CPU 指令集相关，而字节码是和和具体的虚拟机指令集相关。<br>字节码的特点是操作码由一个字节组成。</p>
 <h2 id="栈式虚拟机与寄存器式虚拟机"><a href="#栈式虚拟机与寄存器式虚拟机" class="headerlink" title="栈式虚拟机与寄存器式虚拟机"></a>栈式虚拟机与寄存器式虚拟机</h2><p>栈式和寄存器式指的都是虚拟机主要指令源与目标（操作数）的形式。wasm 中大部分是数值指令，操作数又分为两种：静态操作数和动态操作数。静态操作数直接编码在指令里，跟在操作码的后面。动态操作数在运行时从操作数栈获取）。栈式虚拟机的操作数隐含在栈上，而寄存器式的则是明确的指定操作数的寄存器</p>
 <p>以下面的 c 语言为例子，对比不同的伪代码来理解这两种虚拟机的运行方式。</p>
@@ -3045,7 +3182,7 @@ i32.add<span aria-hidden="true" class="line-numbers-rows"><span></span><span></s
 <pre class="line-numbers language-asm" data-language="asm"><code class="language-asm">mov  eax, 666
 add  eax, 888<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>可以看到栈式虚拟机的 add 操作是没有任何操作数的，这是因为其额外维护了一个操作数栈，在执行 add 操作的时候自动从栈上获取了两个操作数进行计算并将结果推回栈中，整个过程如下：</p>
-<p><img src="/self/2022/03/15/wasm/stack.png" alt="stack"></p>
+<p><img src="/blog/2022/03/15/wasm/stack.png" alt="stack"></p>
 <h3 id="主要区别-amp-特点"><a href="#主要区别-amp-特点" class="headerlink" title="主要区别&amp;特点"></a>主要区别&amp;特点</h3><p>通过上面的例子可以看出：</p>
 <ul>
 <li>表示同样程序逻辑的代码大小：基于栈 &lt; 基于寄存器</li>
@@ -3054,7 +3191,7 @@ add  eax, 888<span aria-hidden="true" class="line-numbers-rows"><span></span><sp
 <p>栈式虚拟机因为省略了操作数，所以代码一般会更小，而寄存器式虚拟机一般执行更快，这是因为对于解释器来说，解释器开销主要来自解释器循环（fetch-decode/dispatch-execute 循环）中的 fetch 与 decode/dispatch，因而减少指令条数可以导致 F 与 D 的开销减少，于是就提升了解释器速度。</p>
 <p>且为了让二进制格式尽可能紧凑，WebAssembly 段的字节数、各种索引等整数值在二进制模块中是按 LEB128 格式编码后存储的。</p>
 <h2 id="WebAssembly-的值类型"><a href="#WebAssembly-的值类型" class="headerlink" title="WebAssembly 的值类型"></a>WebAssembly 的值类型</h2><p>Wasm 1.1 规范只定义了 4 种基本的值类型：32 位整数（简称 i32）、64 位整数（简称 i64）、32 位浮点数（简称 f32）和 64 位浮点数（简称 f64）。高级语言所支持的一切类型（比如布尔值、数值、指针、数组、结构体等），都必须由编译器翻译成这 4 种基本类型或者组合。</p>
-<h2 id="代码结构"><a href="#代码结构" class="headerlink" title="代码结构"></a>代码结构</h2><p><img src="/self/2022/03/15/wasm/code.png" alt="code"></p>
+<h2 id="代码结构"><a href="#代码结构" class="headerlink" title="代码结构"></a>代码结构</h2><p><img src="/blog/2022/03/15/wasm/code.png" alt="code"></p>
 <p>上图左侧为 Wasm 的代码结构，右边是辅助我们理解的一段 go 代码。</p>
 <p>可以看到 Wasm 的代码是以魔数与版本号开头，然后模块的主体内容由 12 种段组成。除了自定义段以外，其他所有的段都最多只能出现一次，且必须按照段 ID 递增的顺序出现（图中不包含自定义段 ID.0，该段是给编译器等工具使用的，里面可以存放函数名等调试信息）。</p>
 <p>WebAssembly 模块中的函数、内存、表、全局变量都各自有自己的索引空间，用于记录各自的顺序，方便相关指令引用访问。</p>
@@ -3068,7 +3205,7 @@ add  eax, 888<span aria-hidden="true" class="line-numbers-rows"><span></span><sp
 <h3 id="起始段"><a href="#起始段" class="headerlink" title="起始段"></a>起始段</h3><p>该段给出模块的起始函数索引</p>
 <h3 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h3><p>内存初始化数据。示例中就是 Hello World!</p>
 <p>若某个段对其他段有依赖，那么他一定在后面，所以浏览器可以实现在下载模块的同时进行解码、验证和编译，以达到更快执行的目的。</p>
-<h2 id="二进制代码简析"><a href="#二进制代码简析" class="headerlink" title="二进制代码简析"></a>二进制代码简析</h2><p>完整的一个 Wasm 模块代码<br><img src="/self/2022/03/15/wasm/binary.png" alt="binary"></p>
+<h2 id="二进制代码简析"><a href="#二进制代码简析" class="headerlink" title="二进制代码简析"></a>二进制代码简析</h2><p>完整的一个 Wasm 模块代码<br><img src="/blog/2022/03/15/wasm/binary.png" alt="binary"></p>
 <p>前四个字节为魔数，翻译为 ASCII 码就是<code> asm</code>，紧跟着四个字节的版本号<code>01 00 00 00</code>，数字是小段编码的，所以需要倒过来解码，就是<code>00 00 00 01</code>也就是 1，Wasm 的 MVP 版本号。</p>
 <p>后面跟着的就是主体内容了，每一个段主要都由一个字节的 ID 和 一个 32 位可变长整数的内容段大小组成。如版本号后的<code>01</code>就是 ID 为 1 的类型段，后面的<code>88 80 80 80 00</code>表示的就是段的大小，前面有提到段的大小使用 LEB128 编码存储的，所以将这五个字节解码过来就是 8，说明后面八个字节都是类型段的，顺着数就会发现类型段之后就是<code>02</code>，也就是第二个代码段开始的地方了。这里用了五个字节来存储段的大小，在开启编译优化之后就会变成一个字节了。</p>
 <p>最后简单看一下最后面的<code>0D</code>也就是 11，数据段，一开始是一些指令，从<code>48</code>往后，转成对应的 ASCII 码就是我们熟悉的 Hello World!了。</p>
@@ -3096,7 +3233,7 @@ add  eax, 888<span aria-hidden="true" class="line-numbers-rows"><span></span><sp
 <span class="token punctuation">&#123;</span>
   <span class="token keyword">return</span> a <span class="token operator">+</span> b<span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p>使用 WebAssembly Explorer 将其编译，可以看到编译结果把方法名改了，手动修正一下即可，点击下载保存为 math.wasm<br><img src="/self/2022/03/15/wasm/code.png" alt="code"></p>
+<p>使用 WebAssembly Explorer 将其编译，可以看到编译结果把方法名改了，手动修正一下即可，点击下载保存为 math.wasm<br><img src="/blog/2022/03/15/wasm/code.png" alt="code"></p>
 <p>首先需要实例化 WebAssembly 模块，这边使用的是 <code>instantiateStreaming</code> 方法，该方法的第一个参数就是请求的 math.wasm 文件，该方法会返回一个 promise，resolve 之后就能拿到 WebAssembly 实例了。示例代码中将模块导出的内容保存到了全局的 <code>moduleExports</code> 中，方便后面查看</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">let</span> moduleExports<span class="token punctuation">;</span>
 WebAssembly<span class="token punctuation">.</span><span class="token function">instantiateStreaming</span><span class="token punctuation">(</span><span class="token function">fetch</span><span class="token punctuation">(</span><span class="token string">"math.wasm"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">obj</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
@@ -3115,7 +3252,7 @@ moduleExports<span class="token punctuation">.</span><span class="token function
   <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>查看编译的结果就会看到，say_hello 需要从外部导入，wasm 调用 js 就是靠这个实现的</p>
-<p><img src="/self/2022/03/15/wasm/sayhello.png" alt="sayhello"></p>
+<p><img src="/blog/2022/03/15/wasm/sayhello.png" alt="sayhello"></p>
 <p>那么 js 如何给到 wasm 所需要的东西呢，答案就是第二个参数</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">sayHello</span><span class="token punctuation">(</span><span class="token parameter">num</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Hello: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>num<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">!</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -3142,7 +3279,7 @@ WebAssembly<span class="token punctuation">.</span><span class="token function">
   <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="WASI"><a href="#WASI" class="headerlink" title="WASI"></a>WASI</h2><p>WebAssembly System Interface。接上文提示我们有提到为了实现不同平台接口的映射，需要在编译器在编译的时候生成一个胶水代码以实现相应的功能，在跨平台的时候其实并不友好，所以 W3C 又提出了这一份接口规范，主要就是 Wasm 运行的平台只要将一些常用的接口按照规范实现，那么 Wasm 在运行的时候就可以不需要胶水代码了。node 14 版本开始已经较好的支持了该规范。</p>
-<h2 id="性能对比"><a href="#性能对比" class="headerlink" title="性能对比"></a>性能对比</h2><h3 id="v8"><a href="#v8" class="headerlink" title="v8"></a>v8</h3><p>在开始性能对比前先简单看一下 v8 的架构，来看看为什么 wasm 可以执行得更快<br><img src="/self/2022/03/15/wasm/v8.png" alt="v8"></p>
+<h2 id="性能对比"><a href="#性能对比" class="headerlink" title="性能对比"></a>性能对比</h2><h3 id="v8"><a href="#v8" class="headerlink" title="v8"></a>v8</h3><p>在开始性能对比前先简单看一下 v8 的架构，来看看为什么 wasm 可以执行得更快<br><img src="/blog/2022/03/15/wasm/v8.png" alt="v8"></p>
 <p>可以看到在有 wasm 之前，v8 只有下面一条编译基线，主要就是解析 js 生成 ast，编译为字节码然后解释为机器码执行，当一段代码执行多次成为热点代码之后就会被丢到 TurboFan 中生成优化后的机器码以达到更快的执行速度。</p>
 <p>加入 wasm 之后就多了一条编译基线，也就是上面的 Liftoff，为了让 wasm 代码更快的执行，引擎一开始会直接对 wasm 代码进行解码然后直接就解释成机器码运行，因为本身就是字节码，对比 js 一开始就赢在了起跑线上。同时会在后台独立开启一个线程将 wasm 生成优化后的机器码，以达到起飞的速度。</p>
 <h3 id="斐波那契数列"><a href="#斐波那契数列" class="headerlink" title="斐波那契数列"></a>斐波那契数列</h3><p>第一个测试的是斐波那契数列，测试获取第 42 项所需的时间，测试五组计算平均值</p>
@@ -3183,13 +3320,13 @@ console<span class="token punctuation">.</span><span class="token function">time
 <span class="token punctuation">&#125;</span>
 console<span class="token punctuation">.</span><span class="token function">timeEnd</span><span class="token punctuation">(</span><span class="token string">"md5-js"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>主要的测试方式就是加密不同长度的字符串十万次，看他们的执行速度，结果还是比较出人意料的</p>
-<p><img src="/self/2022/03/15/wasm/md5.png" alt="md5"></p>
+<p><img src="/blog/2022/03/15/wasm/md5.png" alt="md5"></p>
 <p>可以看到，在字符串比较短的时候，js 是远快于 wasm 的，只有当字符串长度达到一定量级的时候 wasm 的优势才体现出来。从这个测试就可以看出，并不是所有想要快的场景 wasm 都是适用的，往往 js 和 wasm 的耗时、类型的转换也是不可忽略的。</p>
 <h2 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h2><p>wasm 现在的调试已经相对完善了，例如刚刚的 sum 的例子，只需要打开控制台，查看 wasm 代码，就会发现控制台已经帮你转成文本格式了，在代码中打断点也可以正常的步进调试，在右侧还能看到有个表达式栈，就是我们说的操作数栈，求值栈，一个东西。用鼠标悬浮再变量上也可以查看值和类型</p>
-<p><img src="/self/2022/03/15/wasm/debug.png" alt="debug"></p>
+<p><img src="/blog/2022/03/15/wasm/debug.png" alt="debug"></p>
 <h3 id="调试源码"><a href="#调试源码" class="headerlink" title="调试源码"></a>调试源码</h3><p>在复杂的情况下，调试文本格式的 wasm 代码其实也是无异于自杀的，所以控制台进一步的支持了调试源码。目前仅支持 C 代码。</p>
 <p>可以打开控制台的实验选中打开调试 wasm 的选项，可以根据其后面问号指示的文档安装一下插件和构建 wasm 代码，重启一下浏览器就可以调试了，这边仅做简单展示：</p>
-<p><img src="/self/2022/03/15/wasm/cdebug.png" alt="cdebug"></p>
+<p><img src="/blog/2022/03/15/wasm/cdebug.png" alt="cdebug"></p>
 <p>在你调试的时候你可能会发现断到莫名其妙的地方了，此时根据调用栈往上找就能找到对应的 c 源码了。可以看到在浏览器中已经可以正确的显示 c 源码，并像 js 那样查看变量和调用栈了。</p>
 <p>还有其他调试方法，有兴趣的同学可以直接查看官网的 debug 模块。</p>
 <h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><ul>
@@ -3198,7 +3335,7 @@ console<span class="token punctuation">.</span><span class="token function">time
 <li>Web-DSP</li>
 <li>游戏引擎</li>
 </ul>
-<p>可以看到，很重计算的场景（大文件处理，图像处理，音视频渲染，3D 游戏），Wasm 都很好的发挥了作用，并且 caniuse 上现代浏览器对 Wasm 的支持也非常高了，若对速度有需求完全可以用起来了<br><img src="/self/2022/03/15/wasm/caniuse.png" alt="caniuse"></p>
+<p>可以看到，很重计算的场景（大文件处理，图像处理，音视频渲染，3D 游戏），Wasm 都很好的发挥了作用，并且 caniuse 上现代浏览器对 Wasm 的支持也非常高了，若对速度有需求完全可以用起来了<br><img src="/blog/2022/03/15/wasm/caniuse.png" alt="caniuse"></p>
 <p>最后贴一个官网的<a href="http://webassembly.org.cn/demo/Tanks/">坦克游戏</a>，Happy Gaming!</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
 <li>《WebAssembly 原理与核心技术》– 张秀宏</li>
@@ -3215,7 +3352,7 @@ console<span class="token punctuation">.</span><span class="token function">time
   </entry>
   <entry>
     <title>WebGL Beginners Guide 笔记</title>
-    <url>/self/2022/07/06/webgl/</url>
+    <url>/blog/2022/07/06/webgl/</url>
     <content><![CDATA[<p>粗略看了 WebGL Beginners Guide，记录（翻译）一下部分内容。</p>
 <a id="more"></a>
 
@@ -3227,32 +3364,32 @@ console<span class="token punctuation">.</span><span class="token function">time
 <li>Camera</li>
 </ul>
 <h2 id="Rendering-Geometry"><a href="#Rendering-Geometry" class="headerlink" title="Rendering Geometry"></a>Rendering Geometry</h2><p>表示任何 3D 对象需要两种基本的数据类型：顶点（vertices）和索引（indices），内容为这两种数据的 buffer 分别称为 Vertex Buffer Objects (VBOs)和 Index Buffer Objects(IBOs)。</p>
-<p>一个使用定点和索引绘制的例子：<br><img src="/self/2022/07/06/webgl/sample.png" alt="sample"></p>
-<p>渲染管线概览：<br><img src="/self/2022/07/06/webgl/overview.png" alt="overview"></p>
+<p>一个使用定点和索引绘制的例子：<br><img src="/blog/2022/07/06/webgl/sample.png" alt="sample"></p>
+<p>渲染管线概览：<br><img src="/blog/2022/07/06/webgl/overview.png" alt="overview"></p>
 <ul>
 <li>VBO 包含需要绘制的几何体信息，顶点着色器通过属性（Attributes，不同属性指向 VBO 中对应的值）在 VBO 中获取绘制需要的信息，如颜色、法线和纹理等等。</li>
 <li>片段着色器则是让开发者可以完全控制所有绘制的细节，简单来说就是定点着色器控制的是两个定点的绘制，而片段着色器控制两个点之间的其他点的绘制，片段着色器的输入。</li>
 <li>Framebuffer 包含片段着色器处理的片段。一旦处理了所有片段，就会形成 2D 图像并显示在屏幕上。 FrameBuffer 是渲染管道的最终目的地。</li>
 <li>属性变量，同一变量和易变变量（Attributes, uniforms, and varyings）。属性是顶点着色器中使用的输入变量（定点左边和颜色等）。由于每个顶点都调用顶点着色器，因此每次调用顶点着色器时属性都是不同的。统一变量是顶点着色器和片段着色器可用的输入变量。统一变量在<code>渲染周期</code>中是不变的（例如灯的位置）。易变变量用于将数据从顶点着色器传递到片段着色器。</li>
 </ul>
-<h2 id="Lights"><a href="#Lights" class="headerlink" title="Lights!"></a>Lights!</h2><p>光照、法线和向量（Lights, normals, and materials）：<br><img src="/self/2022/07/06/webgl/lights.png" alt="lights"></p>
-<p>有两种光源：位置光和平行光（positional or directional）。位置光就是光源的位置会影响场景的表现，例如灯泡等，可以将其光照的方向想象是一个点出发的不同方向的向量，而太阳光则是比较典型的平行光，他对一个物体的各个位置的光线是平行的。<br><img src="/self/2022/07/06/webgl/difflights.png" alt="difflights"></p>
+<h2 id="Lights"><a href="#Lights" class="headerlink" title="Lights!"></a>Lights!</h2><p>光照、法线和向量（Lights, normals, and materials）：<br><img src="/blog/2022/07/06/webgl/lights.png" alt="lights"></p>
+<p>有两种光源：位置光和平行光（positional or directional）。位置光就是光源的位置会影响场景的表现，例如灯泡等，可以将其光照的方向想象是一个点出发的不同方向的向量，而太阳光则是比较典型的平行光，他对一个物体的各个位置的光线是平行的。<br><img src="/blog/2022/07/06/webgl/difflights.png" alt="difflights"></p>
 <p>着色方法（Shading methods）一种插值类型，定义了最终颜色的计算位置——在顶点着色器中或在片段着色器中；照明模型决定了法线、材质和灯光是如何组合产生最终颜色的。照明模型（lighting models）的方程使用光反射的物理原理。因此，照明模型在文献中也被称为反射模型（reflection models）。</p>
-<h3 id="两种基本的阴影-插值方法（Shading-interpolation-methods）"><a href="#两种基本的阴影-插值方法（Shading-interpolation-methods）" class="headerlink" title="两种基本的阴影/插值方法（Shading/interpolation methods）"></a>两种基本的阴影/插值方法（Shading/interpolation methods）</h3><p>高洛德着色法（Goraud shading）：根据顶点法向量计算出光照，再插值计算出整个面的光照。逐顶点光照。<br>冯氏着色法（Phong shading）：根据顶点的法向量插值计算出表面内各点的法向量，再根据光照模型逐像素计算光照值。逐像素光照。<br><img src="/self/2022/07/06/webgl/shading.png" alt="shading"></p>
+<h3 id="两种基本的阴影-插值方法（Shading-interpolation-methods）"><a href="#两种基本的阴影-插值方法（Shading-interpolation-methods）" class="headerlink" title="两种基本的阴影/插值方法（Shading/interpolation methods）"></a>两种基本的阴影/插值方法（Shading/interpolation methods）</h3><p>高洛德着色法（Goraud shading）：根据顶点法向量计算出光照，再插值计算出整个面的光照。逐顶点光照。<br>冯氏着色法（Phong shading）：根据顶点的法向量插值计算出表面内各点的法向量，再根据光照模型逐像素计算光照值。逐像素光照。<br><img src="/blog/2022/07/06/webgl/shading.png" alt="shading"></p>
 <h3 id="两种光照模型"><a href="#两种光照模型" class="headerlink" title="两种光照模型"></a>两种光照模型</h3><p>朗伯光照反射模型（Lambertian reflection model），只考虑了光照的漫反射情况，没有考虑环境光和镜面反射</p>
-<p>冯氏光照反射模型（Phong reflection model），考虑了 环境光、漫反射以及镜面反射。<br><img src="/self/2022/07/06/webgl/phong.png" alt="phong"></p>
+<p>冯氏光照反射模型（Phong reflection model），考虑了 环境光、漫反射以及镜面反射。<br><img src="/blog/2022/07/06/webgl/phong.png" alt="phong"></p>
 <p>OpenGL ES 着色器的语言是 ESSL。</p>
 <h2 id="Camera"><a href="#Camera" class="headerlink" title="Camera"></a>Camera</h2><p>基本相机类型：轨道摄像头（世界或摄像机坐标中）和跟踪摄像头（FBS）</p>
 <p>WebGL 没有可以操纵的相机对象。No camera object in the WebGL API, only matrices.</p>
 <p>了解场景从 3D 世界到 2D 屏幕的转变</p>
-<h3 id="模型变换（Model-transform）"><a href="#模型变换（Model-transform）" class="headerlink" title="模型变换（Model transform）"></a>模型变换（Model transform）</h3><p>对象的源顶点坐标转换为在世界坐标系中的坐标<br><img src="/self/2022/07/06/webgl/modeltrans.png" alt="modeltrans"></p>
-<h3 id="视图变换（View-transform）"><a href="#视图变换（View-transform）" class="headerlink" title="视图变换（View transform）"></a>视图变换（View transform）</h3><p>世界坐标系中的坐标转换为以视图坐标系中，该坐标系原点可能是眼睛或者摄像头。<br><img src="/self/2022/07/06/webgl/viewtrans.png" alt="viewtrans"></p>
-<h3 id="投影变换（Projection-transform）"><a href="#投影变换（Projection-transform）" class="headerlink" title="投影变换（Projection transform）"></a>投影变换（Projection transform）</h3><p>该变换决定了多少视图空间将被渲染，以及它将如何被映射到计算机屏幕上。这个区域被称为截锥体，它由六个平面(近、远、顶、底、右、左平面)定义，如下图所示:<br><img src="/self/2022/07/06/webgl/projectiontrans.png" alt="projectiontrans"></p>
-<h3 id="透视除法（Perspective-division）"><a href="#透视除法（Perspective-division）" class="headerlink" title="透视除法（Perspective division）"></a>透视除法（Perspective division）</h3><p>一旦确定了多少可视空间将被渲染，锥体将被映射到近平面，以产生一个 2D 图像。近平面是要在你的电脑屏幕上呈现的。该变换生成<br><img src="/self/2022/07/06/webgl/division.png" alt="division"></p>
+<h3 id="模型变换（Model-transform）"><a href="#模型变换（Model-transform）" class="headerlink" title="模型变换（Model transform）"></a>模型变换（Model transform）</h3><p>对象的源顶点坐标转换为在世界坐标系中的坐标<br><img src="/blog/2022/07/06/webgl/modeltrans.png" alt="modeltrans"></p>
+<h3 id="视图变换（View-transform）"><a href="#视图变换（View-transform）" class="headerlink" title="视图变换（View transform）"></a>视图变换（View transform）</h3><p>世界坐标系中的坐标转换为以视图坐标系中，该坐标系原点可能是眼睛或者摄像头。<br><img src="/blog/2022/07/06/webgl/viewtrans.png" alt="viewtrans"></p>
+<h3 id="投影变换（Projection-transform）"><a href="#投影变换（Projection-transform）" class="headerlink" title="投影变换（Projection transform）"></a>投影变换（Projection transform）</h3><p>该变换决定了多少视图空间将被渲染，以及它将如何被映射到计算机屏幕上。这个区域被称为截锥体，它由六个平面(近、远、顶、底、右、左平面)定义，如下图所示:<br><img src="/blog/2022/07/06/webgl/projectiontrans.png" alt="projectiontrans"></p>
+<h3 id="透视除法（Perspective-division）"><a href="#透视除法（Perspective-division）" class="headerlink" title="透视除法（Perspective division）"></a>透视除法（Perspective division）</h3><p>一旦确定了多少可视空间将被渲染，锥体将被映射到近平面，以产生一个 2D 图像。近平面是要在你的电脑屏幕上呈现的。该变换生成<br><img src="/blog/2022/07/06/webgl/division.png" alt="division"></p>
 <p>不同的操作系统和显示设备都有在屏幕上表示二维信息的机制。为了为所有可能的情况提供健壮性（robustness 鲁棒性），WebGL(也在 OpenGL ES 中)提供了一个独立于任何特定硬件的中间坐标系统。这个空间称为归一化设备坐标(Normalized Device Coordinates NDC)。</p>
-<h3 id="视口变换（Viewport-transform）"><a href="#视口变换（Viewport-transform）" class="headerlink" title="视口变换（Viewport transform）"></a>视口变换（Viewport transform）</h3><p>最后，将 NDC 映射到视口坐标。此步骤将这些坐标映射到屏幕上的可用空间。在 WebGL 中，此空间由 HTML5 画布提供，如下图所示：<br><img src="/self/2022/07/06/webgl/viewport.png" alt="viewport"></p>
+<h3 id="视口变换（Viewport-transform）"><a href="#视口变换（Viewport-transform）" class="headerlink" title="视口变换（Viewport transform）"></a>视口变换（Viewport transform）</h3><p>最后，将 NDC 映射到视口坐标。此步骤将这些坐标映射到屏幕上的可用空间。在 WebGL 中，此空间由 HTML5 画布提供，如下图所示：<br><img src="/blog/2022/07/06/webgl/viewport.png" alt="viewport"></p>
 <h3 id="法线转换（Normal-transformations）"><a href="#法线转换（Normal-transformations）" class="headerlink" title="法线转换（Normal transformations）"></a>法线转换（Normal transformations）</h3><p>当顶点被转换时，法向量也应该被转换。</p>
-<h3 id="WebGL-实现"><a href="#WebGL-实现" class="headerlink" title="WebGL 实现"></a>WebGL 实现</h3><p><img src="/self/2022/07/06/webgl/implementation.png" alt="implementation"></p>
+<h3 id="WebGL-实现"><a href="#WebGL-实现" class="headerlink" title="WebGL 实现"></a>WebGL 实现</h3><p><img src="/blog/2022/07/06/webgl/implementation.png" alt="implementation"></p>
 ]]></content>
       <categories>
         <category>前端</category>
@@ -3263,7 +3400,7 @@ console<span class="token punctuation">.</span><span class="token function">time
   </entry>
   <entry>
     <title>初尝 WebGPU</title>
-    <url>/self/2022/05/16/webgpu/</url>
+    <url>/blog/2022/05/16/webgpu/</url>
     <content><![CDATA[<p>简单跑一下 webGPU 的 demo。</p>
 <a id="more"></a>
 
@@ -3275,7 +3412,7 @@ console<span class="token punctuation">.</span><span class="token function">time
   </entry>
   <entry>
     <title>webpack 不同 loader 的执行顺序</title>
-    <url>/self/2021/02/09/webpack-loader-order/</url>
+    <url>/blog/2021/02/09/webpack-loader-order/</url>
     <content><![CDATA[<p>webpack 中 loader 常用的有配置（普通和 enforce）和内联两种形式。在编译的过程中混用的情况比较常见，本文理一下执行顺序。</p>
 <a id="more"></a>
 
@@ -3379,142 +3516,5 @@ module<span class="token punctuation">.</span>exports <span class="token operato
         <tag>Vue</tag>
         <tag>webpack</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>首屏加载速度优化</title>
-    <url>/self/2022/09/05/optimize/</url>
-    <content><![CDATA[<p>使用 React.lazy 优化首屏展示，减少白屏时间。</p>
-<a id="more"></a>
-
-<h2 id="优化前后对比"><a href="#优化前后对比" class="headerlink" title="优化前后对比"></a>优化前后对比</h2><p>首先简单看一下优化的前后的对比，数据为取 6 次的平均值。</p>
-<h3 id="优化前"><a href="#优化前" class="headerlink" title="优化前"></a>优化前</h3><p>7.8 MB transferred<br>8.0 MB resources<br>DOMContentLoaded: 5.18 s<br>Load: 6.33 s</p>
-<p>展示分为两个阶段：白屏 -&gt; 所有内容</p>
-<p>直接展示所有内容<br><img src="/self/2022/09/05/optimize/b1.jpeg" alt="b1"></p>
-<h3 id="优化后"><a href="#优化后" class="headerlink" title="优化后"></a>优化后</h3><p>4.6 MB transferred<br>4.7 MB resources<br>DOMContentLoaded: 1.34 s<br>Load: 4.54 s</p>
-<p>展示主要分为四个阶段：白屏 -&gt; 顶栏 -&gt; 内容区 -&gt; 反馈按钮（右下角）</p>
-<p>出现顶栏<br><img src="/self/2022/09/05/optimize/o1.jpeg" alt="1"><br>出现内容区<br><img src="/self/2022/09/05/optimize/o2.jpeg" alt="2"><br>出现反馈按钮<br><img src="/self/2022/09/05/optimize/o3.jpeg" alt="3"></p>
-<p>通过数据和截图可以很明显看出，优化后首屏加载资源更少，展示内容更快。</p>
-<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>目前项目对首屏加载主要存在两个问题</p>
-<ul>
-<li>只对文件进行了分割（splitChunks），进入页面仍需加载所有文件</li>
-<li>Suspense 位置不合理</li>
-</ul>
-<p>主要针对第一点进行优化，第二点只是在第一点的基础上让用户更快的看到部分已加载的内容而已。</p>
-<h2 id="懒加载"><a href="#懒加载" class="headerlink" title="懒加载"></a>懒加载</h2><p>针对第一点，主要依赖 React.lazy 进行懒加载优化。<br>React.lazy 使用方法可以参考<a href="https://zh-hans.reactjs.org/docs/code-splitting.html#reactlazy">官方文档</a>。<br>原理可以参考<a href="https://webpack.js.org/guides/code-splitting/">Code Splitting</a>。</p>
-<p>因为不需要考虑网速特别差的网络，所以仅做以下 4 点优化就可以获得比较好的体验（需要极致体验可以把所有子路由都懒加载，过多网络请求反而可能影响速度，不推荐）</p>
-<ul>
-<li>减少不必要的依赖</li>
-<li>懒加载主要的路由组件</li>
-<li>懒加载较大的第三方库</li>
-</ul>
-<h3 id="懒加载主要的路由组件"><a href="#懒加载主要的路由组件" class="headerlink" title="懒加载主要的路由组件"></a>懒加载主要的路由组件</h3><p>例如 prado 由三大模块组成，对应三个组件</p>
-<ul>
-<li>任务调度</li>
-<li>资源调度</li>
-<li>资源管理</li>
-</ul>
-<p>那么就对这三个组件进行懒加载就好了</p>
-<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">import</span> ResourceBasedScheduling <span class="token keyword">from</span> <span class="token string">"components/App/ResourceBasedScheduling"</span><span class="token punctuation">;</span> <span class="token comment">// 资源调度</span>
-<span class="token keyword">import</span> ResourceBasedManagement <span class="token keyword">from</span> <span class="token string">"components/App/ResourceBasedManagement"</span><span class="token punctuation">;</span> <span class="token comment">// 资源管理</span>
-<span class="token keyword">import</span> TaskBasedScheduling <span class="token keyword">from</span> <span class="token string">"components/App/TaskBasedScheduling"</span><span class="token punctuation">;</span> <span class="token comment">// 任务调度</span>
-
-<span class="token comment">// 改成</span>
-<span class="token keyword">const</span> ResourceBasedScheduling <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">lazy</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span>
-  <span class="token keyword">import</span><span class="token punctuation">(</span>
-    <span class="token comment">/* webpackChunkName: "resourceScheduling" */</span> <span class="token string">"components/App/ResourceBasedScheduling"</span>
-  <span class="token punctuation">)</span>
-<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">const</span> ResourceBasedManagement <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">lazy</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span>
-  <span class="token keyword">import</span><span class="token punctuation">(</span>
-    <span class="token comment">/* webpackChunkName: "resourceMgmt" */</span> <span class="token string">"components/App/ResourceBasedManagement"</span>
-  <span class="token punctuation">)</span>
-<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">const</span> TaskBasedScheduling <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">lazy</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span>
-  <span class="token keyword">import</span><span class="token punctuation">(</span>
-    <span class="token comment">/* webpackChunkName: "taskScheduling" */</span> <span class="token string">"components/App/TaskBasedScheduling"</span>
-  <span class="token punctuation">)</span>
-<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="懒加载较大的第三方库"><a href="#懒加载较大的第三方库" class="headerlink" title="懒加载较大的第三方库"></a>懒加载较大的第三方库</h3><p>使用 <code>webpack-bundle-analyzer</code> 或直接在 node_modules 下运行命令 <code>du -d 1 -h | sort -h</code>，看看哪个第三库比较大，则对其相关组件进行懒加载。</p>
-<p>如下是 prado 的：<br>28M ./@antv<br>32M ./react-icons<br>41M ./echarts<br>47M ./@ant-design<br>51M ./ace-builds<br>52M ./typescript<br>70M ./infrad</p>
-<p>可以看到除了必须的 infrad 和 @ant-design 外，还有几个比较大的第三方库 @antv、echarts 和 ace-builds。</p>
-<p>以 echarts 为例，代码中仅有一个组件 TaskBarChart 对 echarts 有依赖，在所有使用 TaskBarChart 的地方都改成动态引入就好了：</p>
-<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">import</span> TaskBarChart <span class="token keyword">from</span> <span class="token string">"components/Common/TaskBarChart"</span><span class="token punctuation">;</span>
-
-<span class="token comment">// 改为</span>
-<span class="token keyword">const</span> TaskBarChart <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">lazy</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span>
-  <span class="token keyword">import</span><span class="token punctuation">(</span><span class="token comment">/* webpackChunkName: "taskChart" */</span> <span class="token string">"components/Common/TaskBarChart"</span><span class="token punctuation">)</span>
-<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>此外，还可以在 webpack 的 splitChunks 中将 echart 单独分割出来，方便观察是否懒加载成功</p>
-<pre class="line-numbers language-js" data-language="js"><code class="language-js">splitChunks<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
-  cacheGroups<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
-    echarts<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
-      name<span class="token operator">:</span> <span class="token string">'echarts'</span><span class="token punctuation">,</span>
-      test<span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">[\\/]node_modules[\\/](echarts|zrender)[\\/]</span><span class="token regex-delimiter">/</span></span>
-    <span class="token punctuation">&#125;</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>PS: infrad 的 @ipg/feedback-client build 后很大，需要动态引入</p>
-<h2 id="减少依赖的文件"><a href="#减少依赖的文件" class="headerlink" title="减少依赖的文件"></a>减少依赖的文件</h2><p>针对第一点，还可以主动减少依赖的第三方文件。</p>
-<h3 id="使用支持-es-module-的第三方库"><a href="#使用支持-es-module-的第三方库" class="headerlink" title="使用支持 es module 的第三方库"></a>使用支持 es module 的第三方库</h3><p>例如 lodash 改用 lodash-es（antd 依赖了 lodash，所以这一步不做也没差），或者使用按需引入的写法，如 echarts。<br>webpack 可以自动进行 tree shaking，减少库还能加快下载依赖的时间，好处++</p>
-<h3 id="删除功能重复的库"><a href="#删除功能重复的库" class="headerlink" title="删除功能重复的库"></a>删除功能重复的库</h3><p>例如 antd 和 infrad、lodash 和 ramda</p>
-<h2 id="优化-Suspense-组件的位置"><a href="#优化-Suspense-组件的位置" class="headerlink" title="优化 Suspense 组件的位置"></a>优化 Suspense 组件的位置</h2><p>第二点比较好优化，优化 Suspense 的位置即可。</p>
-<p>现在项目一般都由三个部分组成，分别是顶栏，侧边栏和内容区域，对着三个部分使用 Suspense 进行包裹即可，可以做到尽快展示页面内容的目的。</p>
-<pre class="line-numbers language-js" data-language="js"><code class="language-js"> <span class="token operator">&lt;</span>Suspense fallback<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token operator">&lt;</span>SuspenseFallback <span class="token operator">/</span><span class="token operator">></span><span class="token punctuation">&#125;</span><span class="token operator">></span>
-  <span class="token operator">&lt;</span>CommonStyledLayout<span class="token operator">></span>
-    <span class="token operator">&lt;</span>SidedMenu listMenu<span class="token operator">=</span><span class="token punctuation">&#123;</span>listMenu<span class="token punctuation">&#125;</span> extra<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token operator">&lt;</span>ApplicationSelect <span class="token operator">/</span><span class="token operator">></span><span class="token punctuation">&#125;</span> <span class="token operator">/</span><span class="token operator">></span>
-    <span class="token operator">&lt;</span>CommonStyledContent<span class="token operator">></span>
-      <span class="token operator">&lt;</span>ConfigProvider getPopupContainer<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token parameter">node</span> <span class="token operator">=></span> node<span class="token punctuation">&#125;</span><span class="token operator">></span>
-        <span class="token operator">&lt;</span>Switch<span class="token operator">></span>
-          <span class="token operator">&lt;</span>Route path<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token constant">APPLICATIONS</span><span class="token punctuation">&#125;</span> component<span class="token operator">=</span><span class="token punctuation">&#123;</span>Home<span class="token punctuation">&#125;</span> exact <span class="token operator">/</span><span class="token operator">></span>
-          <span class="token operator">&lt;</span>Redirect <span class="token keyword">from</span><span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token constant">APPLICATIONS_DETAIL</span><span class="token punctuation">&#125;</span> to<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token constant">ONLINE_JOB_MANAGEMENT</span><span class="token punctuation">&#125;</span> <span class="token operator">/</span><span class="token operator">></span>
-        <span class="token operator">&lt;</span><span class="token operator">/</span>Switch<span class="token operator">></span>
-      <span class="token operator">&lt;</span><span class="token operator">/</span>ConfigProvider<span class="token operator">></span>
-    <span class="token operator">&lt;</span><span class="token operator">/</span>CommonStyledContent<span class="token operator">></span>
-  <span class="token operator">&lt;</span><span class="token operator">/</span>CommonStyledLayout<span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">/</span>Suspense<span class="token operator">></span>
-
-<span class="token comment">// 改为下面的结构</span>
-<span class="token comment">// 1、最外层无需 Suspense，因为在使用这个组件的父组件 Layout 本身就已经对其使用了 Suspense包裹</span>
-<span class="token comment">// 2、为内容区添加 Suspense 包裹</span>
-
-<span class="token operator">&lt;</span>CommonStyledLayout<span class="token operator">></span>
-  <span class="token operator">&lt;</span>SidedMenu listMenu<span class="token operator">=</span><span class="token punctuation">&#123;</span>listMenu<span class="token punctuation">&#125;</span> <span class="token operator">/</span><span class="token operator">></span>
-  <span class="token operator">&lt;</span>CommonStyledContent<span class="token operator">></span>
-    <span class="token operator">&lt;</span>Suspense fallback<span class="token operator">=</span><span class="token punctuation">&#123;</span><span class="token operator">&lt;</span>SuspenseFallback <span class="token operator">/</span><span class="token operator">></span><span class="token punctuation">&#125;</span><span class="token operator">></span>
-      Content
-    <span class="token operator">&lt;</span><span class="token operator">/</span>Suspense<span class="token operator">></span>
-  <span class="token operator">&lt;</span><span class="token operator">/</span>CommonStyledContent<span class="token operator">></span>
-<span class="token operator">&lt;</span><span class="token operator">/</span>CommonStyledLayout<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p>整体代码改动可见这笔提交：none</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>部署速度优化</title>
-    <url>/self/2022/09/05/optimize-build/</url>
-    <content><![CDATA[<p>通过优化构建工具和部署脚本，减少部署耗时。</p>
-<a id="more"></a>
-
-<h2 id="优化构建工具"><a href="#优化构建工具" class="headerlink" title="优化构建工具"></a>优化构建工具</h2><p>1、使用 esbuild 和升级 webpack5</p>
-<p>接入 esbuild 可以使用 infrad 提供的插件：xxx</p>
-<p>PS：下面结论中看到的最差部署速度 4min32s 为构建工具优化后的结果，优化前为 7min+</p>
-<h2 id="减少网络下载用时"><a href="#减少网络下载用时" class="headerlink" title="减少网络下载用时"></a>减少网络下载用时</h2><p>不更换部署方案的前提下，主要减少网络下载占时（减少镜像和依赖大小），并使缓存生效。</p>
-<h3 id="修改-Dockerfile"><a href="#修改-Dockerfile" class="headerlink" title="修改 Dockerfile"></a>修改 Dockerfile</h3><p>1、将 node 镜像改为精简版的镜像</p>
-<p>不要使用 16+的镜像，node 有重大更新会导致某个工具报错。</p>
-<p>如果使用精简版的镜像报错，请用回完整版的镜像。</p>
-<p>FROM hostname.com/prado-user-images/node:latest AS builder</p>
-<p>改为</p>
-<p>FROM node:16-alpine AS builder</p>
-<p>2、修改 yarn 的执行时机使 yarn install 的执缓存生效</p>
-<p>COPY package.json yarn.lock ./<br>COPY . ./<br>RUN yarn install –frozen-lockfile</p>
-<p>改为</p>
-<p>COPY package.json yarn.lock ./<br>RUN yarn<br>COPY . ./</p>
-<p>3、合并命令，减少容器创建销毁</p>
-<p>RUN yarn build:$ENV &amp;&amp; rm -rf ./node_modules/</p>
-<p>删除多余依赖</p>
-<p>使用下面命令查看 node_modules 下各个文件夹的大小，谁大就想办法删掉谁（一些功能重复的依赖如 antd 何 infrad、lodash 和 lamda）</p>
-<p>du -d 1 -h | sort -h # 获取目录下文件夹的大小并排序</p>
-<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p>最优速度为 93 秒，其中构建速度占 73 秒，目前瓶颈在构建太久。</p>
-<p><img src="/self/2022/09/05/optimize-build/result.png" alt="result"></p>
-]]></content>
   </entry>
 </search>

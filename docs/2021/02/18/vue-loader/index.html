@@ -7,12 +7,12 @@
 <meta name="generator" content="Hexo 5.3.0">
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/self/favicon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/self/favicon.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/self/favicon.png">
-  <link rel="mask-icon" href="/self/favicon.svg" color="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/favicon.png">
+  <link rel="mask-icon" href="/blog/favicon.svg" color="#222">
 
-<link rel="stylesheet" href="/self/css/main.css">
+<link rel="stylesheet" href="/blog/css/main.css">
 
 
 
@@ -20,29 +20,29 @@
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"xdxspace.gitee.io","root":"/self/","images":"/self/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/self/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
+    var CONFIG = {"hostname":"xdxxdxxdxxdxxdx.github.io","root":"/blog/","images":"/blog/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
   </script>
 <meta name="description" content="如果一个框架（如 weex 和快应用）需要支持 vue dsl，那么就离不开 vue-loader。 vue-loader 负责将 vue 文件转为单文件组件 (SFCs)对象，并调用 vue-template-compiler 将模板编译成 render 函数。 本文主要分析其执行原理。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="vue-loader 的执行原理">
-<meta property="og:url" content="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/index.html">
+<meta property="og:url" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/18/vue-loader/index.html">
 <meta property="og:site_name" content="欢迎来到XDX的博客">
 <meta property="og:description" content="如果一个框架（如 weex 和快应用）需要支持 vue dsl，那么就离不开 vue-loader。 vue-loader 负责将 vue 文件转为单文件组件 (SFCs)对象，并调用 vue-template-compiler 将模板编译成 render 函数。 本文主要分析其执行原理。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/check-plugin.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/parse.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/parse-result.png">
-<meta property="og:image" content="https://xdxspace.gitee.io/self/selected-block.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/18/vue-loader/check-plugin.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/18/vue-loader/parse.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/18/vue-loader/parse-result.png">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/selected-block.png">
 <meta property="article:published_time" content="2021-02-18T09:05:30.000Z">
 <meta property="article:modified_time" content="2021-04-26T07:29:06.588Z">
 <meta property="article:author" content="XIEDONGXIANG">
 <meta property="article:tag" content="Vue">
 <meta property="article:tag" content="webpack">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/check-plugin.png">
+<meta name="twitter:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/18/vue-loader/check-plugin.png">
 
 
-<link rel="canonical" href="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/">
+<link rel="canonical" href="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/18/vue-loader/">
 
 
 <script class="page-configurations">
@@ -113,7 +113,7 @@
 
   <div class="site-meta">
 
-    <a href="/self/" class="brand" rel="start">
+    <a href="/blog/" class="brand" rel="start">
       <i class="logo-line"></i>
       <h1 class="site-title">欢迎来到XDX的博客</h1>
       <i class="logo-line"></i>
@@ -132,9 +132,9 @@
 
 <nav class="site-nav">
   <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/self/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-tags"><a href="/self/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
-        <li class="menu-item menu-item-archives"><a href="/self/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -198,26 +198,26 @@
         <div class="site-overview-wrap sidebar-panel">
           <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="XIEDONGXIANG"
-      src="/self/images/avatar.png">
+      src="/blog/images/avatar.png">
   <p class="site-author-name" itemprop="name">XIEDONGXIANG</p>
   <div class="site-description" itemprop="description">坚持 多写写</div>
 </div>
 <div class="site-state-wrap site-overview-item animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
-          <a href="/self/archives/">
+          <a href="/blog/archives/">
         
           <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-            <a href="/self/categories/">
+            <a href="/blog/categories/">
         <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-            <a href="/self/tags/">
+            <a href="/blog/tags/">
           
         <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">标签</span></a>
@@ -230,7 +230,7 @@
       </span>
   </div>
   <div class="cc-license site-overview-item animated" itemprop="license">
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/self/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/blog/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
   </div>
 
 
@@ -266,10 +266,10 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/">
+    <link itemprop="mainEntityOfPage" href="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/18/vue-loader/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/self/images/avatar.png">
+      <meta itemprop="image" content="/blog/images/avatar.png">
       <meta itemprop="name" content="XIEDONGXIANG">
       <meta itemprop="description" content="坚持 多写写">
     </span>
@@ -298,12 +298,12 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/self/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+          <a href="/blog/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
         </span>
     </span>
 
   
-    <span id="/self/2021/02/18/vue-loader/" class="post-meta-item leancloud_visitors" data-flag-title="vue-loader 的执行原理" title="阅读次数">
+    <span id="/blog/2021/02/18/vue-loader/" class="post-meta-item leancloud_visitors" data-flag-title="vue-loader 的执行原理" title="阅读次数">
       <span class="post-meta-item-icon">
         <i class="far fa-eye"></i>
       </span>
@@ -413,7 +413,7 @@ module<span class="token punctuation">.</span>exports <span class="token operato
   ...
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="打包"><a href="#打包" class="headerlink" title="打包"></a>打包</h3><p>最后执行 <code>npm run build</code> 即可正常打包，在 dist/main.js 看到输出的文件。</p>
-<p>后面的调试方法参考该文章：<a href="https://xdxspace.gitee.io/self/2021/02/19/vscode-debug/">使用 vscode 的调试功能</a></p>
+<p>后面的调试方法参考该文章：<a target="_blank" rel="noopener" href="https://xdxspace.gitee.io/self/2021/02/19/vscode-debug/">使用 vscode 的调试功能</a></p>
 <h2 id="分析执行"><a href="#分析执行" class="headerlink" title="分析执行"></a>分析执行</h2><p>plugin 会在 webpack 启动后不久就开始执行，所以我们先从 VueLoaderPlugin 处开始看起。</p>
 <h3 id="VueLoaderPlugin-的执行"><a href="#VueLoaderPlugin-的执行" class="headerlink" title="VueLoaderPlugin 的执行"></a>VueLoaderPlugin 的执行</h3><p>本文基于 webpack 4 编写，对应的 VueLoaderPlugin 定义在 vue-loader/lib/plugin-webpack4.js 中，在 apply 方法处打断点，并开始调试。</p>
 <p>VueLoaderPlugin 的执行主要就是处理 loader 中的 rules。VueLoaderPlugin 的作用是将定义过的其它规则复制并应用到 .vue 文件里相应语言的块（js、style）。在 webpack 启动时会立即执行。</p>
@@ -470,11 +470,11 @@ compiler<span class="token punctuation">.</span>options<span class="token punctu
 <h3 id="loader-第一轮执行"><a href="#loader-第一轮执行" class="headerlink" title="loader 第一轮执行"></a>loader 第一轮执行</h3><p>根据 webpack 的配置，从下到上开始第一轮的 vue 文件处理。</p>
 <p>此处不贴完整代码，建议打开<a target="_blank" rel="noopener" href="https://github.com/vuejs/vue-loader/blob/master/lib/index.js">vue-loader github 仓库</a>对照阅读。</p>
 <p>首先 vue-loader 会检测是否在 webpack config 中正确配置了 VueLoaderPlugin</p>
-<p><img src="/self/2021/02/18/vue-loader/check-plugin.png" alt="check-plugin"></p>
+<p><img src="/blog/2021/02/18/vue-loader/check-plugin.png" alt="check-plugin"></p>
 <p>然后 vue 文件会迎来他的第一次转换，即下图中的 parse 方法，该方法实际调用的是 vue-template-compiler/build.js 中的 parseComponent 方法</p>
-<p><img src="/self/2021/02/18/vue-loader/parse.png" alt="parse"></p>
+<p><img src="/blog/2021/02/18/vue-loader/parse.png" alt="parse"></p>
 <p>该方法将 vue 文件的内容转换成了 SFC 描述符对象，即文件内容（字符串）转换成下面这个对象，将每个部分（script、styles、template）明确分了开来。</p>
-<p><img src="/self/2021/02/18/vue-loader/parse-result.png" alt="parse-result"></p>
+<p><img src="/blog/2021/02/18/vue-loader/parse-result.png" alt="parse-result"></p>
 <p>接着会有一个 incomingQuery.type 的判断，现在为 false 暂时忽略。</p>
 <p>最后的解析结果：</p>
 <pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">import</span> <span class="token punctuation">&#123;</span>
@@ -517,7 +517,7 @@ component<span class="token punctuation">.</span>options<span class="token punct
 <li>templateLoader</li>
 </ul>
 <p>直接看 vue-loader，关键是这块刚才没有提的逻辑</p>
-<p><img src="/self/selected-block.png" alt="block"></p>
+<p><img src="/blog/selected-block.png" alt="block"></p>
 <p>此处的 selectBlock 方法会根据 url 参数中的 type 获取对应模块的内容（template 等）给下一个 loader。</p>
 <p>最后就是 templateLoader，该 loader 会会拿到 template 字符串。vue-loader 就是通过这个 loader 调用 vue-template-compiler 对模板进行编译，得到最终的 render 函数。</p>
 <p>这是最后编译获得的结果：</p>
@@ -551,7 +551,7 @@ render<span class="token punctuation">.</span>_withStripped <span class="token o
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/" title="vue-loader 的执行原理">https://xdxspace.gitee.io/self/2021/02/18/vue-loader/</a>
+      <a href="https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/18/vue-loader/" title="vue-loader 的执行原理">https://xdxxdxxdxxdxxdx.github.io/blog/2021/02/18/vue-loader/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -560,20 +560,20 @@ render<span class="token punctuation">.</span>_withStripped <span class="token o
 </div>
 
           <div class="post-tags">
-              <a href="/self/tags/Vue/" rel="tag"># Vue</a>
-              <a href="/self/tags/webpack/" rel="tag"># webpack</a>
+              <a href="/blog/tags/Vue/" rel="tag"># Vue</a>
+              <a href="/blog/tags/webpack/" rel="tag"># webpack</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/self/2021/02/12/html-css-daily/" rel="prev" title="HTML + CSS 随笔">
+                <a href="/blog/2021/02/12/html-css-daily/" rel="prev" title="HTML + CSS 随笔">
                   <i class="fa fa-chevron-left"></i> HTML + CSS 随笔
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/self/2021/02/19/vscode-debug/" rel="next" title="使用 vscode 的调试功能">
+                <a href="/blog/2021/02/19/vscode-debug/" rel="next" title="使用 vscode 的调试功能">
                   使用 vscode 的调试功能 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
@@ -631,10 +631,10 @@ render<span class="token punctuation">.</span>_withStripped <span class="token o
 
   
   <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-<script src="/self/js/utils.js"></script><script src="/self/js/next-boot.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/next-boot.js"></script>
 
   
-<script src="/self/js/local-search.js"></script>
+<script src="/blog/js/local-search.js"></script>
 
 
 
