@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/self/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/self/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/self/favicon.png">
+  <link rel="mask-icon" href="/self/favicon.svg" color="#222">
+
+<link rel="stylesheet" href="/self/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdxspace.gitee.io","root":"/self/","images":"/self/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/self/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="基于 typescript 与 rollup 编写一个工具，并发布到 npm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="发布一个工具到NPM">
+<meta property="og:url" content="https://xdxspace.gitee.io/self/2022/04/26/rollup/index.html">
+<meta property="og:site_name" content="欢迎来到XDX的博客">
+<meta property="og:description" content="基于 typescript 与 rollup 编写一个工具，并发布到 npm">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/04/26/rollup/start.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/04/26/rollup/tsc.png">
+<meta property="article:published_time" content="2022-04-26T10:06:38.000Z">
+<meta property="article:modified_time" content="2022-04-28T11:00:09.377Z">
+<meta property="article:author" content="XIEDONGXIANG">
+<meta property="article:tag" content="rollup">
+<meta property="article:tag" content="npm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdxspace.gitee.io/self/2022/04/26/rollup/start.png">
+
+
+<link rel="canonical" href="https://xdxspace.gitee.io/self/2022/04/26/rollup/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>发布一个工具到NPM | 欢迎来到XDX的博客</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/self/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">欢迎来到XDX的博客</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">好好学习，天天向上</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/self/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/self/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/self/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E5%BB%BA%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">1.1.</span> <span class="nav-text">新建文件夹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.2.</span> <span class="nav-text">初始化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#typescript"><span class="nav-number">2.</span> <span class="nav-text">typescript</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.1.</span> <span class="nav-text">安装与初始化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BC%96%E8%AF%91"><span class="nav-number">3.</span> <span class="nav-text">测试编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E5%8C%85%E7%9A%84%E5%AE%89%E8%A3%85%E4%B8%8E%E6%89%A7%E8%A1%8C"><span class="nav-number">4.</span> <span class="nav-text">测试包的安装与执行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%91%E5%B8%83%E5%8C%85%E5%88%B0-npm"><span class="nav-number">5.</span> <span class="nav-text">发布包到 npm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%93%E5%8C%85-js-%E6%96%87%E4%BB%B6%EF%BC%88CDN%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">打包 js 文件（CDN）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="nav-number">6.1.</span> <span class="nav-text">安装依赖</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0%E5%8C%85"><span class="nav-number">7.</span> <span class="nav-text">更新包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">8.</span> <span class="nav-text">其他</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XIEDONGXIANG"
+      src="/self/images/avatar.png">
+  <p class="site-author-name" itemprop="name">XIEDONGXIANG</p>
+  <div class="site-description" itemprop="description">坚持 多写写</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/self/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/self/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/self/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1770796956@qq.com" title="E-Mail → mailto:1770796956@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/self/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdxspace.gitee.io/self/2022/04/26/rollup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/self/images/avatar.png">
+      <meta itemprop="name" content="XIEDONGXIANG">
+      <meta itemprop="description" content="坚持 多写写">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎来到XDX的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          发布一个工具到NPM
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-04-26 18:06:38" itemprop="dateCreated datePublished" datetime="2022-04-26T18:06:38+08:00">2022-04-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/self/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+        </span>
+    </span>
+
+  
+    <span id="/self/2022/04/26/rollup/" class="post-meta-item leancloud_visitors" data-flag-title="发布一个工具到NPM" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>基于 typescript 与 rollup 编写一个工具，并发布到 npm</p>
+<a id="more"></a>
+
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><h3 id="新建文件夹"><a href="#新建文件夹" class="headerlink" title="新建文件夹"></a>新建文件夹</h3><p>安装 git、node 然后在 github 上新建一个代码仓库并 git clone 到本地。</p>
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><ul>
+<li>在项目的根目录下执行以下命令，根据提示输入作者等信息</li>
+</ul>
+<pre class="line-numbers language-none"><code class="language-none">npm init<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>在根目录下新建 src 文件夹并添加 index.ts 文件</li>
+</ul>
+<p>顺利的话现在的目录结构是这样的</p>
+<p><img src="/self/2022/04/26/rollup/start.png" alt="start"></p>
+<p>可选：</p>
+<ul>
+<li>修改 package.json，添加<code>&quot;type&quot;: &quot;module&quot;</code>，然后就可以直接使用 import/export 了</li>
+<li>在根目录添加<code>.gitignore</code>，并写入 <code>node_modules/</code> 避免提交依赖</li>
+</ul>
+<h2 id="typescript"><a href="#typescript" class="headerlink" title="typescript"></a>typescript</h2><p>项目代码使用 ts 编写，若不需要直接忽略 ts 相关的内容即可</p>
+<h3 id="安装与初始化"><a href="#安装与初始化" class="headerlink" title="安装与初始化"></a>安装与初始化</h3><p>安装 typescript</p>
+<pre class="line-numbers language-none"><code class="language-none">npm install typescript<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>根目录下添加 ts 配置文件 tsconfig.json</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+  <span class="token property">"include"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"src"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment">// 需要编译的目录</span>
+  <span class="token property">"exclude"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"node_modules"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment">// 忽略的目录</span>
+  <span class="token property">"compilerOptions"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"declaration"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token comment">// 生成声明文件 *.d.ts</span>
+    <span class="token property">"outDir"</span><span class="token operator">:</span> <span class="token string">"dist"</span> <span class="token comment">// 生成文件的输出目录</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="测试编译"><a href="#测试编译" class="headerlink" title="测试编译"></a>测试编译</h2><p>往 src/index.ts 中写入</p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">function</span> <span class="token function">sum</span><span class="token punctuation">(</span>a<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">,</span> b<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">)</span><span class="token operator">:</span> <span class="token builtin">number</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> a <span class="token operator">+</span> b<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> sum<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>然后在根目录执行 tsc 进行编译，顺利的话就能在 dist 目录获得生成的文件了，此时目录结构应该像这样</p>
+<p><img src="/self/2022/04/26/rollup/tsc.png" alt="tsc"></p>
+<h2 id="测试包的安装与执行"><a href="#测试包的安装与执行" class="headerlink" title="测试包的安装与执行"></a>测试包的安装与执行</h2><p>这一步主要是在本地确认包能够被正常安装与使用</p>
+<p>修改 package.json 中的 <code>main</code> 为 <code>./dist/index.js</code>，也就是将包的入口文件定为我们生成的文件。</p>
+<p>然后本地随便一个项目执行 <code>npm install 这个包的目录</code> 就可以安装这个包了。</p>
+<p>最后在安装了这个包的项目里就可以正常使用了，使用的代码应该类似</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">import</span> sum <span class="token keyword">from</span> <span class="token string">"tools"</span><span class="token punctuation">;</span>
+<span class="token function">sum</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">,</span> <span class="token number">200</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//300</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h2 id="发布包到-npm"><a href="#发布包到-npm" class="headerlink" title="发布包到 npm"></a>发布包到 npm</h2><p>首先确认本地 npm 注册的地址没有切换到淘宝之类的镜像地址，如果切换了的话需要执行一下命令切换回来再继续</p>
+<pre class="line-numbers language-none"><code class="language-none">npm config set registry https:&#x2F;&#x2F;registry.npmjs.org&#x2F;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>npm 网站注册账号密码，注册地址地址：<a target="_blank" rel="noopener" href="https://www.npmjs.com/signup">https://www.npmjs.com/signup</a></li>
+<li>登录 npm，npm login</li>
+<li>发布包，npm publish</li>
+</ul>
+<p>然后就可以正常的使用 npm install 包名的形式安装了！</p>
+<h2 id="打包-js-文件（CDN）"><a href="#打包-js-文件（CDN）" class="headerlink" title="打包 js 文件（CDN）"></a>打包 js 文件（CDN）</h2><p>为了方便直接在浏览器中引入我们编写的工具，往往还需要将多个 js 打包到一起供其他开发者直接使用 script 标签引入使用，打包工具有很多种，这里以 rollup 为例</p>
+<h3 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h3><p>安装 rollup</p>
+<pre class="line-numbers language-none"><code class="language-none">npm install -D rollup<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>安装压缩代码的 rollup 插件</p>
+<pre class="line-numbers language-none"><code class="language-none">npm install -D rollup-plugin-terser<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>安装编译 ts 的 rollup 插件</p>
+<pre class="line-numbers language-none"><code class="language-none">npm install -D @rollup&#x2F;plugin-typescript tslib<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>在根目录下添加 rollup 的配置文件 rollup.config.js，填入以下内容</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">import</span> <span class="token punctuation">&#123;</span> terser <span class="token punctuation">&#125;</span> <span class="token keyword">from</span> <span class="token string">"rollup-plugin-terser"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> typescript <span class="token keyword">from</span> <span class="token string">"@rollup/plugin-typescript"</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>
+  input<span class="token operator">:</span> <span class="token string">"./src/index.ts"</span><span class="token punctuation">,</span>
+  output<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">&#123;</span>
+      file<span class="token operator">:</span> <span class="token string">"./dist/sum.min.js"</span><span class="token punctuation">,</span>
+      format<span class="token operator">:</span> <span class="token string">"iife"</span><span class="token punctuation">,</span>
+      name<span class="token operator">:</span> <span class="token string">"xxxx"</span><span class="token punctuation">,</span> <span class="token comment">// 暴露在全局的变量名</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  plugins<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token function">typescript</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+      compilerOptions<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+        declaration<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token function">terser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>执行 rollup -c 即可在 dist 目录获得生成的 js。保存提交，再次发布本包</p>
+<p>然后借助 unpkg.com 即可直接在 html 中引入该文件了（不需要任何配置），将下方链接替换入你的项目名和构建生成的文件名即可：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://unpkg.com/你的项目名/dist/文件名.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="更新包"><a href="#更新包" class="headerlink" title="更新包"></a>更新包</h2><p>发布之后可能会有功能迭代或者 bug 修复，所以我们一般都会需要更新，更新的时候需要修改 package 的版本号，使用以下命令：</p>
+<pre class="line-numbers language-none"><code class="language-none">npm version &lt;update_type&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><code>update_type</code></p>
+<ul>
+<li>patch 最小版本号+1，如 0.0.1 -&gt; 0.0.2</li>
+<li>minor 小版本号+1，如 0.0.1 -&gt; 0.1.0</li>
+<li>major 大版本号+1，如 0.0.1 -&gt; 1.0.0</li>
+</ul>
+<p>若关联了 git，执行命令后会自动生成一笔提交，直接 git push 即可</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>为了方便后续构建，可以将 “build”: “rollup -c &amp; tsc” 加入到 package.json 的 script 中，后面直接执行 npm run build 即可</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>XIEDONGXIANG
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://xdxspace.gitee.io/self/2022/04/26/rollup/" title="发布一个工具到NPM">https://xdxspace.gitee.io/self/2022/04/26/rollup/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/self/tags/rollup/" rel="tag"># rollup</a>
+              <a href="/self/tags/npm/" rel="tag"># npm</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/self/2022/03/15/wasm/" rel="prev" title="深入了解 WebAssembly">
+                  <i class="fa fa-chevron-left"></i> 深入了解 WebAssembly
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/self/2022/04/27/i18n-dom/" rel="next" title="i18n-dom - 浏览器中最省心的多语言工具">
+                  i18n-dom - 浏览器中最省心的多语言工具 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fas fa-bomb"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XIEDONGXIANG</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/self/js/utils.js"></script><script src="/self/js/next-boot.js"></script>
+
+  
+<script src="/self/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      const visitors = document.querySelector('.leancloud_visitors');
+      const url = decodeURI(visitors.id);
+      const title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            const counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      const visitors = document.querySelectorAll('.leancloud_visitors');
+      const entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            const target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    const { app_id, app_key, server_url } = {"enable":true,"app_id":"sm9f57jD90kfleS8nVQXPSAo-gzGzoHsz","app_key":"pczcxQSKKOWK8SXKt5HhkXbw","server_url":null,"security":false};
+    function fetchData(api_server) {
+      const Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    const api_server = app_id.slice(-9) === '-MdYXbMMI' ? `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com` : server_url;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+
+<script>
+NexT.utils.loadComments('.utterances-container', () => {
+  const script = document.createElement('script');
+  script.src = 'https://utteranc.es/client.js';
+  script.setAttribute('repo', "XDXXDXXDXXDXXDX/XDX_blog_comment");
+  script.setAttribute('issue-term', "og:title");
+  script.setAttribute('theme', "github-light");
+  script.crossOrigin = 'anonymous';
+  script.async = true;
+  document.querySelector('.utterances-container').appendChild(script);
+});
+</script>
+
+</body>
+</html>

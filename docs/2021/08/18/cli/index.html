@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/self/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/self/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/self/favicon.png">
+  <link rel="mask-icon" href="/self/favicon.svg" color="#222">
+
+<link rel="stylesheet" href="/self/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdxspace.gitee.io","root":"/self/","images":"/self/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/self/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="通过分析 create-react-app 的原理，学习如何自己写一个 cli。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="create-react-app 实现原理">
+<meta property="og:url" content="https://xdxspace.gitee.io/self/2021/08/18/cli/index.html">
+<meta property="og:site_name" content="欢迎来到XDX的博客">
+<meta property="og:description" content="通过分析 create-react-app 的原理，学习如何自己写一个 cli。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/08/18/cli/create-react-app.png">
+<meta property="article:published_time" content="2021-08-18T06:55:53.000Z">
+<meta property="article:modified_time" content="2021-08-19T10:42:08.477Z">
+<meta property="article:author" content="XIEDONGXIANG">
+<meta property="article:tag" content="node">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdxspace.gitee.io/self/2021/08/18/cli/create-react-app.png">
+
+
+<link rel="canonical" href="https://xdxspace.gitee.io/self/2021/08/18/cli/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>create-react-app 实现原理 | 欢迎来到XDX的博客</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/self/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">欢迎来到XDX的博客</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">好好学习，天天向上</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/self/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/self/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/self/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">命令行工具基本原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#commander-%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9"><span class="nav-number">2.</span> <span class="nav-text">commander 常用选项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CRA-%E9%A1%B9%E7%9B%AE%E5%88%86%E6%9E%90%EF%BC%88%E5%9F%BA%E4%BA%8E-v4-0-3%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">CRA 项目分析（基于 v4.0.3）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CRA-%E4%B8%AD%E7%94%A8%E5%88%B0%E7%9A%84%E5%B7%A5%E5%85%B7%E5%BA%93"><span class="nav-number">3.1.</span> <span class="nav-text">CRA 中用到的工具库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE"><span class="nav-number">3.2.</span> <span class="nav-text">分析创建项目</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CRA"><span class="nav-number">3.2.1.</span> <span class="nav-text">CRA</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#react-scripts"><span class="nav-number">3.2.2.</span> <span class="nav-text">react-scripts</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E8%84%9A%E6%9C%AC%E6%89%A7%E8%A1%8C"><span class="nav-number">3.3.</span> <span class="nav-text">分析脚本执行</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#react-scripts-start"><span class="nav-number">3.3.1.</span> <span class="nav-text">react-scripts start</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#react-scripts-eject"><span class="nav-number">3.3.2.</span> <span class="nav-text">react-scripts eject</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XIEDONGXIANG"
+      src="/self/images/avatar.png">
+  <p class="site-author-name" itemprop="name">XIEDONGXIANG</p>
+  <div class="site-description" itemprop="description">坚持 多写写</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/self/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/self/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/self/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1770796956@qq.com" title="E-Mail → mailto:1770796956@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/self/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdxspace.gitee.io/self/2021/08/18/cli/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/self/images/avatar.png">
+      <meta itemprop="name" content="XIEDONGXIANG">
+      <meta itemprop="description" content="坚持 多写写">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎来到XDX的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          create-react-app 实现原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-08-18 14:55:53" itemprop="dateCreated datePublished" datetime="2021-08-18T14:55:53+08:00">2021-08-18</time>
+    </span>
+
+  
+    <span id="/self/2021/08/18/cli/" class="post-meta-item leancloud_visitors" data-flag-title="create-react-app 实现原理" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>通过分析 create-react-app 的原理，学习如何自己写一个 cli。</p>
+<a id="more"></a>
+
+<h2 id="命令行工具基本原理"><a href="#命令行工具基本原理" class="headerlink" title="命令行工具基本原理"></a>命令行工具基本原理</h2><p>首先创建一个项目是必须的，新建一个文件夹并执行 npm init -y</p>
+<p>新建 index.js 放入想要执行的命令，并在顶部添加以下 shebang， 表示使用 node 解释执行该脚本</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#!&#x2F;usr&#x2F;bin&#x2F;env node<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>在 package 中添加 bin，就可以在安装时注入全局命令了</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+  <span class="token property">"bin"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"command-name"</span><span class="token operator">:</span> <span class="token string">"./index.js"</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>然后全局安装新建的这个包即可，记住安装路径为你本地包的路径（获取将其发布到 npm 再安装）</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">npm install -g &quot;path to your project&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="commander-常用选项"><a href="#commander-常用选项" class="headerlink" title="commander 常用选项"></a>commander 常用选项</h2><p>version 定义版本号，可以通过-V 查看<br>option 选项，默认为布尔值，可以通过 <code>--opts &lt;foo&gt;</code> 添加参数。使用<code>[foo]</code>表示可选  类型</p>
+<p>再新建 commander 的时候可以传入  名称作为后面提示时的 name 使用：</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">const</span> program <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">commander<span class="token punctuation">.</span>Command</span><span class="token punctuation">(</span><span class="token string">"yourName"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>当然直接使用<code>.name</code>也是一样的</p>
+<h2 id="CRA-项目分析（基于-v4-0-3）"><a href="#CRA-项目分析（基于-v4-0-3）" class="headerlink" title="CRA 项目分析（基于 v4.0.3）"></a>CRA 项目分析（基于 v4.0.3）</h2><p>github 上的 cra 由多个包组成：</p>
+<ul>
+<li>packages/cra-template 默认的模板文件</li>
+<li>packages/cra-template-typescript 基于 ts 的模板文件</li>
+<li><code>packages/create-react-app</code> 注入安装命令和参数、node 兼容性检验和安装依赖</li>
+<li>packages/react-dev-utils packages/react-scripts 的工具库</li>
+<li><code>packages/react-scripts</code></li>
+</ul>
+<p>我们执行 npm install create-react-app 的时候其实就是在安装 packages/create-react-app，所以若无特殊说明，以下 CRA 均指 packages/create-react-app。</p>
+<h3 id="CRA-中用到的工具库"><a href="#CRA-中用到的工具库" class="headerlink" title="CRA 中用到的工具库"></a>CRA 中用到的工具库</h3><p>chalk 在  命令行中显示丰富多彩的文字<br>commander 方便的处理参数和添加命令<br>cross-spawn 跨平台设置环境变量<br>envinfo 获取运行环境信息<br>fs-extra 快捷操作文件夹和文件<br>hyperquest 同时发送更多 http 请求与持久化链接<br>prompts 简单漂亮的命令行输入提示<br>semver npm 版本判断相关工具<br>tar-pack 将文件夹打包为压缩文件<br>tmp 创建临时文件目录<br>validate-npm-package-name 很直白的包名，告诉你这是否为一个合法的 npm 包名</p>
+<h3 id="分析创建项目"><a href="#分析创建项目" class="headerlink" title="分析创建项目"></a>分析创建项目</h3><p>创建项目主要有两个过程，第一个是执行 CRA 创建基本的环境，包括 react 生态和 template，另一个是执行 react-scripts 对项目（template）进行初始化（安装依赖、readme、git 和 ts 等等）。</p>
+<h4 id="CRA"><a href="#CRA" class="headerlink" title="CRA"></a>CRA</h4><p>通过了解主要执行的 createApp 方法的参数就知道要做什么了，有六个参数分别是：</p>
+<ul>
+<li>name 项目名，目录名</li>
+<li>verbose 打印额外的日志</li>
+<li>version react-scripts 的版本</li>
+<li>template  初始化使用的模板</li>
+<li>useNpm 是否使用 npm</li>
+<li>usePnp 是否使用 yarn PnP 特性</li>
+</ul>
+<p>执行完 CRA 后（不包括 react-scripts 的执行）可以观察生成的文件下，目前就只有 package.json 和 node_modules 中刚才安装的依赖（cra-template、react-scripts、react 和 react-dom）。</p>
+<h4 id="react-scripts"><a href="#react-scripts" class="headerlink" title="react-scripts"></a>react-scripts</h4><p>合并 package.json 与模板的 template.json 中的 script 和 dependencies<br>默认情况下合并后的结果如下</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+  <span class="token property">"dependencies"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"cra-template"</span><span class="token operator">:</span> <span class="token string">"1.1.2"</span><span class="token punctuation">,</span>
+    <span class="token property">"react"</span><span class="token operator">:</span> <span class="token string">"^17.0.2"</span><span class="token punctuation">,</span>
+    <span class="token property">"react-dom"</span><span class="token operator">:</span> <span class="token string">"^17.0.2"</span><span class="token punctuation">,</span>
+    <span class="token property">"react-scripts"</span><span class="token operator">:</span> <span class="token string">"4.0.3"</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token property">"scripts"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"start"</span><span class="token operator">:</span> <span class="token string">"react-scripts start"</span><span class="token punctuation">,</span>
+    <span class="token property">"build"</span><span class="token operator">:</span> <span class="token string">"react-scripts build"</span><span class="token punctuation">,</span>
+    <span class="token property">"test"</span><span class="token operator">:</span> <span class="token string">"react-scripts test"</span><span class="token punctuation">,</span>
+    <span class="token property">"eject"</span><span class="token operator">:</span> <span class="token string">"react-scripts eject"</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token property">"eslintConfig"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"extends"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"react-app"</span><span class="token punctuation">,</span> <span class="token string">"react-app/jest"</span><span class="token punctuation">]</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token property">"browserslist"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"production"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">">0.2%"</span><span class="token punctuation">,</span> <span class="token string">"not dead"</span><span class="token punctuation">,</span> <span class="token string">"not op_mini all"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token property">"development"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"last 1 chrome version"</span><span class="token punctuation">,</span>
+      <span class="token string">"last 1 firefox version"</span><span class="token punctuation">,</span>
+      <span class="token string">"last 1 safari version"</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>可以看到，主要就是添加了基于 react-scripts 的开发命令、eslint 规则和构建代码的目标浏览器列表</p>
+<p>eslintConfig 的 extends 参考<a target="_blank" rel="noopener" href="https://cn.eslint.org/docs/user-guide/configuring#using-a-shareable-configuration-package">官方文档</a>，实际就是在请求 node_modules 中<code>eslint-config-react-app</code>导出的规则。</p>
+<p>其余的读写操作细节比较多，完整的代码走读如下：<br><img src="/self/2021/08/18/cli/create-react-app.png" alt="create-react-app"></p>
+<h3 id="分析脚本执行"><a href="#分析脚本执行" class="headerlink" title="分析脚本执行"></a>分析脚本执行</h3><p>项目创建好了，剩下的就是分析脚本是如何执行的了，通过查看 package.json 可以看到主要有四个脚本</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+  <span class="token property">"scripts"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"start"</span><span class="token operator">:</span> <span class="token string">"react-scripts start"</span><span class="token punctuation">,</span>
+    <span class="token property">"build"</span><span class="token operator">:</span> <span class="token string">"react-scripts build"</span><span class="token punctuation">,</span>
+    <span class="token property">"test"</span><span class="token operator">:</span> <span class="token string">"react-scripts test"</span><span class="token punctuation">,</span>
+    <span class="token property">"eject"</span><span class="token operator">:</span> <span class="token string">"react-scripts eject"</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>npm 脚本执行的原理可以参考阮一峰的<a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2016/10/npm_scripts.html">npm scripts 使用指南</a>，简单来说就是执行 <code>npm run start</code> 就相当于执行 <code>react-scripts start</code>，执行 <code>react-scripts start</code> 就相当于执行 <code>./node_modules/.bin/react-scripts start</code>，所以直接看对应的脚本即可。</p>
+<p>简单分析./node_modules/.bin/react-scripts 可以知道其实 <code>react-scripts scriptName</code> 就是在执行 node_modules/react-scripts/scripts 目录下的同名脚本，所以可以进一步聚焦到 node_modules/react-scripts/scripts/start.js 中，这回真的不用再去看其他文件了。</p>
+<h4 id="react-scripts-start"><a href="#react-scripts-start" class="headerlink" title="react-scripts start"></a>react-scripts start</h4><p>整个过程主要就是读取配置并调用 WebpackDevServer 起服务。<br>默认读取的配置文件是 node_modules/react-scripts/config/webpack.config.js，里面逻辑还挺多暂时不深究。</p>
+<h4 id="react-scripts-eject"><a href="#react-scripts-eject" class="headerlink" title="react-scripts eject"></a>react-scripts eject</h4><p>执行该方法会弹出配置，其实就是把 react-scripts 从 node_modules 中搬出来丢到你的项目中，然后将依赖中的 react-scripts 从 package.json 去掉。看看那些配置和脚本，我相信应该没有人会喜欢去增进一个 700+行的 webpack 配置。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>XIEDONGXIANG
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://xdxspace.gitee.io/self/2021/08/18/cli/" title="create-react-app 实现原理">https://xdxspace.gitee.io/self/2021/08/18/cli/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/self/tags/node/" rel="tag"># node</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/self/2021/07/14/mini-app/" rel="prev" title="Web小程序引擎实现">
+                  <i class="fa fa-chevron-left"></i> Web小程序引擎实现
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/self/2021/09/08/array-type/" rel="next" title="std::array 使用中的类型问题">
+                  std::array 使用中的类型问题 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fas fa-bomb"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XIEDONGXIANG</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/self/js/utils.js"></script><script src="/self/js/next-boot.js"></script>
+
+  
+<script src="/self/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      const visitors = document.querySelector('.leancloud_visitors');
+      const url = decodeURI(visitors.id);
+      const title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            const counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      const visitors = document.querySelectorAll('.leancloud_visitors');
+      const entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            const target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    const { app_id, app_key, server_url } = {"enable":true,"app_id":"sm9f57jD90kfleS8nVQXPSAo-gzGzoHsz","app_key":"pczcxQSKKOWK8SXKt5HhkXbw","server_url":null,"security":false};
+    function fetchData(api_server) {
+      const Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    const api_server = app_id.slice(-9) === '-MdYXbMMI' ? `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com` : server_url;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+
+<script>
+NexT.utils.loadComments('.utterances-container', () => {
+  const script = document.createElement('script');
+  script.src = 'https://utteranc.es/client.js';
+  script.setAttribute('repo', "XDXXDXXDXXDXXDX/XDX_blog_comment");
+  script.setAttribute('issue-term', "og:title");
+  script.setAttribute('theme', "github-light");
+  script.crossOrigin = 'anonymous';
+  script.async = true;
+  document.querySelector('.utterances-container').appendChild(script);
+});
+</script>
+
+</body>
+</html>

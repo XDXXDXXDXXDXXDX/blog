@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/self/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/self/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/self/favicon.png">
+  <link rel="mask-icon" href="/self/favicon.svg" color="#222">
+
+<link rel="stylesheet" href="/self/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdxspace.gitee.io","root":"/self/","images":"/self/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/self/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="使用 Jenkins,Ansible,Bash 自动化部署的流程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自动化部署（Jenkins, Ansible,Bash）">
+<meta property="og:url" content="https://xdxspace.gitee.io/self/2022/08/15/deploy/index.html">
+<meta property="og:site_name" content="欢迎来到XDX的博客">
+<meta property="og:description" content="使用 Jenkins,Ansible,Bash 自动化部署的流程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2022/08/15/deploy/pineline.png">
+<meta property="article:published_time" content="2022-08-15T08:50:21.000Z">
+<meta property="article:modified_time" content="2022-09-06T07:17:34.808Z">
+<meta property="article:author" content="XIEDONGXIANG">
+<meta property="article:tag" content="xdx 前端 后端 原生 学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdxspace.gitee.io/self/2022/08/15/deploy/pineline.png">
+
+
+<link rel="canonical" href="https://xdxspace.gitee.io/self/2022/08/15/deploy/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>自动化部署（Jenkins, Ansible,Bash） | 欢迎来到XDX的博客</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/self/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">欢迎来到XDX的博客</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">好好学习，天天向上</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/self/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/self/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/self/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A5%E5%8F%A3"><span class="nav-number">2.</span> <span class="nav-text">入口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E8%A1%8C%E5%91%BD%E4%BB%A4"><span class="nav-number">3.</span> <span class="nav-text">第一行命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.1.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E8%A1%8C%E5%91%BD%E4%BB%A4"><span class="nav-number">4.</span> <span class="nav-text">第二行命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#build-sh"><span class="nav-number">5.</span> <span class="nav-text">build.sh</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-number">5.1.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dockerfile"><span class="nav-number">6.</span> <span class="nav-text">Dockerfile</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-2"><span class="nav-number">6.1.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ansible"><span class="nav-number">7.</span> <span class="nav-text">ansible</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#i-hosts"><span class="nav-number">7.1.</span> <span class="nav-text">-i hosts</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#e-%E2%80%93extra-vars"><span class="nav-number">7.2.</span> <span class="nav-text">-e –extra-vars</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ansible-display-yml"><span class="nav-number">7.3.</span> <span class="nav-text">ansible&#x2F;display.yml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#display-yml-%E6%80%BB%E7%BB%93"><span class="nav-number">7.4.</span> <span class="nav-text">display.yml 总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#roles-prado-fe-%E7%9B%AE%E5%BD%95%E8%A7%A3%E9%87%8A"><span class="nav-number">7.5.</span> <span class="nav-text">roles&#x2F;prado_fe 目录解释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ansible-role-prado-fe-tasks-main-yml"><span class="nav-number">7.6.</span> <span class="nav-text">ansible&#x2F;role&#x2F;prado_fe&#x2F;tasks&#x2F;main.yml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#main-yml-%E6%80%BB%E7%BB%93"><span class="nav-number">7.7.</span> <span class="nav-text">main.yml 总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ansible-role-prado-fe-templates-deploy-j2"><span class="nav-number">7.8.</span> <span class="nav-text">ansible&#x2F;role&#x2F;prado_fe&#x2F;templates&#x2F;deploy.j2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#entrypoint-sh"><span class="nav-number">7.9.</span> <span class="nav-text">entrypoint.sh</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XIEDONGXIANG"
+      src="/self/images/avatar.png">
+  <p class="site-author-name" itemprop="name">XIEDONGXIANG</p>
+  <div class="site-description" itemprop="description">坚持 多写写</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/self/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/self/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/self/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1770796956@qq.com" title="E-Mail → mailto:1770796956@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/self/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdxspace.gitee.io/self/2022/08/15/deploy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/self/images/avatar.png">
+      <meta itemprop="name" content="XIEDONGXIANG">
+      <meta itemprop="description" content="坚持 多写写">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎来到XDX的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          自动化部署（Jenkins, Ansible,Bash）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-08-15 16:50:21" itemprop="dateCreated datePublished" datetime="2022-08-15T16:50:21+08:00">2022-08-15</time>
+    </span>
+
+  
+    <span id="/self/2022/08/15/deploy/" class="post-meta-item leancloud_visitors" data-flag-title="自动化部署（Jenkins, Ansible,Bash）" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>使用 Jenkins,Ansible,Bash 自动化部署的流程。</p>
+<p><img src="/self/2022/08/15/deploy/pineline.png" alt="pineline"></p>
+<a id="more"></a>
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前端项目中有这么几个不直接服务于 UI 的文件、目录，主要就是用于自动部署的：</p>
+<ul>
+<li>/ansible</li>
+<li>/scripts</li>
+<li>build.sh</li>
+<li>Dockerfile</li>
+<li>entrypoint.sh</li>
+<li>nginx.conf</li>
+<li>.gitlab-ci.yml</li>
+</ul>
+<p>示例中对脚本进行了优化，所以会跟源码稍有不同。</p>
+<p><strong>PS: 代码相关的内容会分为代码详细注释和总结执行结果。</strong></p>
+<h2 id="入口"><a href="#入口" class="headerlink" title="入口"></a>入口</h2><p>开发环境一般用的是 gitlab ci/cd，查看 <code>.gitlab-ci.yml</code> 中 deploy 阶段可以看到其获取代码后执行的是 ./scripts/deploy.sh 脚本。<br>./scripts/deploy.sh 脚本内容和 Jenkins 部署流程中的脚本类似，所以下面主要展开看 Jenkins 的部署流程。</p>
+<p>有权限的话可以查看 Jenkins 的配置，下面仅截取关键步骤。</p>
+<p>第一步是先将指定分支的代码克隆到指定位置，然后执行以下脚本：</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sh &quot;sed -i  &#39;s&#x2F;10.12.78.47&#x2F;hostName.com&#x2F;g&#39; .&#x2F;nginx.conf&quot;
+sh &quot;.&#x2F;build.sh &amp;&amp; cd ansible &amp;&amp; ansible-playbook -i &#39;10.xx.xx.xx,10.xx.xx.xx&#39; display.yml -e role&#x3D;prado_fe --extra-vars \&quot;ListenPort&#x3D;9000\&quot;&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>这两条命令就是部署的全过程，下面会详细展开说这两条命令的执行。</p>
+<h2 id="第一行命令"><a href="#第一行命令" class="headerlink" title="第一行命令"></a>第一行命令</h2><pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">sh &quot;sed -i &#39;s&#x2F;10.12.78.47&#x2F;hostName.com&#x2F;g&#39; .&#x2F;nginx.conf&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>涉及的关键字：<br><code>sed</code> -&gt; stream editor<br><code>-i</code> -&gt; 直接修改读取的文件内容<br>语法：sed -i ‘s/原字符串/新字符串/g’ file (g 在正则中为全局替换)</p>
+<p>所以第一行的命令翻译过来就是 nginx.conf 文件中的 10.12.78.47 全部替换为 hostName.com</p>
+<p>查看项目中的 nginx.config 可以知道修改的是 proxy_pass 的内容：</p>
+<pre class="line-numbers language-none"><code class="language-none">server &#123;
+  location &#x2F;api &#123;
+    proxy_pass http:&#x2F;&#x2F;10.12.78.47; &#x2F;&#x2F; 改为 http:&#x2F;&#x2F;hostName.com
+  &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>修改 <code>nginx.conf</code> 中 proxy_pass 字段的内容。</p>
+<h2 id="第二行命令"><a href="#第二行命令" class="headerlink" title="第二行命令"></a>第二行命令</h2><pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">sh &quot;.&#x2F;build.sh &amp;&amp; cd ansible &amp;&amp; ansible-playbook ...&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>执行 build.sh 脚本</li>
+<li>进入到 ansible 目录执行 ansible-playbook</li>
+</ul>
+<p>下面分别展开看这两步的执行流程</p>
+<h2 id="build-sh"><a href="#build-sh" class="headerlink" title="build.sh"></a>build.sh</h2><pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">#!&#x2F;bin&#x2F;bash
+# 定义变量 IMAGES_NAME
+IMAGES_NAME&#x3D;&quot;prado_ui:latest&quot;
+# 打印环境变量 ENV, 可以在 Jenkins 的构建参数中看到 ENV 为 live
+echo $ENV
+# 使用当前目录下的 Dockerfile 构建定制的镜像
+docker build --build-arg ENV -t $IMAGES_NAME .
+# $? 是 shell 变量，表示最后一次执行命令的状态，0为成功，非0为失败
+# -ne -&gt; 不等于
+if [ $? -ne 0 ]; then
+        echo &quot;build dot ui images failed&quot;
+        exit 1
+# fi 为 if 语句的结尾
+fi
+# 构建完镜像后，将镜像保存到 .&#x2F;ansible&#x2F;role&#x2F;prado_fe&#x2F;files 目录下
+cd .&#x2F;ansible&#x2F;role&#x2F;prado_fe&#x2F;files &amp;&amp; docker save $IMAGES_NAME &gt; prado_ui.tar &amp;&amp; cd ..<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><p>执行 docker build 构建镜像，生成镜像后将镜像保存在 ansible/role/prado_fe/files 目录下，文件名为 prado_ui.tar。</p>
+<p>执行 docker build 默认会读取目录下的 DOCKERFILE 进行构建，所以接着查看 Dockerfile 了解构建的镜像内容。</p>
+<h2 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h2><p>有两个 From，多阶段编译，只保留最后的一个阶段的结果</p>
+<pre class="line-numbers language-Dockerfile" data-language="Dockerfile"><code class="language-Dockerfile"># 阶段一
+# 基础镜像包含node。后续阶段可以通过 builder 获取该阶段的结果
+FROM xxx.com&#x2F;prado-user-images&#x2F;node:latest AS builder
+# 指定后续 COPY 和 RUN 的工作路径
+WORKDIR &#x2F;usr&#x2F;src&#x2F;app
+# 将项目的依赖文件复制到包中
+COPY package.json yarn.lock .&#x2F;
+# 安装依赖
+RUN yarn
+# 将跟 Dockerfile 同目录的所有内容（即项目源码）复制到包中
+COPY . .&#x2F;
+# ARG ENV&#x3D;&quot;dev&quot; 可以被命令中的 --build-arg ENV 覆盖为 live，仅在DOCKERFILE中生效
+ARG ENV&#x3D;&quot;dev&quot;
+# 构建目标文件
+RUN yarn build:$ENV
+# 清除超大的依赖，这步是必须的。虽然阶段1并不会保留到最终镜像内，但是docker会创建这一步build的缓存，硬盘空间很快就会不够用
+RUN rm -rf .&#x2F;node_modules&#x2F;
+
+# 阶段二
+# 基础镜像包含nginx
+FROM hostName.com&#x2F;prado-user-images&#x2F;nginx:alpine
+# 将阶段一中 &#x2F;usr&#x2F;src&#x2F;app&#x2F;dist 目录下的文件（也就是构建产物）复制到当前镜像的 &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html 路径下
+COPY --from&#x3D;builder &#x2F;usr&#x2F;src&#x2F;app&#x2F;dist &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html
+# 将 nginx.conf 和 entrypoint.sh 复制到镜像中
+COPY nginx.conf &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;default.conf
+COPY entrypoint.sh .&#x2F;
+# 定义环境变量 DOMAIN 和 PORT，容器运行时生效
+ENV DOMAIN &quot;test-hostName.com&quot;
+ENV PORT 80
+# 容器启动时执行 sh .&#x2F;entrypoint.sh
+CMD [&quot;sh&quot;,&quot;.&#x2F;entrypoint.sh&quot;]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h3><p>最终的镜像主要就是包含 ngnix 和构建后的网站的静态文件。</p>
+<p>build 命令执行完后，就是 ansible 命令相关的内容了。</p>
+<h2 id="ansible"><a href="#ansible" class="headerlink" title="ansible"></a>ansible</h2><p>ansible 自动化运维的框架，简单理解就是远程连接需要部署的主机并发送相关的命令，仅介绍他的执行和执行结果。</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">ansible-playbook -i &#39;10.xx.xx.xx,10.xx.xx.xx&#39; display.yml -e role&#x3D;prado_fe --extra-vars \&quot;ListenPort&#x3D;9000\&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>执行 display.yml 所定义的流程</p>
+<h3 id="i-hosts"><a href="#i-hosts" class="headerlink" title="-i hosts"></a>-i hosts</h3><p>-i 指定需要部署的主机 ip，默认会读取 ansible/hosts 文件，此处是直接指定两台主机的 ip</p>
+<h3 id="e-–extra-vars"><a href="#e-–extra-vars" class="headerlink" title="-e –extra-vars"></a>-e –extra-vars</h3><p>都是对 yml 文件和模板文件传参，分别传了 role=prado_fe 和 ListenPort=9000</p>
+<h3 id="ansible-display-yml"><a href="#ansible-display-yml" class="headerlink" title="ansible/display.yml"></a>ansible/display.yml</h3><pre class="line-numbers language-yml" data-language="yml"><code class="language-yml">---
+- name: Installing prado_agent
+  gather_facts: no # 是否收集各机器的信息
+  hosts: all
+  become: yes # 需要root权限
+  become_user: root # 需要的特权用户
+  roles:
+    - &quot;&#123;&#123; role &#125;&#125;&quot; # role 被替换为 prado_fe
+    #- &#123; role: prado_agent &#125;
+    #- &#123; role: change_config &#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="display-yml-总结"><a href="#display-yml-总结" class="headerlink" title="display.yml 总结"></a>display.yml 总结</h3><p>最后的执行的 roles 为 prado_fe，查看对应文件夹 <code>ansible/role/prado_fe</code> 下的文件执行</p>
+<h3 id="roles-prado-fe-目录解释"><a href="#roles-prado-fe-目录解释" class="headerlink" title="roles/prado_fe 目录解释"></a>roles/prado_fe 目录解释</h3><ul>
+<li>files 存放需要 copy 的文件，经过上面的 build.sh，会在该目录下生成 prado_ui.tar</li>
+<li>tasks 用户存放一系列任务</li>
+<li>handlers 空 无视</li>
+<li>template 存放此 Role 需要使用的 jinjis2 模板文件</li>
+</ul>
+<p>查看任务的的入口 <code>tasks/main.yml</code></p>
+<h3 id="ansible-role-prado-fe-tasks-main-yml"><a href="#ansible-role-prado-fe-tasks-main-yml" class="headerlink" title="ansible/role/prado_fe/tasks/main.yml"></a>ansible/role/prado_fe/tasks/main.yml</h3><pre class="line-numbers language-yml" data-language="yml"><code class="language-yml">---
+- name: get tar
+  # 将 prado_ui.tar 复制到远程主机的 &#x2F;tmp&#x2F; 目录下
+  copy:
+    src: &quot;&#123;&#123; role_path &#125;&#125;&#x2F;files&#x2F;prado_ui.tar&quot;
+    dest: &quot;&#x2F;tmp&#x2F;&quot;
+
+- name: get deploy_sh
+  # 获取模板 deploy.j2，替换文件中的 &#123;&#123; ListenPort &#125;&#125; 变量为9000后，保存到远程主机 &#x2F;tmp&#x2F; 目录下的deploy_ui.sh文件中
+  template:
+    src: deploy.j2
+    dest: &#x2F;tmp&#x2F;deploy_ui.sh
+
+- name: start ui
+  shell:
+    # 在 tmp目录下执行命令
+    chdir: &quot;&#x2F;tmp&#x2F;&quot;
+    # 给予所有用户执行 deploy_ui.sh 的权限，并执行 deploy_ui.sh
+    cmd: chmod a+x deploy_ui.sh &amp;&amp; .&#x2F;deploy_ui.sh
+    # 保存执行结果到 checkStarted 中，暂无用
+    register: checkStarted<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="main-yml-总结"><a href="#main-yml-总结" class="headerlink" title="main.yml 总结"></a>main.yml 总结</h3><p>将 prado_ui.tar 和 deploy_ui.sh（deploy.j2）复制到远程主机的 tmp 目录下并执行 deploy_ui.sh</p>
+<p>所以接下来就是 deploy_ui.sh 的执行</p>
+<h3 id="ansible-role-prado-fe-templates-deploy-j2"><a href="#ansible-role-prado-fe-templates-deploy-j2" class="headerlink" title="ansible/role/prado_fe/templates/deploy.j2"></a>ansible/role/prado_fe/templates/deploy.j2</h3><p>deploy.j2 -&gt; deploy.sh</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">#!&#x2F;bin&#x2F;bash
+NAME&#x3D;&quot;prado_ui&quot;
+BACK_NAME&#x3D;&quot;prado_ui_backup&quot;
+IMAGES_NAME&#x3D;&quot;prado_ui:latest&quot;
+IMAGES_NAME_BACKUP&#x3D;&quot;prado_ui:backup&quot;
+# 先做一通操作，清除和备份上一次的运行容器、镜像，可用作回滚
+# 停止运行中的容器 prado_ui
+docker stop  $NAME
+# 删除容器 prado_ui
+docker rm    $NAME
+# 删除镜像 prado_ui:backup
+docker image rm $IMAGES_NAME_BACKUP
+# 给 prado_ui:latest 打上 backup 标签
+docker tag $IMAGES_NAME $IMAGES_NAME_BACKUP
+# 删除镜像 prado_ui:latest
+docker image rm $IMAGES_NAME
+# 加载镜像 prado_ui.tar，也就是我们构建的那个镜像
+docker load &lt; prado_ui.tar
+# 运行镜像 prado_ui:latest
+# -itd  -it 提供可交互的伪终端，容器启动时需要执行shell脚本（entrypoint.sh）,-d 保持在后台执行
+# --name 指定容器名字为 prado_ui
+# -p 将本地主机的 ListenPort 映射到容器的 80 端口，ListenPort在上一步知道被替换为9000
+docker run -itd --name $NAME -p &#123;&#123; ListenPort &#125;&#125;:80 $IMAGES_NAME<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>在 DOCKERFILE 一节可以知道，容器启动后会执行脚本 entrypoint.sh</p>
+<h3 id="entrypoint-sh"><a href="#entrypoint-sh" class="headerlink" title="entrypoint.sh"></a>entrypoint.sh</h3><pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">#!&#x2F;usr&#x2F;bin&#x2F;env bash
+# 侯勋所有bash命令返回的code如果不是0，脚本立即退出
+set -e
+# 定义DOMAIN和PORT，:&#x3D;指定默认值，DOCKERFILE中已经定义为了 ENV DOMAIN &quot;test-hostName.com&quot; 和 ENV PORT 80
+DOMAIN&#x3D;&quot;$&#123;DOMAIN:-test-hostName.com&#125;&quot;
+PORT&#x3D;&quot;$&#123;PORT:-80&#125;&quot;
+
+# 将nginx配置中的 port 改成 80，domain 改成 test-hostName.com
+sed -i &quot;s#&#123;&#123;port&#125;&#125;#$&#123;PORT&#125;#g&quot; &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;default.conf
+sed -i &quot;s#&#123;&#123;domain&#125;&#125;#$&#123;DOMAIN&#125;#g&quot; &#x2F;etc&#x2F;nginx&#x2F;conf.d&#x2F;default.conf
+# 启动ngnix服务，ngnix默认为后台模式启动，使用daemon off改为前台进程，避免跟随脚本执行进程退出，导致容器退出
+exec nginx -g &quot;daemon off;&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>最终启动的 ngnix 的配置为</p>
+<pre class="line-numbers language-none"><code class="language-none">server &#123;
+    listen       80;
+    server_name  test-hostName.com;
+    access_log   &#x2F;dev&#x2F;null;
+
+    location &#x2F; &#123;
+        root   &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html;
+        index  index.html index.htm;
+        try_files $uri &#x2F;index.html;
+    &#125;
+
+    location &#x2F;api &#123;
+         proxy_pass http:&#x2F;&#x2F;hostName.com;
+    &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>根据前面的配置，访问主机的 9000 端口，就能访问到这个容器中的 ngnix 在 80 端口的服务了</p>
+<p><strong>PS: 从域名到服务整个代理过程暂时黑盒，没搜到文档</strong></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>XIEDONGXIANG
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://xdxspace.gitee.io/self/2022/08/15/deploy/" title="自动化部署（Jenkins, Ansible,Bash）">https://xdxspace.gitee.io/self/2022/08/15/deploy/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/self/2022/08/09/loadsh-xor/" rel="prev" title="loadsh xor 实现分析">
+                  <i class="fa fa-chevron-left"></i> loadsh xor 实现分析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/self/2022/09/05/optimize/" rel="next" title="首屏加载速度优化">
+                  首屏加载速度优化 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fas fa-bomb"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XIEDONGXIANG</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/self/js/utils.js"></script><script src="/self/js/next-boot.js"></script>
+
+  
+<script src="/self/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      const visitors = document.querySelector('.leancloud_visitors');
+      const url = decodeURI(visitors.id);
+      const title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            const counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      const visitors = document.querySelectorAll('.leancloud_visitors');
+      const entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            const target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    const { app_id, app_key, server_url } = {"enable":true,"app_id":"sm9f57jD90kfleS8nVQXPSAo-gzGzoHsz","app_key":"pczcxQSKKOWK8SXKt5HhkXbw","server_url":null,"security":false};
+    function fetchData(api_server) {
+      const Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    const api_server = app_id.slice(-9) === '-MdYXbMMI' ? `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com` : server_url;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+
+<script>
+NexT.utils.loadComments('.utterances-container', () => {
+  const script = document.createElement('script');
+  script.src = 'https://utteranc.es/client.js';
+  script.setAttribute('repo', "XDXXDXXDXXDXXDX/XDX_blog_comment");
+  script.setAttribute('issue-term', "og:title");
+  script.setAttribute('theme', "github-light");
+  script.crossOrigin = 'anonymous';
+  script.async = true;
+  document.querySelector('.utterances-container').appendChild(script);
+});
+</script>
+
+</body>
+</html>

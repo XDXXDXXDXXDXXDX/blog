@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/self/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/self/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/self/favicon.png">
+  <link rel="mask-icon" href="/self/favicon.svg" color="#222">
+
+<link rel="stylesheet" href="/self/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdxspace.gitee.io","root":"/self/","images":"/self/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/self/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="小程序架构和原理可以从微信小程序架构和小程序底层实现原理学习到，本文主要是通过实现一个 Web 版小程序引擎，让大家可以更好的理解抽象的架构说明，清楚一个小程序是如何运行的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Web小程序引擎实现">
+<meta property="og:url" content="https://xdxspace.gitee.io/self/2021/07/14/mini-app/index.html">
+<meta property="og:site_name" content="欢迎来到XDX的博客">
+<meta property="og:description" content="小程序架构和原理可以从微信小程序架构和小程序底层实现原理学习到，本文主要是通过实现一个 Web 版小程序引擎，让大家可以更好的理解抽象的架构说明，清楚一个小程序是如何运行的。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/07/14/mini-app/webview.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/07/14/mini-app/bridge.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/07/14/mini-app/file.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/07/14/mini-app/run.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/07/14/mini-app/file.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/07/14/mini-app/sample.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/07/14/mini-app/dist.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/07/14/mini-app/frame.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/07/14/mini-app/abstract.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/07/14/mini-app/page.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/07/14/mini-app/call.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/07/14/mini-app/flow.png">
+<meta property="article:published_time" content="2021-07-14T06:28:43.000Z">
+<meta property="article:modified_time" content="2021-07-14T09:21:08.338Z">
+<meta property="article:author" content="XIEDONGXIANG">
+<meta property="article:tag" content="小程序">
+<meta property="article:tag" content="Vue">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdxspace.gitee.io/self/2021/07/14/mini-app/webview.png">
+
+
+<link rel="canonical" href="https://xdxspace.gitee.io/self/2021/07/14/mini-app/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Web小程序引擎实现 | 欢迎来到XDX的博客</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/self/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">欢迎来到XDX的博客</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">好好学习，天天向上</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/self/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/self/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/self/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8D%E8%AF%8D%E8%A7%A3%E9%87%8A"><span class="nav-number">1.</span> <span class="nav-text">名词解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Webview"><span class="nav-number">2.</span> <span class="nav-text">Webview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">小程序运行原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%B7%A5%E5%85%B7"><span class="nav-number">4.</span> <span class="nav-text">编译工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F"><span class="nav-number">4.1.</span> <span class="nav-text">示例程序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="nav-number">5.</span> <span class="nav-text">架构设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1"><span class="nav-number">5.1.</span> <span class="nav-text">抽象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1"><span class="nav-number">5.2.</span> <span class="nav-text">通信</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E5%B1%82%E5%92%8C-native-%E9%80%9A%E4%BF%A1"><span class="nav-number">5.2.1.</span> <span class="nav-text">逻辑层和 native 通信</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE%E5%B1%82%E5%92%8C-native-%E9%80%9A%E4%BF%A1"><span class="nav-number">5.2.2.</span> <span class="nav-text">视图层和 native 通信</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE%E5%B1%82%E5%92%8C%E9%80%BB%E8%BE%91%E5%B1%82%E9%80%9A%E4%BF%A1"><span class="nav-number">5.2.3.</span> <span class="nav-text">视图层和逻辑层通信</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E5%B1%82"><span class="nav-number">6.</span> <span class="nav-text">逻辑层</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E4%BA%8B%E4%BB%B6"><span class="nav-number">6.1.</span> <span class="nav-text">处理事件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E6%95%B0%E6%8D%AE"><span class="nav-number">6.2.</span> <span class="nav-text">处理数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E8%B0%83%E7%94%A8"><span class="nav-number">6.3.</span> <span class="nav-text">接口调用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE%E5%B1%82"><span class="nav-number">7.</span> <span class="nav-text">视图层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XIEDONGXIANG"
+      src="/self/images/avatar.png">
+  <p class="site-author-name" itemprop="name">XIEDONGXIANG</p>
+  <div class="site-description" itemprop="description">坚持 多写写</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/self/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/self/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/self/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1770796956@qq.com" title="E-Mail → mailto:1770796956@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/self/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdxspace.gitee.io/self/2021/07/14/mini-app/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/self/images/avatar.png">
+      <meta itemprop="name" content="XIEDONGXIANG">
+      <meta itemprop="description" content="坚持 多写写">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎来到XDX的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Web小程序引擎实现
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-07-14 14:28:43" itemprop="dateCreated datePublished" datetime="2021-07-14T14:28:43+08:00">2021-07-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/self/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+        </span>
+    </span>
+
+  
+    <span id="/self/2021/07/14/mini-app/" class="post-meta-item leancloud_visitors" data-flag-title="Web小程序引擎实现" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>小程序架构和原理可以从<a target="_blank" rel="noopener" href="https://developers.weixin.qq.com/community/develop/article/doc/000a4c1620c188f3adf7db9ab5b413">微信小程序架构</a>和<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/81775922">小程序底层实现原理</a>学习到，本文主要是通过实现一个 Web 版小程序引擎，让大家可以更好的理解抽象的架构说明，清楚一个小程序是如何运行的。</p>
+<a id="more"></a>
+
+<p>本项目地址：<a target="_blank" rel="noopener" href="https://github.com/XDXXDXXDXXDXXDX/mini-app">mini-app</a></p>
+<h2 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h2><p>原生应用、客户端：承载 webview 的应用，安卓、IOS app</p>
+<h2 id="Webview"><a href="#Webview" class="headerlink" title="Webview"></a>Webview</h2><p>首先我们需要了解一下 Webview 是什么。WebView 是一种嵌入式浏览器，原生应用可以用它来展示网络内容。WebView 就是浏览器引擎部分，可以像插入 iframe 一样将 Webview 插入到原生应用中。</p>
+<p><img src="/self/2021/07/14/mini-app/webview.png" alt="webview"></p>
+<p>传统 web 开发，浏览器提供了诸多 api 供前端开发者使用，那么在 hybird app 的开发模式下，网页开发者除了调用浏览器提供的 api 外还可以通过桥与原生应用进行通信，然后由原生应用执行浏览器没有提供的功能（例如开关蓝牙），然后再通过桥将结果返回给网页开发者（蓝牙开启成功或失败）。</p>
+<p><img src="/self/2021/07/14/mini-app/bridge.png" alt="bridge"></p>
+<h2 id="小程序运行原理"><a href="#小程序运行原理" class="headerlink" title="小程序运行原理"></a>小程序运行原理</h2><p>一份小程序源码目录一般长这个样子（微信小程序的示例代码）</p>
+<p><img src="/self/2021/07/14/mini-app/file.png" alt="file"></p>
+<p>要让这份代码运行起来，一般需要两个过程：</p>
+<ul>
+<li>编译，将小程序源码编译为浏览器/webview 可以识别的 html 和 js</li>
+<li>执行，原生应用加载编译后的小程序程序包，按照规则执行不同的文件</li>
+</ul>
+<p>整个过程是这样的，后面会详细展开说明</p>
+<p><img src="/self/2021/07/14/mini-app/run.png" alt="run"></p>
+<p>所以开发一个引擎我们需要关注的主要也就是两部分</p>
+<ul>
+<li>编译工具</li>
+<li>运行环境</li>
+</ul>
+<h2 id="编译工具"><a href="#编译工具" class="headerlink" title="编译工具"></a>编译工具</h2><p>首先来了解一下需要编译的文件有哪些，本文仅实现引擎的主要逻辑，所以后续会忽略对全局文件（app.js 等）和配置文件（.json）的处理。<br><img src="/self/2021/07/14/mini-app/file.png" alt="file"></p>
+<ul>
+<li><code>.json</code>后缀的配置文件</li>
+<li><code>.wxml</code>后缀的模板文件</li>
+<li><code>.css</code>后缀的样式文件</li>
+<li><code>.js</code>后缀的脚本逻辑文件</li>
+</ul>
+<p>先说一下编译结果，后续会说明为什么要这么编译</p>
+<ul>
+<li>包含所有页面逻辑的 app.js：由 app.js 和哥哥页面的 index.js 组成</li>
+<li>页面的视图信息（index.html + index.js）：各个页面的模板、样式组成（ <em>.wxml、</em>.css）</li>
+</ul>
+<h3 id="示例程序"><a href="#示例程序" class="headerlink" title="示例程序"></a>示例程序</h3><p>本文的小程序源码结构如下图，相当于刚才给出的小程序示例的目录结构中的 pages/index 下的文件，本文不会对配置和样式扩展进行实现，所以去除了 json 文件和将 css 文件合入了.vue 文件中。</p>
+<p><img src="/self/2021/07/14/mini-app/sample.png" alt="sample"></p>
+<p>此处编译的逻辑比较简单，主要就是使用 webpack，借助 vue-loader 对.vue 文件进行编译，此处需要注意的配置是入口和 HtmlWebpackPlugin 的配置</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js">entry<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+  page<span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">"../Demo/index.js"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  index<span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">"./template/index.js"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+plugins<span class="token operator">:</span> <span class="token punctuation">[</span>
+  <span class="token keyword">new</span> <span class="token class-name">HtmlWebpackPlugin</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+    template<span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">"./template/index.html"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    chunks<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"index"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>实际的小程序编译过程中，入口的路径都是按照配置动态生成的。主要处理两个文件，一个是页面的逻辑 index.js，另一个是提前在编译器中准备好的模板 template/index.js。</p>
+<p>然后我们刚才运行流程图中有提到，页面的逻辑文件是需要在一个地方单独执行的，不能和生成的 html 关联，所以需要在 HtmlWebpackPlugin chunks 上配置生成的 html 仅需要 index 这个 chunk。</p>
+<p>另外一个 entry 也可以看到并不是.vue 文件，而是提前准备好的一个模板文件，这个模板文件除了引用.vue 文件外，还需要运行额外的操作，后面会解释为什么。</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">import</span> Page <span class="token keyword">from</span> <span class="token string">"../../Demo/index.vue"</span><span class="token punctuation">;</span>
+window<span class="token punctuation">.</span><span class="token function">pageLoad</span><span class="token punctuation">(</span>Page<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>配置编写完后就能执行构建了，这就是最后构建的结果</p>
+<p><img src="/self/2021/07/14/mini-app/dist.png" alt="dist"></p>
+<h2 id="架构设计"><a href="#架构设计" class="headerlink" title="架构设计"></a>架构设计</h2><p>此处直接引用微信的架构设计了，各家大同小异，为什么这么做请看文章开头提到的两篇文章，本文剩余部分将解释如何让构建出的小程序代码在这个架构下运行。</p>
+<p><img src="/self/2021/07/14/mini-app/frame.png" alt="frame"></p>
+<p>要让小程序代码直接执行肯定是不可能的，因为逻辑层没有 Page 方法，视图层也需要 vue 框架驱动构建出的 vue 文件执行，所以在执行小程序的代码之前，还需要在逻辑层和视图层分别执行引擎代码进行初始化，逻辑层执行的引擎代码为 service.js，视图层执行的引擎代码为 view.js，他们分别需要实现什么功能，会在下面一一说明。</p>
+<h3 id="抽象"><a href="#抽象" class="headerlink" title="抽象"></a>抽象</h3><p>为了方便说明运行原理，我对这个架构进行抽象，用前端的技术实现。其中 js 线程就是 web woeker，webview 就是 iframe，原生应用就对应网页应用。</p>
+<p><img src="/self/2021/07/14/mini-app/abstract.png" alt="abstract"></p>
+<h3 id="通信"><a href="#通信" class="headerlink" title="通信"></a>通信</h3><p>首先就需要解决我们文章开头提到的原生应用和不同线程的通信问题，也就是搭建所谓的桥。</p>
+<p>v8 引擎和 webview 组件都提供了对应的接口供开发者通信，此处不扩展。用抽象的模型的基础上，对通信的过程有一个等效的认识。</p>
+<p>三个主要的通信问题</p>
+<ul>
+<li>逻辑层和 native 通信</li>
+<li>渲染层和 native 通信</li>
+<li>逻辑层和渲染层通信</li>
+</ul>
+<h4 id="逻辑层和-native-通信"><a href="#逻辑层和-native-通信" class="headerlink" title="逻辑层和 native 通信"></a>逻辑层和 native 通信</h4><p>原生应用向逻辑层（webworker）发送消息</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">const</span> service <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Worker</span><span class="token punctuation">(</span><span class="token string">"service.js"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 逻辑层</span>
+service<span class="token punctuation">.</span><span class="token function">postMessage</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+  type<span class="token operator">:</span> <span class="token string">"initializeFeature"</span><span class="token punctuation">,</span>
+  data<span class="token operator">:</span> <span class="token constant">INTERFACE</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>原生应用接收 webworker 发送的消息</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js">service<span class="token punctuation">.</span><span class="token function-variable function">onmessage</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">e</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>逻辑层向原生发送消息</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token function">postMessage</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+  target<span class="token operator">:</span> <span class="token string">"view"</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>逻辑层接收原生发送的消息</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token function-variable function">onmessage</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">e</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h4 id="视图层和-native-通信"><a href="#视图层和-native-通信" class="headerlink" title="视图层和 native 通信"></a>视图层和 native 通信</h4><p>原生向视图层（iframe）发送消息</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">const</span> view <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"View"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 视图层 iframe</span>
+<span class="token keyword">const</span> viewContent <span class="token operator">=</span> view<span class="token punctuation">.</span>contentWindow<span class="token punctuation">;</span>
+viewContent<span class="token punctuation">.</span><span class="token function">postMessage</span><span class="token punctuation">(</span>eventData<span class="token punctuation">,</span> <span class="token string">"*"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>原生层接收视图层发送的消息</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js">window<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">"message"</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>视图层向原生发送消息</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js">top<span class="token punctuation">.</span><span class="token function">postMessage</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span> type<span class="token operator">:</span> <span class="token string">"webviewReady"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token string">"*"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>视图层接收原生发送的消息</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js">window<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">"message"</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h4 id="视图层和逻辑层通信"><a href="#视图层和逻辑层通信" class="headerlink" title="视图层和逻辑层通信"></a>视图层和逻辑层通信</h4><p>视图层和逻辑层的通信需要通过原生中转，所以解决方案就是在通信协议中规定一个 target 字段，当逻辑层发送消息时，指定 target 是视图层，则原生直接将该消息直接转发给视图层，若没有指定 target 则默认为发送给原生的消息，原生应用自己处理，视图层发送消息也是相同的。</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js">service<span class="token punctuation">.</span><span class="token function-variable function">onmessage</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">e</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> data<span class="token operator">:</span> eventData <span class="token punctuation">&#125;</span> <span class="token operator">=</span> e<span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> type<span class="token punctuation">,</span> data<span class="token punctuation">,</span> target <span class="token punctuation">&#125;</span> <span class="token operator">=</span> eventData<span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>target <span class="token operator">===</span> <span class="token string">"view"</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    viewContent<span class="token punctuation">.</span><span class="token function">postMessage</span><span class="token punctuation">(</span>eventData<span class="token punctuation">,</span> <span class="token string">"*"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 转发给使视图层</span>
+  <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 原生应用自己处理</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="逻辑层"><a href="#逻辑层" class="headerlink" title="逻辑层"></a>逻辑层</h2><p>原生应用主要就是负责管理逻辑层、渲染层、消息分发和处理，那么逻辑层的作用是什么呢。</p>
+<p>首先看一下运行在逻辑层的文件：<br><img src="/self/2021/07/14/mini-app/page.png" alt="page"></p>
+<p>可以看到主要需要实现三个功能</p>
+<ul>
+<li>接口的调用（获取用户信息）</li>
+<li>处理数据并给到渲染层</li>
+<li>处理事件</li>
+</ul>
+<p>当然还有 Page 方法，不然这个文件一运行就会提示 Page 方法 undefined。我们一个个的处理</p>
+<h3 id="处理事件"><a href="#处理事件" class="headerlink" title="处理事件"></a>处理事件</h3><p>这个比较简单，就是用我们刚才说的 onmessage 接口，监听原生发送的消息，消息有一定协议，主要就是规定一个 type 指定是什么事件，然后触发对应事件就好了。</p>
+<h3 id="处理数据"><a href="#处理数据" class="headerlink" title="处理数据"></a>处理数据</h3><p>通过 Page 方法获取到页面数据，然后使用 proxy 劫持，在数据初始化和发生变化时发送消息到视图层即可。</p>
+<h3 id="接口调用"><a href="#接口调用" class="headerlink" title="接口调用"></a>接口调用</h3><p>首先需要原生通知逻辑层有哪些接口，逻辑层将接口注册到全局。可以看到接口注册的过程其实就是定义一个函数，在用户调用接口时候发送消息给原生，并使用 uuid 将回调保存起来，原生执行完后，会将执行结果和 uuid 回传给逻辑层，逻辑层根据 uuid 执行回调即可</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token comment">/**
+ * 原生应用
+ */</span>
+<span class="token keyword">const</span> <span class="token constant">INTERFACE</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">"getUserProfile"</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment">// 原生接口列表</span>
+<span class="token comment">// 原生通知逻辑层注册原生提供的接口</span>
+service<span class="token punctuation">.</span><span class="token function">postMessage</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+  type<span class="token operator">:</span> <span class="token string">"initializeFeature"</span><span class="token punctuation">,</span>
+  data<span class="token operator">:</span> <span class="token constant">INTERFACE</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">/**
+ * 逻辑层 service.js
+ */</span>
+<span class="token comment">// 将原生提供的接口注入全局属性wx.xxx</span>
+<span class="token keyword">function</span> <span class="token function">initializeFeature</span><span class="token punctuation">(</span><span class="token parameter">features</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  features<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">feature</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    wx<span class="token punctuation">[</span>feature<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">data</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> success <span class="token punctuation">&#125;</span> <span class="token operator">=</span> data<span class="token punctuation">;</span>
+      <span class="token keyword">const</span> callbackId <span class="token operator">=</span> Date<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token comment">// 收集回调</span>
+      <span class="token constant">CALLBACK</span><span class="token punctuation">[</span>callbackId<span class="token punctuation">]</span> <span class="token operator">=</span> success<span class="token punctuation">;</span>
+      <span class="token function">postMessage</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+        type<span class="token operator">:</span> <span class="token string">"executeFeature"</span><span class="token punctuation">,</span>
+        data<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+          id<span class="token operator">:</span> callbackId<span class="token punctuation">,</span>
+          feature<span class="token punctuation">,</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>整个过程是这样的</p>
+<p><img src="/self/2021/07/14/mini-app/call.png" alt="call"></p>
+<h2 id="视图层"><a href="#视图层" class="headerlink" title="视图层"></a>视图层</h2><p>视图层需要做的东西很多，这里只把最精简的部分提出来</p>
+<ul>
+<li>视图层框架（不然 vue 怎么执行呢）</li>
+<li>响应事件</li>
+<li>全处初始化（全局属性、方法、指令注入等）</li>
+</ul>
+<p>视图层是怎么加载 view.js 的呢，玄机就在模板 html 里，可以看到模板 html 在 head 处引用了 view.js ,view.js 其实是内置在引擎内部了</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token doctype"><span class="token punctuation">&lt;!</span><span class="token doctype-tag">DOCTYPE</span> <span class="token name">html</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span> <span class="token attr-name">lang</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>en<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>UTF-8<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">http-equiv</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>X-UA-Compatible<span class="token punctuation">"</span></span> <span class="token attr-name">content</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>IE=edge<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>viewport<span class="token punctuation">"</span></span> <span class="token attr-name">content</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>width=device-width, initial-scale=1.0<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>Document<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>/view.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>app<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>整体的执行流程图</p>
+<p><img src="/self/2021/07/14/mini-app/flow.png" alt="flow"></p>
+<p>欢迎访问项目的原地址体验文中提到的所有代码：<a target="_blank" rel="noopener" href="https://github.com/XDXXDXXDXXDXXDX/mini-app">mini-app</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>XIEDONGXIANG
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://xdxspace.gitee.io/self/2021/07/14/mini-app/" title="Web小程序引擎实现">https://xdxspace.gitee.io/self/2021/07/14/mini-app/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/self/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/" rel="tag"># 小程序</a>
+              <a href="/self/tags/Vue/" rel="tag"># Vue</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/self/2021/07/13/css-based/" rel="prev" title="CSS 基础与实用特性大全">
+                  <i class="fa fa-chevron-left"></i> CSS 基础与实用特性大全
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/self/2021/08/18/cli/" rel="next" title="create-react-app 实现原理">
+                  create-react-app 实现原理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fas fa-bomb"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XIEDONGXIANG</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/self/js/utils.js"></script><script src="/self/js/next-boot.js"></script>
+
+  
+<script src="/self/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      const visitors = document.querySelector('.leancloud_visitors');
+      const url = decodeURI(visitors.id);
+      const title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            const counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      const visitors = document.querySelectorAll('.leancloud_visitors');
+      const entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            const target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    const { app_id, app_key, server_url } = {"enable":true,"app_id":"sm9f57jD90kfleS8nVQXPSAo-gzGzoHsz","app_key":"pczcxQSKKOWK8SXKt5HhkXbw","server_url":null,"security":false};
+    function fetchData(api_server) {
+      const Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    const api_server = app_id.slice(-9) === '-MdYXbMMI' ? `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com` : server_url;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+
+<script>
+NexT.utils.loadComments('.utterances-container', () => {
+  const script = document.createElement('script');
+  script.src = 'https://utteranc.es/client.js';
+  script.setAttribute('repo', "XDXXDXXDXXDXXDX/XDX_blog_comment");
+  script.setAttribute('issue-term', "og:title");
+  script.setAttribute('theme', "github-light");
+  script.crossOrigin = 'anonymous';
+  script.async = true;
+  document.querySelector('.utterances-container').appendChild(script);
+});
+</script>
+
+</body>
+</html>

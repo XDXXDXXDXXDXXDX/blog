@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/self/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/self/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/self/favicon.png">
+  <link rel="mask-icon" href="/self/favicon.svg" color="#222">
+
+<link rel="stylesheet" href="/self/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdxspace.gitee.io","root":"/self/","images":"/self/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/self/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="简单记录一下配置过程，使用 husky、prettier 和 lint-staged，使项目可以在提交代码时自动格式化。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git 提交时自动格式化代码">
+<meta property="og:url" content="https://xdxspace.gitee.io/self/2021/01/23/husky-prettier/index.html">
+<meta property="og:site_name" content="欢迎来到XDX的博客">
+<meta property="og:description" content="简单记录一下配置过程，使用 husky、prettier 和 lint-staged，使项目可以在提交代码时自动格式化。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/23/husky-prettier/husky-prettier.png">
+<meta property="article:published_time" content="2021-01-23T10:13:15.000Z">
+<meta property="article:modified_time" content="2021-08-31T07:36:33.874Z">
+<meta property="article:author" content="XIEDONGXIANG">
+<meta property="article:tag" content="git">
+<meta property="article:tag" content="husky">
+<meta property="article:tag" content="prettier">
+<meta property="article:tag" content="lint-staged">
+<meta property="article:tag" content="eslint">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdxspace.gitee.io/self/2021/01/23/husky-prettier/husky-prettier.png">
+
+
+<link rel="canonical" href="https://xdxspace.gitee.io/self/2021/01/23/husky-prettier/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>git 提交时自动格式化代码 | 欢迎来到XDX的博客</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/self/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">欢迎来到XDX的博客</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">好好学习，天天向上</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/self/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/self/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/self/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#2021-8-31-%E6%9B%B4%E6%96%B0%E9%85%8D%E7%BD%AE%E6%96%B9%E6%A1%88"><span class="nav-number">1.</span> <span class="nav-text">2021-8-31 更新配置方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">依赖简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">1.2.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#eslint"><span class="nav-number">1.3.</span> <span class="nav-text">eslint</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A5%E4%B8%8B%E4%B8%BA%E6%97%A7%E6%96%B9%E6%A1%88%EF%BC%8C%E4%B8%8D%E6%8E%A8%E8%8D%90%E4%BD%BF%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">以下为旧方案，不推荐使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-prettier"><span class="nav-number">2.1.</span> <span class="nav-text">配置 prettier</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-husky-%E5%92%8C-lint-staged"><span class="nav-number">2.2.</span> <span class="nav-text">配置 husky 和 lint-staged</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%92%A9%E5%AD%90%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E4%B8%A2%E5%A4%B1"><span class="nav-number">2.3.</span> <span class="nav-text">钩子配置文件丢失</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XIEDONGXIANG"
+      src="/self/images/avatar.png">
+  <p class="site-author-name" itemprop="name">XIEDONGXIANG</p>
+  <div class="site-description" itemprop="description">坚持 多写写</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/self/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/self/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/self/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1770796956@qq.com" title="E-Mail → mailto:1770796956@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/self/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdxspace.gitee.io/self/2021/01/23/husky-prettier/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/self/images/avatar.png">
+      <meta itemprop="name" content="XIEDONGXIANG">
+      <meta itemprop="description" content="坚持 多写写">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎来到XDX的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          git 提交时自动格式化代码
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-23 18:13:15" itemprop="dateCreated datePublished" datetime="2021-01-23T18:13:15+08:00">2021-01-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/self/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+        </span>
+    </span>
+
+  
+    <span id="/self/2021/01/23/husky-prettier/" class="post-meta-item leancloud_visitors" data-flag-title="git 提交时自动格式化代码" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>简单记录一下配置过程，使用 husky、prettier 和 lint-staged，使项目可以在提交代码时自动格式化。</p>
+<a id="more"></a>
+
+<h1 id="2021-8-31-更新配置方案"><a href="#2021-8-31-更新配置方案" class="headerlink" title="2021-8-31 更新配置方案"></a>2021-8-31 更新配置方案</h1><p>不知不觉 husky 已经升级到 v7，eslint 也有所更新所以特此更新一波</p>
+<h2 id="依赖简介"><a href="#依赖简介" class="headerlink" title="依赖简介"></a>依赖简介</h2><ul>
+<li>git 代码管理工具</li>
+<li>husky 快捷配置 git 提交钩子，可以在代码提交的各个阶段对代码进行一定操作</li>
+<li>prettier 按照规则对代码进行格式化</li>
+<li>lint-staged 对提交的代码进行进行操作，避免每次都对整个项目的代码进行格式化</li>
+<li>eslint 可以对代码风格进行检查与格式化（格式化部分会与 prettier 有所不同，故推荐先用 prettier 格式化再调用 eslint）</li>
+</ul>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>因为配置越来越简单了，所以这里推荐一次性安装所有依赖</p>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">npm install --save-dev prettier husky lint-staged<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>剩下的就是执行几个命令，推荐阅读<a target="_blank" rel="noopener" href="https://prettier.io/docs/en/install.html#git-hooks">官方文档</a></p>
+<p>这边主要说一下配合 eslint 的使用方式</p>
+<h2 id="eslint"><a href="#eslint" class="headerlink" title="eslint"></a>eslint</h2><p>eslint 主要还是用来在代码编写的时候，配合编辑器的插件（例如 vscode 的 eslint）进行代码风格提示，因为有一些代码问题是无法自动修复的。</p>
+<p>eslint 依旧推荐官方的配置<a target="_blank" rel="noopener" href="https://eslint.bootcss.com/docs/user-guide/getting-started#installation-and-usage">教程</a>。</p>
+<p>如果需要对 ts、tsx 进行检测那么你应该还会需要<code>@typescript-eslint/eslint-plugin</code>，<code>@typescript-eslint/parser</code>，<code>eslint-import-resolver-typescript</code></p>
+<p>如果要和 prettier 和谐使用（先 prettier 后 eslint），那么你还需要 prettier-eslint-cli</p>
+<p>以下是一批可能会用到的 eslint 依赖</p>
+<ul>
+<li>eslint-config-standard</li>
+<li>eslint-import-resolver-typescript</li>
+<li>eslint-plugin-import</li>
+<li>eslint-plugin-node</li>
+<li>eslint-plugin-promise</li>
+<li>eslint-plugin-react</li>
+<li>eslint-plugin-react-hooks</li>
+</ul>
+<h1 id="以下为旧方案，不推荐使用"><a href="#以下为旧方案，不推荐使用" class="headerlink" title="以下为旧方案，不推荐使用"></a>以下为旧方案，不推荐使用</h1><h2 id="配置-prettier"><a href="#配置-prettier" class="headerlink" title="配置 prettier"></a>配置 prettier</h2><p>prettier 用来进行代码格式化。</p>
+<ul>
+<li>安装 prettier</li>
+</ul>
+<pre class="line-numbers language-sh" data-language="sh"><code class="language-sh">npm install --save-dev --save-exact prettier<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li><p>在根目录新建 .prettierrc.json 文件，内容为 {} 即可。主要用作提示其他开发者和 ide 本项目使用 prettier 进行代码格式化</p>
+</li>
+<li><p>在根目录新建 .prettierignore 文件，配置哪些文件、目录不需要进行格式化</p>
+</li>
+</ul>
+<h2 id="配置-husky-和-lint-staged"><a href="#配置-husky-和-lint-staged" class="headerlink" title="配置 husky 和 lint-staged"></a>配置 husky 和 lint-staged</h2><p>husky 用来执行 git 的提交钩子，主要使用提交前钩子 pre-commit，lint-staged 用来过滤哪些文件需要被格式化。</p>
+<ul>
+<li>安装 husky</li>
+</ul>
+<pre class="line-numbers language-none"><code class="language-none">npm install husky --save-dev<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>安装 lint-staged</li>
+</ul>
+<pre class="line-numbers language-none"><code class="language-none">npm install lint-staged --save-dev<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>在 package.json 添加配置</li>
+</ul>
+<p><em>不需要在命令中添加 git add，因为 husky 会自动执行这一步</em></p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+  <span class="token property">"husky"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"hooks"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token property">"pre-commit"</span><span class="token operator">:</span> <span class="token string">"lint-staged"</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token property">"lint-staged"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"*.&#123;js,css,md&#125;"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"prettier --write"</span><span class="token punctuation">]</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>配置完后，git commit 时就会自动格式化了</p>
+<h2 id="钩子配置文件丢失"><a href="#钩子配置文件丢失" class="headerlink" title="钩子配置文件丢失"></a>钩子配置文件丢失</h2><p>有时候会发现钩子不会正常触发，查看.git/hooks 文件夹可以看到 husky 的钩子全没了，只剩下.sample 文件。但是 npm rebuild 也没用。</p>
+<p>此时建议将代码备份或者先 push 到远程，然后删掉整个本地项目，重新从远端 clone 并安装依赖即可。npm 不行就用 yarn，相信一下玄学。<br><img src="/self/2021/01/23/husky-prettier/husky-prettier.png" alt="rebuild"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>XIEDONGXIANG
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://xdxspace.gitee.io/self/2021/01/23/husky-prettier/" title="git 提交时自动格式化代码">https://xdxspace.gitee.io/self/2021/01/23/husky-prettier/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/self/tags/git/" rel="tag"># git</a>
+              <a href="/self/tags/husky/" rel="tag"># husky</a>
+              <a href="/self/tags/prettier/" rel="tag"># prettier</a>
+              <a href="/self/tags/lint-staged/" rel="tag"># lint-staged</a>
+              <a href="/self/tags/eslint/" rel="tag"># eslint</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/self/2021/01/23/start/" rel="prev" title="Hexo 图片引用问题">
+                  <i class="fa fa-chevron-left"></i> Hexo 图片引用问题
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/self/2021/01/24/comment/" rel="next" title="为博客添加评论系统">
+                  为博客添加评论系统 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fas fa-bomb"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XIEDONGXIANG</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/self/js/utils.js"></script><script src="/self/js/next-boot.js"></script>
+
+  
+<script src="/self/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      const visitors = document.querySelector('.leancloud_visitors');
+      const url = decodeURI(visitors.id);
+      const title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            const counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      const visitors = document.querySelectorAll('.leancloud_visitors');
+      const entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            const target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    const { app_id, app_key, server_url } = {"enable":true,"app_id":"sm9f57jD90kfleS8nVQXPSAo-gzGzoHsz","app_key":"pczcxQSKKOWK8SXKt5HhkXbw","server_url":null,"security":false};
+    function fetchData(api_server) {
+      const Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    const api_server = app_id.slice(-9) === '-MdYXbMMI' ? `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com` : server_url;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+
+<script>
+NexT.utils.loadComments('.utterances-container', () => {
+  const script = document.createElement('script');
+  script.src = 'https://utteranc.es/client.js';
+  script.setAttribute('repo', "XDXXDXXDXXDXXDX/XDX_blog_comment");
+  script.setAttribute('issue-term', "og:title");
+  script.setAttribute('theme', "github-light");
+  script.crossOrigin = 'anonymous';
+  script.async = true;
+  document.querySelector('.utterances-container').appendChild(script);
+});
+</script>
+
+</body>
+</html>

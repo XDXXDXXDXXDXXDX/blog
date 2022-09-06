@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/self/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/self/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/self/favicon.png">
+  <link rel="mask-icon" href="/self/favicon.svg" color="#222">
+
+<link rel="stylesheet" href="/self/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdxspace.gitee.io","root":"/self/","images":"/self/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/self/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="如果一个框架（如 weex 和快应用）需要支持 vue dsl，那么就离不开 vue-loader。 vue-loader 负责将 vue 文件转为单文件组件 (SFCs)对象，并调用 vue-template-compiler 将模板编译成 render 函数。 本文主要分析其执行原理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue-loader 的执行原理">
+<meta property="og:url" content="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/index.html">
+<meta property="og:site_name" content="欢迎来到XDX的博客">
+<meta property="og:description" content="如果一个框架（如 weex 和快应用）需要支持 vue dsl，那么就离不开 vue-loader。 vue-loader 负责将 vue 文件转为单文件组件 (SFCs)对象，并调用 vue-template-compiler 将模板编译成 render 函数。 本文主要分析其执行原理。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/check-plugin.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/parse.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/parse-result.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/selected-block.png">
+<meta property="article:published_time" content="2021-02-18T09:05:30.000Z">
+<meta property="article:modified_time" content="2021-04-26T07:29:06.588Z">
+<meta property="article:author" content="XIEDONGXIANG">
+<meta property="article:tag" content="Vue">
+<meta property="article:tag" content="webpack">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/check-plugin.png">
+
+
+<link rel="canonical" href="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>vue-loader 的执行原理 | 欢迎来到XDX的博客</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/self/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">欢迎来到XDX的博客</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">好好学习，天天向上</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/self/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/self/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/self/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E9%A1%B9%E7%9B%AE"><span class="nav-number">1.</span> <span class="nav-text">初始化项目</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="nav-number">1.1.</span> <span class="nav-text">安装依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%8D%95%E7%BB%84%E4%BB%B6%E6%96%87%E4%BB%B6%E7%9A%84%E5%86%85%E5%AE%B9"><span class="nav-number">1.2.</span> <span class="nav-text">添加单组件文件的内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0-webpack-%E9%85%8D%E7%BD%AE"><span class="nav-number">1.3.</span> <span class="nav-text">添加 webpack 配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC"><span class="nav-number">2.</span> <span class="nav-text">添加脚本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%93%E5%8C%85"><span class="nav-number">2.1.</span> <span class="nav-text">打包</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E6%89%A7%E8%A1%8C"><span class="nav-number">3.</span> <span class="nav-text">分析执行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#VueLoaderPlugin-%E7%9A%84%E6%89%A7%E8%A1%8C"><span class="nav-number">3.1.</span> <span class="nav-text">VueLoaderPlugin 的执行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#loader-%E7%AC%AC%E4%B8%80%E8%BD%AE%E6%89%A7%E8%A1%8C"><span class="nav-number">3.2.</span> <span class="nav-text">loader 第一轮执行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#loader-%E7%AC%AC%E4%BA%8C%E8%BD%AE%E6%89%A7%E8%A1%8C"><span class="nav-number">3.3.</span> <span class="nav-text">loader 第二轮执行</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XIEDONGXIANG"
+      src="/self/images/avatar.png">
+  <p class="site-author-name" itemprop="name">XIEDONGXIANG</p>
+  <div class="site-description" itemprop="description">坚持 多写写</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/self/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/self/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/self/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1770796956@qq.com" title="E-Mail → mailto:1770796956@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/self/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/self/images/avatar.png">
+      <meta itemprop="name" content="XIEDONGXIANG">
+      <meta itemprop="description" content="坚持 多写写">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎来到XDX的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          vue-loader 的执行原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-02-18 17:05:30" itemprop="dateCreated datePublished" datetime="2021-02-18T17:05:30+08:00">2021-02-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/self/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+        </span>
+    </span>
+
+  
+    <span id="/self/2021/02/18/vue-loader/" class="post-meta-item leancloud_visitors" data-flag-title="vue-loader 的执行原理" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>如果一个框架（如 weex 和快应用）需要支持 vue dsl，那么就离不开 vue-loader。</p>
+<p>vue-loader 负责将 vue 文件转为单文件组件 (SFCs)对象，并调用 vue-template-compiler 将模板编译成 render 函数。</p>
+<p>本文主要分析其执行原理。</p>
+<a id="more"></a>
+
+<p>首先还是贴一下官方文档：<a target="_blank" rel="noopener" href="https://vue-loader.vuejs.org/zh/">Vue Loader</a></p>
+<p>下面主要分为这两个部分说明</p>
+<ul>
+<li>构建示例项目</li>
+<li>分析 vue-loader 的执行</li>
+</ul>
+<h2 id="初始化项目"><a href="#初始化项目" class="headerlink" title="初始化项目"></a>初始化项目</h2><p>根据文档说明先快速构建一个项目，并安装上依赖</p>
+<h3 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h3><p>新建项目</p>
+<pre class="line-numbers language-none"><code class="language-none">npm init<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>安装 vue-loader、vue-template-compiler，编译 vue 文件</p>
+<pre class="line-numbers language-none"><code class="language-none">npm install -D vue-loader vue-template-compiler<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>安装 webpack 4 和 webpack-cli，打包静态资源</p>
+<pre class="line-numbers language-none"><code class="language-none">npm install -D webpack@4 webpack-cli<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>安装 css-loader 和 babel-loader，编译 css 和模拟对 js 的处理</p>
+<pre class="line-numbers language-none"><code class="language-none">npm install -D css-loader babel-loader<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>然后在根目录下新建 <code>webpack.config.js</code> 和 <code>src/index.vue</code> 文件。</p>
+<p>最终目录应该是这样的<br>├─package-lock.json<br>├─package.json<br>├─webpack.config.js<br>├─src<br>| └index.vue<br>└dist</p>
+<h3 id="添加单组件文件的内容"><a href="#添加单组件文件的内容" class="headerlink" title="添加单组件文件的内容"></a>添加单组件文件的内容</h3><p>往 index.vue 中添加如下内容，也可以是其他任意的组件内容</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>template</span><span class="token punctuation">></span></span>
+  <span class="token comment">&lt;!-- template里只能有一个根节点 --></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>demo-page<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>text</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>title<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>欢迎打开&#123;&#123; title &#125;&#125;<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>text</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>template</span><span class="token punctuation">></span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript">
+  <span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>
+    <span class="token function-variable function">data</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token punctuation">&#123;</span>
+        title<span class="token operator">:</span> <span class="token string">"vue-loader示例"</span><span class="token punctuation">,</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>style</span><span class="token punctuation">></span></span><span class="token style"><span class="token language-css">
+  <span class="token selector">.demo-page</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">flex-direction</span><span class="token punctuation">:</span> column<span class="token punctuation">;</span>
+    <span class="token property">justify-content</span><span class="token punctuation">:</span> center<span class="token punctuation">;</span>
+    <span class="token property">align-items</span><span class="token punctuation">:</span> center<span class="token punctuation">;</span>
+    <span class="token property">width</span><span class="token punctuation">:</span> 100%<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>style</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="添加-webpack-配置"><a href="#添加-webpack-配置" class="headerlink" title="添加 webpack 配置"></a>添加 webpack 配置</h3><p>往 webpack.config.js 中添加如下配置，其中 vue-style-loader 是跟随 vue-loader 安装的，不用自行再安装。</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"path"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> VueLoaderPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"vue-loader/lib/plugin"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  mode<span class="token operator">:</span> <span class="token string">"development"</span><span class="token punctuation">,</span>
+  entry<span class="token operator">:</span> <span class="token string">"./src/index.vue"</span><span class="token punctuation">,</span>
+  output<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    filename<span class="token operator">:</span> <span class="token string">"main.js"</span><span class="token punctuation">,</span>
+    path<span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">"dist"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  module<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    rules<span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">&#123;</span>
+        test<span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.vue$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+        loader<span class="token operator">:</span> <span class="token string">"vue-loader"</span><span class="token punctuation">,</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+      <span class="token comment">// 它会应用到普通的 `.js` 文件</span>
+      <span class="token comment">// 以及 `.vue` 文件中的 `&lt;script>` 块</span>
+      <span class="token punctuation">&#123;</span>
+        test<span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.js$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+        loader<span class="token operator">:</span> <span class="token string">"babel-loader"</span><span class="token punctuation">,</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+      <span class="token comment">// 它会应用到普通的 `.css` 文件</span>
+      <span class="token comment">// 以及 `.vue` 文件中的 `&lt;style>` 块</span>
+      <span class="token punctuation">&#123;</span>
+        test<span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.css$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+        use<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"vue-style-loader"</span><span class="token punctuation">,</span> <span class="token string">"css-loader"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  plugins<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token comment">// 请确保引入这个插件来施展魔法</span>
+    <span class="token keyword">new</span> <span class="token class-name">VueLoaderPlugin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="添加脚本"><a href="#添加脚本" class="headerlink" title="添加脚本"></a>添加脚本</h2><p>往 package.json 中添加脚本 <code>&quot;build&quot;: &quot;webpack&quot;</code></p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+  ...
+  <span class="token property">"scripts"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"test"</span><span class="token operator">:</span> <span class="token string">"echo \"Error: no test specified\" &amp;&amp; exit 1"</span><span class="token punctuation">,</span>
+    <span class="token property">"build"</span><span class="token operator">:</span> <span class="token string">"webpack"</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  ...
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="打包"><a href="#打包" class="headerlink" title="打包"></a>打包</h3><p>最后执行 <code>npm run build</code> 即可正常打包，在 dist/main.js 看到输出的文件。</p>
+<p>后面的调试方法参考该文章：<a href="https://xdxspace.gitee.io/self/2021/02/19/vscode-debug/">使用 vscode 的调试功能</a></p>
+<h2 id="分析执行"><a href="#分析执行" class="headerlink" title="分析执行"></a>分析执行</h2><p>plugin 会在 webpack 启动后不久就开始执行，所以我们先从 VueLoaderPlugin 处开始看起。</p>
+<h3 id="VueLoaderPlugin-的执行"><a href="#VueLoaderPlugin-的执行" class="headerlink" title="VueLoaderPlugin 的执行"></a>VueLoaderPlugin 的执行</h3><p>本文基于 webpack 4 编写，对应的 VueLoaderPlugin 定义在 vue-loader/lib/plugin-webpack4.js 中，在 apply 方法处打断点，并开始调试。</p>
+<p>VueLoaderPlugin 的执行主要就是处理 loader 中的 rules。VueLoaderPlugin 的作用是将定义过的其它规则复制并应用到 .vue 文件里相应语言的块（js、style）。在 webpack 启动时会立即执行。</p>
+<p>首先看一下第一部分的代码，可以看到就是在 webpack 配置中想尽办法找到和 <code>.vue</code> 或者 <code>.vue.html</code> 匹配的 rules，获取到后存储在 <code>vueRule</code> 中</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">class</span> <span class="token class-name">VueLoaderPlugin</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">apply</span> <span class="token punctuation">(</span><span class="token parameter">compiler</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+<span class="token punctuation">.</span>
+  <span class="token operator">...</span>
+    <span class="token comment">// use webpack's RuleSet utility to normalize user rules</span>
+    <span class="token keyword">const</span> rawRules <span class="token operator">=</span> compiler<span class="token punctuation">.</span>options<span class="token punctuation">.</span>module<span class="token punctuation">.</span>rules
+    <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> rules <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">RuleSet</span><span class="token punctuation">(</span>rawRules<span class="token punctuation">)</span>
+    <span class="token comment">// find the rule that applies to vue files</span>
+    <span class="token keyword">let</span> vueRuleIndex <span class="token operator">=</span> rawRules<span class="token punctuation">.</span><span class="token function">findIndex</span><span class="token punctuation">(</span><span class="token function">createMatcher</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">foo.vue</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>vueRuleIndex <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      vueRuleIndex <span class="token operator">=</span> rawRules<span class="token punctuation">.</span><span class="token function">findIndex</span><span class="token punctuation">(</span><span class="token function">createMatcher</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">foo.vue.html</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">const</span> vueRule <span class="token operator">=</span> rules<span class="token punctuation">[</span>vueRuleIndex<span class="token punctuation">]</span>
+    <span class="token operator">...</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>然后就是克隆一份所有除了 vue rules 以外的 rules，此处也暂不展开说明</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> clonedRules <span class="token operator">=</span> rules<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">r</span><span class="token punctuation">)</span> <span class="token operator">=></span> r <span class="token operator">!==</span> vueRule<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>cloneRule<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>然后会准备一个 pitcher-loader，该 loader 只要资源文件路径的?后有 vue 就会执行（如 xxx/filename.vue?<code>vue</code>&amp;xxxx）。</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">const</span> pitcher <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  loader<span class="token operator">:</span> require<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">"./loaders/pitcher"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function-variable function">resourceQuery</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter">query</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> parsed <span class="token operator">=</span> qs<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>query<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> parsed<span class="token punctuation">.</span>vue <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  options<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    cacheDirectory<span class="token operator">:</span> vueLoaderUse<span class="token punctuation">.</span>options<span class="token punctuation">.</span>cacheDirectory<span class="token punctuation">,</span>
+    cacheIdentifier<span class="token operator">:</span> vueLoaderUse<span class="token punctuation">.</span>options<span class="token punctuation">.</span>cacheIdentifier<span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>让我们先简单看一下 pitcher 文件，通过代码就可以知道，pitcher 只是为了负责拦截所有 vue 块请求，并将其转化为适当的请求。module.exports 并没有其他逻辑实现。</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">module<span class="token punctuation">.</span><span class="token function-variable function">exports</span> <span class="token operator">=</span> <span class="token parameter">code</span> <span class="token operator">=></span> code
+<span class="token comment">// This pitching loader is responsible for intercepting all vue block requests</span>
+<span class="token comment">// and transform it into appropriate requests.</span>
+module<span class="token punctuation">.</span>exports<span class="token punctuation">.</span><span class="token function-variable function">pitch</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">remainingRequest</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token operator">...</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>最后就是修改 rules，重写 rules 为 pitcher-loader，克隆的 loader（clonedRules）和原本定义的 loader（rules）</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// replace original rules</span>
+compiler<span class="token punctuation">.</span>options<span class="token punctuation">.</span>module<span class="token punctuation">.</span>rules <span class="token operator">=</span> <span class="token punctuation">[</span>pitcher<span class="token punctuation">,</span> <span class="token operator">...</span>clonedRules<span class="token punctuation">,</span> <span class="token operator">...</span>rules<span class="token punctuation">]</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>根据 rules 可以知道默认的执行顺序：<br>pitch</p>
+<ul>
+<li>pitcher-loader 中 pitch，对有 vue 参数的请求进行转化</li>
+</ul>
+<p>loader</p>
+<ul>
+<li>用户自己定义的 rules</li>
+<li>经过克隆的用户定义的 rules（没有 vue-loader）</li>
+<li>pitcher-loader（无用）</li>
+</ul>
+<h3 id="loader-第一轮执行"><a href="#loader-第一轮执行" class="headerlink" title="loader 第一轮执行"></a>loader 第一轮执行</h3><p>根据 webpack 的配置，从下到上开始第一轮的 vue 文件处理。</p>
+<p>此处不贴完整代码，建议打开<a target="_blank" rel="noopener" href="https://github.com/vuejs/vue-loader/blob/master/lib/index.js">vue-loader github 仓库</a>对照阅读。</p>
+<p>首先 vue-loader 会检测是否在 webpack config 中正确配置了 VueLoaderPlugin</p>
+<p><img src="/self/2021/02/18/vue-loader/check-plugin.png" alt="check-plugin"></p>
+<p>然后 vue 文件会迎来他的第一次转换，即下图中的 parse 方法，该方法实际调用的是 vue-template-compiler/build.js 中的 parseComponent 方法</p>
+<p><img src="/self/2021/02/18/vue-loader/parse.png" alt="parse"></p>
+<p>该方法将 vue 文件的内容转换成了 SFC 描述符对象，即文件内容（字符串）转换成下面这个对象，将每个部分（script、styles、template）明确分了开来。</p>
+<p><img src="/self/2021/02/18/vue-loader/parse-result.png" alt="parse-result"></p>
+<p>接着会有一个 incomingQuery.type 的判断，现在为 false 暂时忽略。</p>
+<p>最后的解析结果：</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">import</span> <span class="token punctuation">&#123;</span>
+  render<span class="token punctuation">,</span>
+  staticRenderFns<span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span> <span class="token keyword">from</span> <span class="token string">"./index.vue?vue&amp;type=template&amp;id=2964abc9&amp;"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> script <span class="token keyword">from</span> <span class="token string">"./index.vue?vue&amp;type=script&amp;lang=js&amp;"</span><span class="token punctuation">;</span>
+<span class="token keyword">export</span> <span class="token operator">*</span> <span class="token keyword">from</span> <span class="token string">"./index.vue?vue&amp;type=script&amp;lang=js&amp;"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> style0 <span class="token keyword">from</span> <span class="token string">"./index.vue?vue&amp;type=style&amp;index=0&amp;lang=css&amp;"</span><span class="token punctuation">;</span>
+<span class="token comment">/* normalize component */</span>
+<span class="token keyword">import</span> normalizer <span class="token keyword">from</span> <span class="token string">"!../node_modules/vue-loader/lib/runtime/componentNormalizer.js"</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> component <span class="token operator">=</span> <span class="token function">normalizer</span><span class="token punctuation">(</span>
+  script<span class="token punctuation">,</span>
+  render<span class="token punctuation">,</span>
+  staticRenderFns<span class="token punctuation">,</span>
+  <span class="token boolean">false</span><span class="token punctuation">,</span>
+  <span class="token keyword">null</span><span class="token punctuation">,</span>
+  <span class="token keyword">null</span><span class="token punctuation">,</span>
+  <span class="token keyword">null</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">/* hot reload 代码省略 */</span>
+component<span class="token punctuation">.</span>options<span class="token punctuation">.</span>__file <span class="token operator">=</span> <span class="token string">"src/index.vue"</span><span class="token punctuation">;</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> component<span class="token punctuation">.</span>exports<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>可以看到经过第一轮的解析，vue 文件被拆分为了几个请求，主要为三个：</p>
+<ul>
+<li>./index.vue?vue&amp;type=template</li>
+<li>./index.vue?vue&amp;type=script</li>
+<li>./index.vue?vue&amp;type=style</li>
+</ul>
+<h3 id="loader-第二轮执行"><a href="#loader-第二轮执行" class="headerlink" title="loader 第二轮执行"></a>loader 第二轮执行</h3><p>根据上面第一轮 vue-loader 的解析结果，开始第二轮的解析。</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">import</span> <span class="token punctuation">&#123;</span>
+  render<span class="token punctuation">,</span>
+  staticRenderFns<span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span> <span class="token keyword">from</span> <span class="token string">"./index.vue?vue&amp;type=template&amp;id=2964abc9&amp;"</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>因为请求中有 vue，故该请求会给 VueLoaderPlugin 定义的 pitcher 拦截，重新分发请求。让我们直接看一下 pitch 重写后的请求。</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">export</span> <span class="token operator">*</span> <span class="token keyword">from</span> <span class="token string">"-!../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../node_modules/vue-loader/lib/index.js??vue-loader-options!./index.vue?vue&amp;type=template&amp;id=2964abc9&amp;"</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>可以看到该请求已经转换成这 2 个 loader 的事情了</p>
+<ul>
+<li>vue-loader</li>
+<li>templateLoader</li>
+</ul>
+<p>直接看 vue-loader，关键是这块刚才没有提的逻辑</p>
+<p><img src="/self/selected-block.png" alt="block"></p>
+<p>此处的 selectBlock 方法会根据 url 参数中的 type 获取对应模块的内容（template 等）给下一个 loader。</p>
+<p>最后就是 templateLoader，该 loader 会会拿到 template 字符串。vue-loader 就是通过这个 loader 调用 vue-template-compiler 对模板进行编译，得到最终的 render 函数。</p>
+<p>这是最后编译获得的结果：</p>
+<pre class="line-numbers language-js" data-language="js"><code class="language-js"><span class="token keyword">var</span> <span class="token function-variable function">render</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">var</span> _vm <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+  <span class="token keyword">var</span> _h <span class="token operator">=</span> _vm<span class="token punctuation">.</span>$createElement<span class="token punctuation">;</span>
+  <span class="token keyword">var</span> _c <span class="token operator">=</span> _vm<span class="token punctuation">.</span>_self<span class="token punctuation">.</span>_c <span class="token operator">||</span> _h<span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token function">_c</span><span class="token punctuation">(</span><span class="token string">"div"</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> staticClass<span class="token operator">:</span> <span class="token string">"demo-page"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>
+    <span class="token function">_c</span><span class="token punctuation">(</span><span class="token string">"text"</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> staticClass<span class="token operator">:</span> <span class="token string">"title"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>
+      _vm<span class="token punctuation">.</span><span class="token function">_v</span><span class="token punctuation">(</span><span class="token string">"欢迎打开"</span> <span class="token operator">+</span> _vm<span class="token punctuation">.</span><span class="token function">_s</span><span class="token punctuation">(</span>_vm<span class="token punctuation">.</span>title<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> staticRenderFns <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+render<span class="token punctuation">.</span>_withStripped <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token punctuation">&#123;</span> render<span class="token punctuation">,</span> staticRenderFns <span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>XIEDONGXIANG
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://xdxspace.gitee.io/self/2021/02/18/vue-loader/" title="vue-loader 的执行原理">https://xdxspace.gitee.io/self/2021/02/18/vue-loader/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/self/tags/Vue/" rel="tag"># Vue</a>
+              <a href="/self/tags/webpack/" rel="tag"># webpack</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/self/2021/02/12/html-css-daily/" rel="prev" title="HTML + CSS 随笔">
+                  <i class="fa fa-chevron-left"></i> HTML + CSS 随笔
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/self/2021/02/19/vscode-debug/" rel="next" title="使用 vscode 的调试功能">
+                  使用 vscode 的调试功能 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fas fa-bomb"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XIEDONGXIANG</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/self/js/utils.js"></script><script src="/self/js/next-boot.js"></script>
+
+  
+<script src="/self/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      const visitors = document.querySelector('.leancloud_visitors');
+      const url = decodeURI(visitors.id);
+      const title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            const counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      const visitors = document.querySelectorAll('.leancloud_visitors');
+      const entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            const target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    const { app_id, app_key, server_url } = {"enable":true,"app_id":"sm9f57jD90kfleS8nVQXPSAo-gzGzoHsz","app_key":"pczcxQSKKOWK8SXKt5HhkXbw","server_url":null,"security":false};
+    function fetchData(api_server) {
+      const Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    const api_server = app_id.slice(-9) === '-MdYXbMMI' ? `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com` : server_url;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+
+<script>
+NexT.utils.loadComments('.utterances-container', () => {
+  const script = document.createElement('script');
+  script.src = 'https://utteranc.es/client.js';
+  script.setAttribute('repo', "XDXXDXXDXXDXXDX/XDX_blog_comment");
+  script.setAttribute('issue-term', "og:title");
+  script.setAttribute('theme', "github-light");
+  script.crossOrigin = 'anonymous';
+  script.async = true;
+  document.querySelector('.utterances-container').appendChild(script);
+});
+</script>
+
+</body>
+</html>

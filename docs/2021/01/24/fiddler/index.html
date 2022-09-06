@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/self/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/self/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/self/favicon.png">
+  <link rel="mask-icon" href="/self/favicon.svg" color="#222">
+
+<link rel="stylesheet" href="/self/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdxspace.gitee.io","root":"/self/","images":"/self/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/self/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="在选择博客评论系统的过程中，遇到了两次访问的网站使用的 jquery 下载失败导致网站功能不能正常使用的问题，故尝试修改请求让网站恢复正常。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="fiddler 修改响应实践">
+<meta property="og:url" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/index.html">
+<meta property="og:site_name" content="欢迎来到XDX的博客">
+<meta property="og:description" content="在选择博客评论系统的过程中，遇到了两次访问的网站使用的 jquery 下载失败导致网站功能不能正常使用的问题，故尝试修改请求让网站恢复正常。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/jquery_failed.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/trust.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/choose.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/before.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/decode.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/html.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/edit.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/change_path.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/res.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/start_res.png">
+<meta property="og:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/success.png">
+<meta property="article:published_time" content="2021-01-24T14:00:28.000Z">
+<meta property="article:modified_time" content="2021-04-26T07:29:06.556Z">
+<meta property="article:author" content="XIEDONGXIANG">
+<meta property="article:tag" content="fiddler">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdxspace.gitee.io/self/2021/01/24/fiddler/jquery_failed.png">
+
+
+<link rel="canonical" href="https://xdxspace.gitee.io/self/2021/01/24/fiddler/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>fiddler 修改响应实践 | 欢迎来到XDX的博客</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/self/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">欢迎来到XDX的博客</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">好好学习，天天向上</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/self/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/self/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/self/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B"><span class="nav-number">1.</span> <span class="nav-text">开始</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-fiddler"><span class="nav-number">2.</span> <span class="nav-text">配置 fiddler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E8%AF%B7%E6%B1%82%E9%80%BB%E8%BE%91"><span class="nav-number">3.</span> <span class="nav-text">分析请求逻辑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%93%8D%E5%BA%94"><span class="nav-number">4.</span> <span class="nav-text">修改响应</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XIEDONGXIANG"
+      src="/self/images/avatar.png">
+  <p class="site-author-name" itemprop="name">XIEDONGXIANG</p>
+  <div class="site-description" itemprop="description">坚持 多写写</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/self/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/self/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/self/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1770796956@qq.com" title="E-Mail → mailto:1770796956@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/self/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdxspace.gitee.io/self/2021/01/24/fiddler/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/self/images/avatar.png">
+      <meta itemprop="name" content="XIEDONGXIANG">
+      <meta itemprop="description" content="坚持 多写写">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎来到XDX的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          fiddler 修改响应实践
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-24 22:00:28" itemprop="dateCreated datePublished" datetime="2021-01-24T22:00:28+08:00">2021-01-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/self/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+        </span>
+    </span>
+
+  
+    <span id="/self/2021/01/24/fiddler/" class="post-meta-item leancloud_visitors" data-flag-title="fiddler 修改响应实践" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>在选择博客评论系统的过程中，遇到了两次访问的网站使用的 jquery 下载失败导致网站功能不能正常使用的问题，故尝试修改请求让网站恢复正常。</p>
+<a id="more"></a>
+
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>如果是为了了解如何修改响应，可以直接跳到最后一节<a href="#%E4%BF%AE%E6%94%B9%E5%93%8D%E5%BA%94">修改响应</a></p>
+<p>本文主要解决<a target="_blank" rel="noopener" href="http://livere.com/">livere</a>的官网登陆问题。</p>
+<p>进入官网后，点击右上角进行注册，然后点击登陆，可以看到控制台报错：</p>
+<p><img src="/self/2021/01/24/fiddler/jquery_failed.png" alt="jquery_failed"></p>
+<p>可以看到是<a target="_blank" rel="noopener" href="https://code.jquery.com/jquery-1.11.2.min.js">jquery</a>加载失败了，导致登陆不成功。</p>
+<p>在排除了是 DNS 解析和墙的问题之后，决定直接修改响应让网页正常获取到 jquery。</p>
+<h2 id="配置-fiddler"><a href="#配置-fiddler" class="headerlink" title="配置 fiddler"></a>配置 fiddler</h2><p>首先需要到官网下载 fiddler，<a target="_blank" rel="noopener" href="https://www.telerik.com/download/fiddler">点此前往</a></p>
+<p>若是直接访问 fiddler 的官网首页去找下载页，注意区分 Fiddler Classic 和 Fiddler Everywhere，我们需要的是 Fiddler Classic，Fiddler Everywhere 个人觉得打开又慢还需要登陆，很不好用。</p>
+<p>配置 fiddler 拦截 https：Tools -&gt; Options -&gt; HTTPS</p>
+<ul>
+<li>重置所有证书和信任根证书证书，点击左上角的 Actions，按照顺序点击按钮，有弹窗则一直确定就好</li>
+</ul>
+<p><img src="/self/2021/01/24/fiddler/trust.png" alt="trust"></p>
+<ul>
+<li>勾选拦截 https 相关的配置</li>
+</ul>
+<p><img src="/self/2021/01/24/fiddler/choose.png" alt="choose"></p>
+<p>配置完后即可正常拦截 https 请求了</p>
+<h2 id="分析请求逻辑"><a href="#分析请求逻辑" class="headerlink" title="分析请求逻辑"></a>分析请求逻辑</h2><p>回到官网的登陆页，输入信息点击登陆，可以在 fiddler 的面板中看到，在获取 jquery 之前有另外一个请求</p>
+<p><img src="/self/2021/01/24/fiddler/before.png" alt="before"></p>
+<p>将该请求（双击选中请求）的响应解密可以看到是一个 html</p>
+<p><img src="/self/2021/01/24/fiddler/decode.png" alt="decode"></p>
+<p><img src="/self/2021/01/24/fiddler/html.png" alt="html"></p>
+<p>所以推测登陆的逻辑就是在 iframe 中加载一个 html（该 html 去请求 juery），然后再将登陆结果返回给主站。所以只要修改该 html 加载 jquery 的地址就好了。</p>
+<h2 id="修改响应"><a href="#修改响应" class="headerlink" title="修改响应"></a>修改响应</h2><p>首先找一个可以正常返回 jquery 的 cdn，例如<a target="_blank" rel="noopener" href="https://cdn.bootcdn.net/ajax/libs/jquery/1.12.1/jquery.js">https://cdn.bootcdn.net/ajax/libs/jquery/1.12.1/jquery.js</a></p>
+<p>然后在 fiddler 中选中刚才的那个请求，右键保存并编辑响应</p>
+<p><img src="/self/2021/01/24/fiddler/edit.png" alt="edit"></p>
+<p>在打开的编辑中，找到 jquery 的位置，将其替换为可用的 cdn</p>
+<p><img src="/self/2021/01/24/fiddler/change_path.png" alt="change_path"></p>
+<p>然后到 fiddler 中添加自动响应规则，选中右边的 AutoResponder，按照下图进行配置（三个红框先不用开启）</p>
+<p><img src="/self/2021/01/24/fiddler/res.png" alt="res"></p>
+<p>最后重新回到刚才的登陆页面，在点击登陆之前，在 fiddler 中开启自动响应，把图中的三个选项都要勾上，这三个按顺序分别是</p>
+<ul>
+<li>开启自动响应</li>
+<li>允许所有链接</li>
+<li>没有匹配到规则的请求直接放行</li>
+</ul>
+<p><img src="/self/2021/01/24/fiddler/start_res.png" alt="start_res"></p>
+<p>然后再点击登陆，可以看到页面已经正常登陆进去了~</p>
+<p><img src="/self/2021/01/24/fiddler/success.png" alt="success"></p>
+<p>通过该方式，修改其他请求也是 OK 的~</p>
+<p>神仙运行商有段时间连 github 都不让我上，真的服了…</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>XIEDONGXIANG
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://xdxspace.gitee.io/self/2021/01/24/fiddler/" title="fiddler 修改响应实践">https://xdxspace.gitee.io/self/2021/01/24/fiddler/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/self/tags/fiddler/" rel="tag"># fiddler</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/self/2021/01/24/comment/" rel="prev" title="为博客添加评论系统">
+                  <i class="fa fa-chevron-left"></i> 为博客添加评论系统
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/self/2021/01/25/command/" rel="next" title="常用命令">
+                  常用命令 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fas fa-bomb"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XIEDONGXIANG</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/self/js/utils.js"></script><script src="/self/js/next-boot.js"></script>
+
+  
+<script src="/self/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      const visitors = document.querySelector('.leancloud_visitors');
+      const url = decodeURI(visitors.id);
+      const title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            const counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      const visitors = document.querySelectorAll('.leancloud_visitors');
+      const entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            const target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    const { app_id, app_key, server_url } = {"enable":true,"app_id":"sm9f57jD90kfleS8nVQXPSAo-gzGzoHsz","app_key":"pczcxQSKKOWK8SXKt5HhkXbw","server_url":null,"security":false};
+    function fetchData(api_server) {
+      const Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    const api_server = app_id.slice(-9) === '-MdYXbMMI' ? `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com` : server_url;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+
+<script>
+NexT.utils.loadComments('.utterances-container', () => {
+  const script = document.createElement('script');
+  script.src = 'https://utteranc.es/client.js';
+  script.setAttribute('repo', "XDXXDXXDXXDXXDX/XDX_blog_comment");
+  script.setAttribute('issue-term', "og:title");
+  script.setAttribute('theme', "github-light");
+  script.crossOrigin = 'anonymous';
+  script.async = true;
+  document.querySelector('.utterances-container').appendChild(script);
+});
+</script>
+
+</body>
+</html>
