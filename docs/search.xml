@@ -3518,25 +3518,6 @@ module<span class="token punctuation">.</span>exports <span class="token operato
       </tags>
   </entry>
   <entry>
-    <title>图解网络</title>
-    <url>/blog/2022/09/19/network/</url>
-    <content><![CDATA[<p><img src="/blog/2022/09/19/network/%E5%9B%BE%E8%A7%A3%E7%BD%91%E7%BB%9C.epub" alt="点击下载"></p>
-<a id="more"></a>
-]]></content>
-  </entry>
-  <entry>
-    <title>study</title>
-    <url>/blog/2022/09/23/study/</url>
-    <content><![CDATA[<a id="more"></a>
-
-<h1 id="纯小数转二进制"><a href="#纯小数转二进制" class="headerlink" title="纯小数转二进制"></a>纯小数转二进制</h1><p>10 进制纯小数转换为 2 进制数，采用乘 2 取整法：<br>0.609375<em>2=1.21875<br>0.21875</em>2=0.4375<br>0.4375<em>2=0.875<br>0.875</em>2=1.75<br>0.75<em>2=1.5<br>0.5</em>2=1<br>从上往下读取每一次商的整数部分，就是转换的结果：<br>0.609375=(0.100111)2</p>
-<h2 id="纯小数二进制转十进制"><a href="#纯小数二进制转十进制" class="headerlink" title="纯小数二进制转十进制"></a>纯小数二进制转十进制</h2><p>0.101，第一个 1 代表的是 2 的负一次方（0.5），即 1<em>0.5，第二个 1 代表的是 2 的负三次方（0.125），即 1</em>0.125，结果为 0.5+0.125=0.625，简而纯亩没言之，每个 1 乘以其所在位所代表的数，最后相加。小数点后第一位所代表的数是 2 的负一次方，第二位是负二次方，以此类推</p>
-<h2 id="补码的本质"><a href="#补码的本质" class="headerlink" title="补码的本质"></a>补码的本质</h2><p>作者：Coldwings<br>链接：<a href="https://www.zhihu.com/question/21511392/answer/82989720">https://www.zhihu.com/question/21511392/answer/82989720</a><br>来源：知乎<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
-<p>![bu.png]</p>
-<h2 id="奇偶校验"><a href="#奇偶校验" class="headerlink" title="奇偶校验"></a>奇偶校验</h2><p>在传输数据后增加一位奇偶校验位。以偶检验为例，偶检验的意思就是数据的接受放在接受到数据的时候要确保数据里 1 的个数为偶数，所以当数据中 1 的个数为偶数时，校验位为 0，当 1 的个数为奇数时，检验位为 1，这样就能保证总的数据中 1 的个数为偶数，接受方发现不为偶数，那么数据就是出问题了。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>webcomponent 样式隔离问题</title>
     <url>/blog/2022/10/31/webcomponent/</url>
     <content><![CDATA[<p>使用 webcomponent 进行样式隔离需要注意继承影响样式</p>
