@@ -3517,4 +3517,61 @@ module<span class="token punctuation">.</span>exports <span class="token operato
         <tag>webpack</tag>
       </tags>
   </entry>
+  <entry>
+    <title>图解网络</title>
+    <url>/blog/2022/09/19/network/</url>
+    <content><![CDATA[<p><img src="/blog/2022/09/19/network/%E5%9B%BE%E8%A7%A3%E7%BD%91%E7%BB%9C.epub" alt="点击下载"></p>
+<a id="more"></a>
+]]></content>
+  </entry>
+  <entry>
+    <title>study</title>
+    <url>/blog/2022/09/23/study/</url>
+    <content><![CDATA[<a id="more"></a>
+
+<h1 id="纯小数转二进制"><a href="#纯小数转二进制" class="headerlink" title="纯小数转二进制"></a>纯小数转二进制</h1><p>10 进制纯小数转换为 2 进制数，采用乘 2 取整法：<br>0.609375<em>2=1.21875<br>0.21875</em>2=0.4375<br>0.4375<em>2=0.875<br>0.875</em>2=1.75<br>0.75<em>2=1.5<br>0.5</em>2=1<br>从上往下读取每一次商的整数部分，就是转换的结果：<br>0.609375=(0.100111)2</p>
+<h2 id="纯小数二进制转十进制"><a href="#纯小数二进制转十进制" class="headerlink" title="纯小数二进制转十进制"></a>纯小数二进制转十进制</h2><p>0.101，第一个 1 代表的是 2 的负一次方（0.5），即 1<em>0.5，第二个 1 代表的是 2 的负三次方（0.125），即 1</em>0.125，结果为 0.5+0.125=0.625，简而纯亩没言之，每个 1 乘以其所在位所代表的数，最后相加。小数点后第一位所代表的数是 2 的负一次方，第二位是负二次方，以此类推</p>
+<h2 id="补码的本质"><a href="#补码的本质" class="headerlink" title="补码的本质"></a>补码的本质</h2><p>作者：Coldwings<br>链接：<a href="https://www.zhihu.com/question/21511392/answer/82989720">https://www.zhihu.com/question/21511392/answer/82989720</a><br>来源：知乎<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+<p>![bu.png]</p>
+<h2 id="奇偶校验"><a href="#奇偶校验" class="headerlink" title="奇偶校验"></a>奇偶校验</h2><p>在传输数据后增加一位奇偶校验位。以偶检验为例，偶检验的意思就是数据的接受放在接受到数据的时候要确保数据里 1 的个数为偶数，所以当数据中 1 的个数为偶数时，校验位为 0，当 1 的个数为奇数时，检验位为 1，这样就能保证总的数据中 1 的个数为偶数，接受方发现不为偶数，那么数据就是出问题了。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>webcomponent 样式隔离问题</title>
+    <url>/blog/2022/10/31/webcomponent/</url>
+    <content><![CDATA[<p>使用 webcomponent 进行样式隔离需要注意继承影响样式</p>
+<a id="more"></a>
+
+<p>使用 webcomponent 的 shadowdom 可以很好的实现样式隔离，例如：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>style</span><span class="token punctuation">></span></span><span class="token style"><span class="token language-css">
+  <span class="token selector">p</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">color</span><span class="token punctuation">:</span> red<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>style</span><span class="token punctuation">></span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>test-item</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>test-item</span><span class="token punctuation">></span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>template</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>itemTemplate<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>test-color<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>TEST CSS<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>template</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript">
+  <span class="token keyword">class</span> <span class="token class-name">Item</span> <span class="token keyword">extends</span> <span class="token class-name">HTMLElement</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">connectedCallback</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> content <span class="token operator">=</span> document
+        <span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"itemTemplate"</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span>content<span class="token punctuation">.</span><span class="token function">cloneNode</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">attachShadow</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span> mode<span class="token operator">:</span> <span class="token string">"open"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">appendChild</span><span class="token punctuation">(</span>content<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+  window<span class="token punctuation">.</span>customElements<span class="token punctuation">.</span><span class="token function">define</span><span class="token punctuation">(</span><span class="token string">"test-item"</span><span class="token punctuation">,</span> Item<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>执行代码可以看到页面中的 p 标签并没有变成红色，说明外部的选择器是无法选择到 shadowdom 内部的节点的，很好的实现了我们想要的样式隔离。</p>
+<p>但是如果此时给任一父组件加上可继承的样式，例如给 body 加上 color</p>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token selector">body</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">color</span><span class="token punctuation">:</span> red<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>重新执行就会发现 p 标签就变成红色，查看控制台会发现是从 body 继承了 color。有点隔离失效的意思。</p>
+<p>所以父组件修改样式是可被继承的样式时，如果不想子组件被影响，最好在子组件或子组件最近一层父组件中设置具体的颜色，避免给父组件影响。</p>
+]]></content>
+  </entry>
 </search>
