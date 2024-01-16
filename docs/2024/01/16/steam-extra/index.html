@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/favicon.png">
+  <link rel="mask-icon" href="/blog/favicon.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xdxxdxxdxxdxxdx.github.io","root":"/blog/","images":"/blog/images","scheme":"Gemini","version":"8.2.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="七折充值 steam 钱包，快来试试吧！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="steam 倒余额">
+<meta property="og:url" content="https://xdxxdxxdxxdxxdx.github.io/blog/2024/01/16/steam-extra/index.html">
+<meta property="og:site_name" content="欢迎来到XDX的博客">
+<meta property="og:description" content="七折充值 steam 钱包，快来试试吧！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2024/01/16/steam-extra/column.jpg">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2024/01/16/steam-extra/left.jpg">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2024/01/16/steam-extra/sold.jpg">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2024/01/16/steam-extra/name.jpg">
+<meta property="og:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2024/01/16/steam-extra/last.jpg">
+<meta property="article:published_time" content="2024-01-16T04:47:08.000Z">
+<meta property="article:modified_time" content="2024-01-17T02:44:18.168Z">
+<meta property="article:author" content="XIEDONGXIANG">
+<meta property="article:tag" content="xdx 前端 后端 原生 学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xdxxdxxdxxdxxdx.github.io/blog/2024/01/16/steam-extra/column.jpg">
+
+
+<link rel="canonical" href="https://xdxxdxxdxxdxxdx.github.io/blog/2024/01/16/steam-extra/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>steam 倒余额 | 欢迎来到XDX的博客</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">欢迎来到XDX的博客</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">好好学习，天天向上</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E3%8A%99%EF%B8%8F-7-%E6%8A%98%E5%85%85%E5%80%BC-steam-%E4%BD%99%E9%A2%9D%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">㊙️ 7 折充值 steam 余额原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%A4%94-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%88%B0%E8%B4%A6%E5%B0%91%E4%BA%86%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">🤔 为什么到账少了？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%90%8E%E8%AE%A1%E7%AE%97%E4%B8%80%E4%B8%8B%E6%AF%94%E4%BE%8B"><span class="nav-number">1.2.</span> <span class="nav-text">最后计算一下比例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9D%97%EF%B8%8F-%E8%BF%99%E4%B8%AA%E6%AF%94%E4%BE%8B%E8%AE%A1%E7%AE%97%E5%A4%AA%E9%BA%BB%E7%83%A6%E4%BA%86%EF%BC%81"><span class="nav-number">2.</span> <span class="nav-text">❗️ 这个比例计算太麻烦了！</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8F%A7-%E8%B4%AD%E4%B9%B0%E6%95%99%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">🏧 购买教程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%92%B0-%E5%94%AE%E5%87%BA%E6%95%99%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">💰 售出教程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%A4%91-%E6%89%B9%E9%87%8F%E5%94%AE%E5%87%BA"><span class="nav-number">4.1.</span> <span class="nav-text">🤑 批量售出</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XIEDONGXIANG"
+      src="/blog/images/avatar.png">
+  <p class="site-author-name" itemprop="name">XIEDONGXIANG</p>
+  <div class="site-description" itemprop="description">坚持 多写写</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/blog/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1770796956@qq.com" title="E-Mail → mailto:1770796956@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/blog/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xdxxdxxdxxdxxdx.github.io/blog/2024/01/16/steam-extra/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.png">
+      <meta itemprop="name" content="XIEDONGXIANG">
+      <meta itemprop="description" content="坚持 多写写">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="欢迎来到XDX的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          steam 倒余额
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-01-16 12:47:08" itemprop="dateCreated datePublished" datetime="2024-01-16T12:47:08+08:00">2024-01-16</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>七折充值 steam 钱包，快来试试吧！</p>
+<a id="more"></a>
+
+<h2 id="㊙️-7-折充值-steam-余额原理"><a href="#㊙️-7-折充值-steam-余额原理" class="headerlink" title="㊙️ 7 折充值 steam 余额原理"></a>㊙️ 7 折充值 steam 余额原理</h2><p>准确来说是 RMB 换余额</p>
+<p>简单来说就是倒买倒卖：<br>1、在第三方平台购买 steam 的商品（饰品、武器箱）<br>2、在 steam 上高价售出获得 steam 余额</p>
+<p>例如在第三方平台花 1.24RMB 了一把刀，在 steam 上以 2.08 售出，那么 steam 余额就会到账 1.81</p>
+<h3 id="🤔-为什么到账少了？"><a href="#🤔-为什么到账少了？" class="headerlink" title="🤔 为什么到账少了？"></a>🤔 为什么到账少了？</h3><p>steam 市场卖东西收 13%的手续费，也就是实际 steam 余额到手(1.81) = 售出价格(2.08) - 手续费(2.08*0.13=0.27)</p>
+<p>化简一下就是： 1.81 = 2.08 * 0.87</p>
+<h3 id="最后计算一下比例"><a href="#最后计算一下比例" class="headerlink" title="最后计算一下比例"></a>最后计算一下比例</h3><p>1.24 / 1.81 = 0.69，成功 7 折充值 steam 余额</p>
+<p>下面会展开说怎么购买与售出</p>
+<h2 id="❗️-这个比例计算太麻烦了！"><a href="#❗️-这个比例计算太麻烦了！" class="headerlink" title="❗️ 这个比例计算太麻烦了！"></a>❗️ 这个比例计算太麻烦了！</h2><p>那要怎么找比例好一点的 steam 商品呢，毕竟一个一个在第三方市场看完再去 staem 市场比价太麻烦了。</p>
+<p>直接查看这个网站即可：<a target="_blank" rel="noopener" href="https://www.iflow.work/cn?platform=buff-igxe-c5-uuyp&game=csgo-dota2&order=buy&pagenum=1&min_price=1.0&max_price=5000.0&min_volume=1000">比例自动计算网站</a></p>
+<p>这个网站会自动计算各个平台售出饰品比例，网站的“稳定求购比例那一列”就是我们刚才算的折扣</p>
+<p><img src="/blog/2024/01/16/steam-extra/column.jpg" alt="column"></p>
+<p>可以点击某一个商品的那一行看看在各个平台的售价和在 steam 上的售出价格</p>
+<p><img src="/blog/2024/01/16/steam-extra/left.jpg" alt="left"></p>
+<p><em>购买前最好去 steam 市场确认一下售出价格(也就是点一下那个 Steam 链接)，因为这个网站的更新是有滞后的</em></p>
+<p><img src="/blog/2024/01/16/steam-extra/sold.jpg" alt="sold"></p>
+<p>为了避免商品囤积卖不出去，所以在查看网站的时候，记得把交易筛选里的成交量设置大于 1000 或 1w，这样卖出会快一点，避免商品烂在自己手里</p>
+<h2 id="🏧-购买教程"><a href="#🏧-购买教程" class="headerlink" title="🏧 购买教程"></a>🏧 购买教程</h2><p>常用的第三方平台有网易 BUFF、IGEX、C5、UUYP。推荐使用网易 BUFF 和 UUYP，卖家发货会快一点。</p>
+<p>下载注册 BUFF 和 UUYP，并绑定 steam 账号，手机上要安装好 steam app。</p>
+<p>手机上使用 steam app，翻墙或者网易 UU 加速器也是必须的。</p>
+<p>然后就是查看刚才的网站，选择交易平台是 UUYP 或者网易 BUFF 的商品购买即可（直接点击那个网站的交易平台链接就能跳转过去，在打开的网页里一般都会提示打开 APP，如果没有的话复制名字去 App 里搜索页可以）</p>
+<p>购买流程通常都是：<br>1、充值第三方钱包（要买多少充多少）<br>2、扣款购买<br>3、第三方 app 自动向卖家发起 steam 交易报价<br>4、卖家确认报价发货<br>5、商品自动入库到 steam 库存中</p>
+<p>有些 app 会有自动收货之类的功能，全部打开允许就好了。</p>
+<h2 id="💰-售出教程"><a href="#💰-售出教程" class="headerlink" title="💰 售出教程"></a>💰 售出教程</h2><p>如果购买的商品单价在 50 块钱以上的话，到 steam 库存里一个一个售出就好。</p>
+<p>一般售出价格只要比在售价格便宜 0.01 就很好卖出去</p>
+<h3 id="🤑-批量售出"><a href="#🤑-批量售出" class="headerlink" title="🤑 批量售出"></a>🤑 批量售出</h3><p>通常一两块钱的商品比例会更好，所以就需要批量购买 50 或 100 个。</p>
+<p>第三方平台一般都会有批量购买的功能，所以购买不是问题。</p>
+<p>但是在 steam 上批量售出就需要一点小技巧了：</p>
+<ul>
+<li>先在 Steam 市场中把自己想卖的东西的英文名提取出來（比如這個膠囊是 2020%20RMR%20Legends）</li>
+</ul>
+<p><img src="/blog/2024/01/16/steam-extra/name.jpg" alt="name"></p>
+<ul>
+<li>把上面提取到的英文換到下面链接中=号后面的部分，浏览器访问该地址，输入价格和数量就可以了</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://steamcommunity.com/market/multisell?appid=730&amp;contextid=2&amp;items%5B%5D=%E6%8F%90%E5%8F%96%E5%87%BA%E6%9D%A5%E7%9A%84%E8%8B%B1%E6%96%87">https://steamcommunity.com/market/multisell?appid=730&amp;contextid=2&amp;items[]=提取出来的英文</a></p>
+<p><img src="/blog/2024/01/16/steam-extra/last.jpg" alt="last"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>XIEDONGXIANG
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://xdxxdxxdxxdxxdx.github.io/blog/2024/01/16/steam-extra/" title="steam 倒余额">https://xdxxdxxdxxdxxdx.github.io/blog/2024/01/16/steam-extra/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/blog/2022/10/31/webcomponent/" rel="prev" title="webcomponent 样式隔离问题">
+                  <i class="fa fa-chevron-left"></i> webcomponent 样式隔离问题
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fas fa-bomb"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XIEDONGXIANG</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/next-boot.js"></script>
+
+  
+<script src="/blog/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+<script>
+NexT.utils.loadComments('.utterances-container', () => {
+  const script = document.createElement('script');
+  script.src = 'https://utteranc.es/client.js';
+  script.setAttribute('repo', "XDXXDXXDXXDXXDX/XDX_blog_comment");
+  script.setAttribute('issue-term', "og:title");
+  script.setAttribute('theme', "github-light");
+  script.crossOrigin = 'anonymous';
+  script.async = true;
+  document.querySelector('.utterances-container').appendChild(script);
+});
+</script>
+
+</body>
+</html>

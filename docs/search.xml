@@ -3555,4 +3555,48 @@ module<span class="token punctuation">.</span>exports <span class="token operato
 <p>所以父组件修改样式是可被继承的样式时，如果不想子组件被影响，最好在子组件或子组件最近一层父组件中设置具体的颜色，避免给父组件影响。</p>
 ]]></content>
   </entry>
+  <entry>
+    <title>steam 倒余额</title>
+    <url>/blog/2024/01/16/steam-extra/</url>
+    <content><![CDATA[<p>七折充值 steam 钱包，快来试试吧！</p>
+<a id="more"></a>
+
+<h2 id="㊙️-7-折充值-steam-余额原理"><a href="#㊙️-7-折充值-steam-余额原理" class="headerlink" title="㊙️ 7 折充值 steam 余额原理"></a>㊙️ 7 折充值 steam 余额原理</h2><p>准确来说是 RMB 换余额</p>
+<p>简单来说就是倒买倒卖：<br>1、在第三方平台购买 steam 的商品（饰品、武器箱）<br>2、在 steam 上高价售出获得 steam 余额</p>
+<p>例如在第三方平台花 1.24RMB 了一把刀，在 steam 上以 2.08 售出，那么 steam 余额就会到账 1.81</p>
+<h3 id="🤔-为什么到账少了？"><a href="#🤔-为什么到账少了？" class="headerlink" title="🤔 为什么到账少了？"></a>🤔 为什么到账少了？</h3><p>steam 市场卖东西收 13%的手续费，也就是实际 steam 余额到手(1.81) = 售出价格(2.08) - 手续费(2.08*0.13=0.27)</p>
+<p>化简一下就是： 1.81 = 2.08 * 0.87</p>
+<h3 id="最后计算一下比例"><a href="#最后计算一下比例" class="headerlink" title="最后计算一下比例"></a>最后计算一下比例</h3><p>1.24 / 1.81 = 0.69，成功 7 折充值 steam 余额</p>
+<p>下面会展开说怎么购买与售出</p>
+<h2 id="❗️-这个比例计算太麻烦了！"><a href="#❗️-这个比例计算太麻烦了！" class="headerlink" title="❗️ 这个比例计算太麻烦了！"></a>❗️ 这个比例计算太麻烦了！</h2><p>那要怎么找比例好一点的 steam 商品呢，毕竟一个一个在第三方市场看完再去 staem 市场比价太麻烦了。</p>
+<p>直接查看这个网站即可：<a href="https://www.iflow.work/cn?platform=buff-igxe-c5-uuyp&game=csgo-dota2&order=buy&pagenum=1&min_price=1.0&max_price=5000.0&min_volume=1000">比例自动计算网站</a></p>
+<p>这个网站会自动计算各个平台售出饰品比例，网站的“稳定求购比例那一列”就是我们刚才算的折扣</p>
+<p><img src="/blog/2024/01/16/steam-extra/column.jpg" alt="column"></p>
+<p>可以点击某一个商品的那一行看看在各个平台的售价和在 steam 上的售出价格</p>
+<p><img src="/blog/2024/01/16/steam-extra/left.jpg" alt="left"></p>
+<p><em>购买前最好去 steam 市场确认一下售出价格(也就是点一下那个 Steam 链接)，因为这个网站的更新是有滞后的</em></p>
+<p><img src="/blog/2024/01/16/steam-extra/sold.jpg" alt="sold"></p>
+<p>为了避免商品囤积卖不出去，所以在查看网站的时候，记得把交易筛选里的成交量设置大于 1000 或 1w，这样卖出会快一点，避免商品烂在自己手里</p>
+<h2 id="🏧-购买教程"><a href="#🏧-购买教程" class="headerlink" title="🏧 购买教程"></a>🏧 购买教程</h2><p>常用的第三方平台有网易 BUFF、IGEX、C5、UUYP。推荐使用网易 BUFF 和 UUYP，卖家发货会快一点。</p>
+<p>下载注册 BUFF 和 UUYP，并绑定 steam 账号，手机上要安装好 steam app。</p>
+<p>手机上使用 steam app，翻墙或者网易 UU 加速器也是必须的。</p>
+<p>然后就是查看刚才的网站，选择交易平台是 UUYP 或者网易 BUFF 的商品购买即可（直接点击那个网站的交易平台链接就能跳转过去，在打开的网页里一般都会提示打开 APP，如果没有的话复制名字去 App 里搜索页可以）</p>
+<p>购买流程通常都是：<br>1、充值第三方钱包（要买多少充多少）<br>2、扣款购买<br>3、第三方 app 自动向卖家发起 steam 交易报价<br>4、卖家确认报价发货<br>5、商品自动入库到 steam 库存中</p>
+<p>有些 app 会有自动收货之类的功能，全部打开允许就好了。</p>
+<h2 id="💰-售出教程"><a href="#💰-售出教程" class="headerlink" title="💰 售出教程"></a>💰 售出教程</h2><p>如果购买的商品单价在 50 块钱以上的话，到 steam 库存里一个一个售出就好。</p>
+<p>一般售出价格只要比在售价格便宜 0.01 就很好卖出去</p>
+<h3 id="🤑-批量售出"><a href="#🤑-批量售出" class="headerlink" title="🤑 批量售出"></a>🤑 批量售出</h3><p>通常一两块钱的商品比例会更好，所以就需要批量购买 50 或 100 个。</p>
+<p>第三方平台一般都会有批量购买的功能，所以购买不是问题。</p>
+<p>但是在 steam 上批量售出就需要一点小技巧了：</p>
+<ul>
+<li>先在 Steam 市场中把自己想卖的东西的英文名提取出來（比如這個膠囊是 2020%20RMR%20Legends）</li>
+</ul>
+<p><img src="/blog/2024/01/16/steam-extra/name.jpg" alt="name"></p>
+<ul>
+<li>把上面提取到的英文換到下面链接中=号后面的部分，浏览器访问该地址，输入价格和数量就可以了</li>
+</ul>
+<p><a href="https://steamcommunity.com/market/multisell?appid=730&amp;contextid=2&amp;items%5B%5D=%E6%8F%90%E5%8F%96%E5%87%BA%E6%9D%A5%E7%9A%84%E8%8B%B1%E6%96%87">https://steamcommunity.com/market/multisell?appid=730&amp;contextid=2&amp;items[]=提取出来的英文</a></p>
+<p><img src="/blog/2024/01/16/steam-extra/last.jpg" alt="last"></p>
+]]></content>
+  </entry>
 </search>
